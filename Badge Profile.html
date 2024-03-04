@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWARDS</title>
+    <link rel="stylesheet" href="Badge Profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="icon" href="https://bbmalaysia.org/badges/award/4312%20Presidents.png">
+    <script src="Badge Profile.js"></script>
+
+</head> 
+
+<body>
+    <button class="goBackbutton" id="goBack" title="Go Back to Homepage">Go Back</button>
+
+    <button id="toggleSidebar" class="bars"><i class="fas fa-bars" title="Menu"></i></button>
+
+    <i id="goToTopBtn" class="fa-solid fa-up-long" title="Go to Top"></i>
+
+    <div id="side-bar" class="side-bar">
+        <div class="menu">
+            <div class="side_barclose" onclick="toggleSidebar()"> <button>Close &times;</button> </div>
+            <h1 class="side-bar-title">Award Section</h1>
+            <div class="side-bar-row-container">
+                <p>Proficiency Award</p>
+                <p class="basic">Basic <span>Advance</span></p>
+            </div>            
+
+            <div class="item">
+                <a class="sub-btn" onclick="toggleSubMenu(this)">
+                    Compulsory
+                    <i class="fa-solid fa-caret-right"></i>                
+                </a> 
+                
+                <div class="sub-menu">
+
+                    <a href="#" class="sub-item" data-url="image/Right/Target.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Target.png" alt="Sub Item Image">
+                            <p class="sub-box-text">TARGET</p>
+                            <div class="ccheckbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox-none" type="checkbox">
+                            </div>                                                       
+                        </div>
+                    </a>
+                    
+                    <a href="#" class="sub-item" data-url="image/Right/Christian Education.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Christian Education.png" alt="CHRISTIAN EDUCATION">
+                            <p class="sub-box-text">CHRISTIAN EDUCATION</p>
+                            <div class="ccheckbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                            
+                        </div>
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Right/Drill.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Drill.png" alt="DRILL">
+                            <p class="sub-box-text">DRILL</p>
+                            <div class="ccheckbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div> 
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Recruitment.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Recruitment.png" alt="RECRUITMENT">
+                            <p class="sub-box-text">RECRUITMENT</p>
+                            <div class="ccheckbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div> 
+                        </div>
+                    </a>
+                </div>
+
+                <p class="electives">ELECTIVES</p>
+
+                <a class="sub-btn" onclick="toggleSubMenu(this)">
+                    Interest (Group A)
+                    <i class="fa-solid fa-caret-right"></i>                
+                </a>
+                
+                <div class="sub-menu1">
+                    <a href="#" class="sub-item" data-url="image/Right/Arts.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Arts.png" alt="ARTS">
+                            <p class="sub-box-text">ARTS</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>
+                        </div>                     
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Bandsmans.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Bandsmans.png" alt="BANDSMAN">
+                            <p class="sub-box-text">BANDSMAN</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>
+                        </div>                      
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Buglers.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Buglers.png" alt="BUGLERS">
+                            <p class="sub-box-text">BUGLERS</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>
+                        </div>                       
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Right/Communication.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Communication.png" alt="COMMUNICATION">
+                            <p class="sub-box-text">COMMUNICATION</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Right/Computer Knowledge.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Computer Knowledge.png" alt="COMPUTER KNOWLEDGE">
+                            <p class="sub-box-text">COMPUTER KNOWLEDGE</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Crafts.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Crafts.png" alt="CRAFT">
+                            <p class="sub-box-text">CRAFT</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Drummers.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Drummers.png" alt="DRUMMERS">
+                            <p class="sub-box-text">DRUMMERS</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Hobbies.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Hobbies.png" alt="HOBBIES">
+                            <p class="sub-box-text">HOBBIES</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/International Relations.png">
+                        <div class="sub-box">
+                            <img src="image/Right/International Relations.png" alt="INTERNATIONAL RELATIONS">
+                            <p class="sub-box-text">INTERNATIONAL RELATIONS</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Nature Awareness.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Nature Awareness.png" alt="NATURE AWARENESS">
+                            <p class="sub-box-text">NATURE AWARENESS</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Right/Pipers.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Pipers.png" alt="PIPERS">
+                            <p class="sub-box-text">PIPERS</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+                </div>
+
+                <a class="sub-btn" onclick="toggleSubMenu(this)">
+                    Adventure (Group B)
+                    <i class="fa-solid fa-caret-right"></i>                
+                </a>
+                
+                <div class="sub-menu2">
+                    <a href="#" class="sub-item" data-url="image/Right/Camping.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Camping.png" alt="CAMPING">
+                            <p class="sub-box-text">CAMPING</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Expedition.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Expedition.png" alt="EXPEDITION">
+                            <p class="sub-box-text">EXPEDITION</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Water.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Water.png" alt="WATER ADVENTURE">
+                            <p class="sub-box-text">WATER ADVENTURE</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                </div>
+
+                <a class="sub-btn" onclick="toggleSubMenu(this)">
+                    Community (Group C)
+                    <i class="fa-solid fa-caret-right"></i>                
+                </a>
+                
+                <div class="sub-menu3">
+                    <a href="#" class="sub-item" data-url="image/Right/Citizenship.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Citizenship.png" alt="CITIZENSHIP">
+                            <p class="sub-box-text">CITIZENSHIP</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Right/Community Service.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Community Service.png" alt="COMMUNITY SERVICE">
+                            <p class="sub-box-text">COMMUNITY SERVICE</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Right/Environmental Conservation.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Environmental Conservation.png" alt="ENVIROMENTAL CONSERVATION">
+                            <p class="sub-box-text">ENVIROMENTAL CONSERVATION</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Fireman.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Fireman.png" alt="FIRE AND RESCUE">
+                            <p class="sub-box-text">FIRE AND RESCUE</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/First Aid.png">
+                        <div class="sub-box">
+                            <img src="image/Right/First Aid.png" alt="FIRST AID">
+                            <p class="sub-box-text">FIRST AID</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Life Saving.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Life Saving.png" alt="LIFE SAVING">
+                            <p class="sub-box-text">LIFE SAVING</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Safety.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Safety.png" alt="SAFETY">
+                            <p class="sub-box-text">SAFETY</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+                </div>
+
+                <a class="sub-btn" onclick="toggleSubMenu(this)">
+                    Physical (Group D)
+                    <i class="fa-solid fa-caret-right"></i>                
+                </a>
+                
+                <div class="sub-menu4">
+                    <a href="#" class="sub-item" data-url="image/Right/Athletics.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Athletics.png" alt="ATHLETICS">
+                            <p class="sub-box-text">ATHLETICS</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Right/Gymnastics.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Gymnastics.png" alt="GYMNASTICS">
+                            <p class="sub-box-text">GYMNASTICS</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Right/Martial Art.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Martial Art.png" alt="MARTIAL ARTS">
+                            <p class="sub-box-text">MARTIAL ARTS</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Physical Training.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Physical Training.png" alt="PHYSICAL TRAINING">
+                            <p class="sub-box-text">PHYSICAL TRAINING</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Sports.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Sports.png" alt="SPORTS">
+                            <p class="sub-box-text">SPORTS</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Right/Swimming.png">
+                        <div class="sub-box">
+                            <img src="image/Right/Swimming.png" alt="SWIMMING">
+                            <p class="sub-box-text">SWIMMING</p>
+                            <div class="checkbox-container">
+                                <input class="checkbox" type="checkbox">
+                                <input class="right-checkbox" type="checkbox">
+                            </div>                         
+                        </div>
+                    </a>
+                </div>
+
+                <a class="sub-btn" onclick="toggleSubMenu(this)">
+                    Service Awards
+                    <i class="fa-solid fa-caret-right"></i>                
+                </a>
+                
+                <div class="sub-menu-right1">
+                    <a href="#" class="sub-item" data-url="image/Left/Junior One-Year.png">
+                        <div class="sub-box">
+                            <img src="image/Left/Junior One-Year.png" alt="JUNIOR SECTION SERVICE BADGE">
+                            <p class="sub-box-text">JUNIOR SECTION SERVICE BADGE</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Left/One-Year.png">
+                        <div class="sub-box">
+                            <img src="image/Left/One-Year.png" alt="ONE YEAR SERVICE BADGE">
+                            <p class="sub-box-text">ONE YEAR SERVICE BADGE</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Left/Three-Years.png">
+                        <div class="sub-box">
+                            <img src="image/Left/Three-Years.png" alt="THREE YEAR SERVICE BADGE">
+                            <p class="sub-box-text">THREE YEAR SERVICE BADGE</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Left/Long-Year.png">
+                        <div class="sub-box">
+                            <img src="image/Left/Long-Year.png" alt="LONG YEAR SERVICE BADGE">
+                            <p class="sub-box-text">LONG YEAR SERVICE BADGE</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+                </div>
+
+                <a class="sub-btn" onclick="toggleSubMenu(this)">
+                    Special Awards
+                    <i class="fa-solid fa-caret-right"></i>                
+                </a>
+                
+                <div class="sub-menu-right2">
+                    <a href="#" class="sub-item" data-url="image/Left/NCO Proficiency Star.png">
+                        <div class="sub-box">
+                            <img src="image/Left/NCO Proficiency Star.png" alt="NCO PROFICIENCY">
+                            <p class="sub-box-text">NCO PROFICIENCY</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Left/Scholastic Bronze.png">
+                        <div class="sub-box">
+                            <img src="image/Left/Scholastic Bronze.png" alt="BRONZE SCHOLASTIC AWARDS">
+                            <p class="sub-box-text">BRONZE SCHOLASTIC AWARDS</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+            
+                    <a href="#" class="sub-item" data-url="image/Left/Scholastic Silver.png">
+                        <div class="sub-box">
+                            <img src="image/Left/Scholastic Silver.png" alt="SILVER SCHOLASTIC AWARDS">
+                            <p class="sub-box-text">SILVER SCHOLASTIC AWARDS</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Left/Scholastic Gold.png">
+                        <div class="sub-box">
+                            <img src="image/Left/Scholastic Gold.png" alt="GOLD SCHOLASTIC AWARDS">
+                            <p class="sub-box-text">GOLD SCHOLASTIC AWARDS</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Left/Gold.png">
+                        <div class="sub-box">
+                            <img src="image/Left/Gold.png" alt="GOLD AWARD">
+                            <p class="sub-box-text">GOLD AWARD</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Left/DOE.png">
+                        <div class="sub-box">
+                            <img src="image/Left/DOE.png" alt="DOE">
+                            <p class="sub-box-text">DOE</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Left/Presidents.png">
+                        <div class="sub-box">
+                            <img src="image/Left/Presidents.png" alt="PRESIDENT’S AWARD">
+                            <p class="sub-box-text">PRESIDENT’S AWARD</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+
+                    <a href="#" class="sub-item" data-url="image/Left/Founder.png">
+                        <div class="sub-box">
+                            <img src="image/Left/Founder.png" alt="FOUNDER’S AWARD">
+                            <p class="sub-box-text">FOUNDER’S AWARD</p>
+                            <input class="checkbox-right" type="checkbox">
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="side-bar-button">
+                <button type="toggle-button" onclick="collapseAllSubmenus()">Collapse All</button>
+                <button type="close-button" onclick="clearAll()">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="main">
+        <h1 class="main-h1">Badges Arrangement</h1>
+    
+        <div class="main-box">
+    
+            <div class="box left-box" id="leftBox">
+                <div id="selectedBadgesContainer"></div>
+            </div>
+            
+            <div class="box right-box" id="rightBox">
+                <div id="selectedBadgesContainer"></div>
+            </div>
+        </div>
+
+    </section>
+    
+    <div class="progress-box" id="selectedCount">
+        <div class="progress-column">
+            <div class="progress-row">
+                <div class="progress-cell">Compulsory</div>
+                <div class="progress-cell progress-number">: 0 / 4&nbsp;&nbsp;</div>
+            </div>
+            <div class="progress-row">
+                <div class="progress-cell">Interest (Group A)</div>
+                <div class="progress-cell progress-number">: 0 / 11</div>
+            </div>
+            <div class="progress-row">
+                <div class="progress-cell">Adventure (Group B)</div>
+                <div class="progress-cell progress-number">: 0 / 3&nbsp;&nbsp;</div>
+            </div>
+            <div class="progress-row">
+                <div class="progress-cell">Community (Group C)</div>
+                <div class="progress-cell progress-number">: 0 / 7&nbsp;&nbsp;</div>
+            </div>
+            <div class="progress-row">
+                <div class="progress-cell">Physical (Group D)</div>
+                <div class="progress-cell progress-number">: 0 / 6&nbsp;&nbsp;</div>
+            </div>
+        </div>
+        <div class="progress-column">
+            <div class="progress-row">
+                <div class="progress-cell">Service Awards</div>
+                <div class="progress-cell progress-number">: 0 / 4&nbsp;&nbsp;</div>
+            </div>
+            <div class="progress-row">
+                <div class="progress-cell">Special Awards</div>
+                <div class="progress-cell progress-number">: 0 / 8&nbsp;&nbsp;</div>
+            </div>
+            <div class="progress-row">
+                <div class="progress-cell">Total Basic Proficiency Award</div>
+                <div class="progress-cell progress-number">: 0 / 31</div>
+            </div>
+            <div class="progress-row">
+                <div class="progress-cell">Total Advance Proficiency Award</div>
+                <div class="progress-cell progress-number">: 0 / 30</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="main1">
+        <div class="president-header">
+            <h1 class="main-h1">PRESIDENT'S AWARD</h1>
+            <i class="fa-solid fa-circle-info" id="presidentAwardIcon" title="President Award Syllabus"></i>
+        </div>
+
+        <div id="presidentAwardModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div class="modal-header">
+                    <img src="image/President/Presidents.png" alt="President's Award Information" class="modal-image" />
+                    <h1 class="modal-title">PRESIDENT'S AWARD</h1>
+                </div>
+                <div class="modal-body">
+                    <ol type="i">
+                        <li>The applicant must be 15 years and above and be recommended by his/her Company Captain and Chaplain.</li>
+                        <li>Must be an NCO in the Company.</li>
+                        <li>Must satisfy the minimum awards required as follows:
+                            <ul type="disc">
+                                <li>NCO’s Proficiency Star (Advanced Level).</li>
+                                <li>Christian Education (Advanced Level).</li>
+                                <li>Drill (Advanced Level).</li>
+                                <li>Recruitment (Basic Level).</li>
+                                <li>At least three years of service in the Senior Section.</li>
+                                <li>At least six (6) awards from group A, B, C and D with at least one (1) award from each group with the minimum level being two (2) at Basic Level and four (4) at Advanced Level.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="president-container">
+            <div class="president-container-box" title="TARGET" data-description="TARGET">
+                <img src="image/President/Target.png" alt="TARGET" width="100" height="100">
+                <h4 class="text">TARGET</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0;"></div>
+                </div>
+                <div class="progress-number">0/1 (0%)</div>
+            </div>
+
+            <div class="president-container-box" title="CHRISTIAN EDUCATION" data-description="CHRISTIAN EDUCATION">
+                <div class="red-cloth">
+                    <img src="image/President/Christian Education.png" alt="CHRISTIAN EDUCATION" width="100" height="100">
+                </div>                
+                <h4 class="text">CHRISTIAN EDUCATION</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/2 (0%)</div>
+            </div>
+      
+            <div class="president-container-box" title="DRILL" data-description="DRILL">
+                <div class="red-cloth">
+                    <img src="image/President/Drill.png" alt="DRILL" width="100" height="100">
+                </div>                
+                <h4 class="text">DRILL</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/2 (0%)</div>
+            </div>
+
+            <div class="president-container-box" title="RECRUITMENT" data-description="RECRUITMENT">
+                <img src="image/President/Recruitment.png" alt="RECRUITMENT" width="100" height="100">
+                <h4 class="text">RECRUITMENT</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/1 (0%)</div>
+            </div>
+      
+            <div class="president-container-box" title="NCO PROFICIENCY" data-description="NCO PROFICIENCY">
+                <img src="image/President/NCO Proficiency Star.png" alt="NCO PROFICIENCY" width="100" height="100">
+                <h4 class="text">NCO PROFICIENCY</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/1 (0%)</div>
+            </div>
+      
+            <div class="president-container-box" title="THREE YEAR SERVICE BADGE" data-description="THREE YEAR SERVICE BADGE">
+                <img src="image/President/Three-Years.png" alt="THREE YEAR SERVICE BADGE" width="100" height="100">
+                <h4 class="text">THREE YEAR SERVICE BADGE</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/1 (0%)</div>
+            </div>
+
+            <div class="president-container-box" title="6 of Basic Proficiency Award" data-description="6 of Basic Proficiency Award">
+                <img src="image/President/6.png" alt="6 of Basic Proficiency Award" width="100" height="100">
+                <h4 class="text">6 of Basic Proficiency Award</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/10 (0%)</div>
+            </div>
+
+            <div class="president-container-box" title="4 of Advance Proficiency Award" data-description="4 of Advance Proficiency Award">
+                <img src="image/President/4.png" alt="4 of Advance Proficiency Award" width="100" height="100">
+                <h4 class="text">4 of Advance Proficiency Award</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/6 (0%)</div>
+            </div>
+
+            <div class="president-container-box" title="Interest (Group A)" data-description="Interest (Group A)">
+                <img src="image/President/a.png" alt="Interest (Group A)" width="100" height="100">
+                <h4 class="text">Interest (Group A)</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/1 (0%)</div>
+            </div>
+
+            <div class="president-container-box" title="Adventure (Group B)" data-description="Adventure (Group B)">
+                <img src="image/President/b.png" alt="Adventure (Group B)" width="100" height="100">
+                <h4 class="text">Adventure (Group B)</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/1 (0%)</div>
+            </div>
+
+            <div class="president-container-box" title="Community (Group C)" data-description="Community (Group C)">
+                <img src="image/President/c.png" alt="Community (Group C)" width="100" height="100">
+                <h4 class="text">Community (Group C)</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/1 (0%)</div>
+            </div>
+
+            <div class="president-container-box" title="Physical (Group D)" data-description="Physical (Group D)">
+                <img src="image/President/d.png" alt="Physical (Group D)" width="100" height="100">
+                <h4 class="text">Physical (Group D)</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number">0/1 (0%)</div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
