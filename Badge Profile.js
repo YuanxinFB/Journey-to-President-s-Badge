@@ -401,15 +401,15 @@ function handleCheckboxChange(checkbox) {
                 if (advanceCheckbox.checked) {
                     advanceCheckbox.checked = false;
                     // Check the total number of .right-checkbox elements checked before decrementing
-                    if (checkedRightCheckboxes <= 6) {
+                    if (checkedRightCheckboxes <= 4) {
                         updateGroupProgress('.sub-menu .right-checkbox', '4 of Advance Proficiency Award', -1);
                     }
-                    if (checkedCheckboxes <= 9) {
+                    if (checkedCheckboxes <= 5) {
                     updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', -1);
                 }
                 } else {
                     // Only decrement if the total number of .checkbox elements checked is less than or equal to 10
-                    if (checkedCheckboxes <= 9) {
+                    if (checkedCheckboxes <= 5) {
                         updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', -1);
                     }
                 }
