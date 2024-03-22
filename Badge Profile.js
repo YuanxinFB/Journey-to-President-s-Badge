@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }
-    });
+    }); 
    
     const hasThreeYearServiceBadge = badgesData.some(b => b.badgeText === "THREE YEAR SERVICE BADGE");
     const hasLongYearServiceBadge = badgesData.some(b => b.badgeText === "LONG YEAR SERVICE BADGE");
@@ -257,35 +257,35 @@ document.addEventListener('DOMContentLoaded', function () {
     let layoutStructure;
     if (!hasThreeYearServiceBadge && !hasLongYearServiceBadge) {
         layoutStructure = [
-            [null, null, "FOUNDER’S AWARD", null, null],
-            [null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null],
-            [null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null],
-            [null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null],
-            [null, "JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", null, null]
+            [null, null,null, "FOUNDER’S AWARD", null, null, null],
+            [null,null,null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null, null, null],
+            [null,null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null, null],
+            [null,null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null, null],
+            [null,null, "JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", null, null]
         ];
     } else if (hasThreeYearServiceBadge) {
         layoutStructure = [
-            [null, null, "FOUNDER’S AWARD", null, null],
-            [null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null],
-            [null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null],
-            [null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null],
-            [null, "JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", null]
+            [null, null,null, "FOUNDER’S AWARD", null, null, null],
+            [null,null,null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null, null, null],
+            [null,null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null, null],
+            [null,null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null, null],
+            [null,null, "JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", null, null]
         ];
     } if (hasLongYearServiceBadge && hasThreeYearServiceBadge) {
         layoutStructure = [
-            [null, null, "FOUNDER’S AWARD", null, null],
-            [null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null],
-            [null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null],
-            [null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null],
-            ["JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE"]
+            [null, null,null, "FOUNDER’S AWARD", null, null, null],
+            [null,null,null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null, null, null],
+            [null,null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null, null],
+            [null,null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null, null],
+            [null, null, "JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", null, null]
         ];
     } else if (hasLongYearServiceBadge) {
         layoutStructure = [
-            [null, null, "FOUNDER’S AWARD", null, null],
-            [null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null],
-            [null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null],
-            [null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null],
-            ["JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE"]
+            [null, null,null, "FOUNDER’S AWARD", null, null, null],
+            [null,null,null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null, null, null],
+            [null,null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null, null],
+            [null,null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null, null],
+            [null,null,"JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE",null, null]
         ];
     }
 
