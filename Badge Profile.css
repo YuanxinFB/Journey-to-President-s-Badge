@@ -688,6 +688,12 @@ section.main {
     border-radius: 50px;
 }
 
+@media screen {
+        .main-p {
+        display: none;
+    }
+}
+
 @media screen and (max-width: 768px) {
     .progress-box {
         flex-direction: column;
