@@ -781,6 +781,12 @@ section.main {
         padding: 10px; 
     }
 
+    .president-container-overall {
+        width: 100%;
+        height: auto;
+        border-radius: 0;
+    }
+
     .progress-column {
         width: 100%; 
     }
