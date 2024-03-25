@@ -342,27 +342,11 @@ document.addEventListener('change', function (event) {
     const targetCheckbox = event.target.closest('.checkbox, .right-checkbox, .checkbox-right');
     if (targetCheckbox) {
         handleCheckboxChange(targetCheckbox);
-        setTimeout(updateProgressNumbers, 100);
+        updateOverallProgress();
     }
 });
 
-function updateGroupProgress(subMenuClass, groupName,) {
-    const subMenuCheckboxes = document.querySelectorAll(`.${subMenuClass} .checkbox, .${subMenuClass} .right-checkbox`);
-    const progressBar = document.querySelector(`.president-container-box[title="${groupName}"] .progress-bar`);
-    const progressNumber = document.querySelector(`.president-container-box[title="${groupName}"] .progress-number`);
-    const checkedCheckboxes = Array.from(subMenuCheckboxes).filter(cb => cb.checked);
-
-    if (checkedCheckboxes.length > 0) {
-        progressBar.style.width = '100%';
-        progressNumber.textContent = `1/1 (100%)`;
-    } else {
-        progressBar.style.width = '0%';
-        progressNumber.textContent = `0/1 (0%)`;
-    }
-}
-
 function updateGroupProgress(subMenuClass, groupName, count) {
-    const subMenuCheckboxes = document.querySelectorAll(subMenuClass);
     const progressBar = document.querySelector(`.president-container-box[title="${groupName}"] .progress-bar`);
     const progressNumber = document.querySelector(`.president-container-box[title="${groupName}"] .progress-number`);
 
@@ -376,9 +360,31 @@ function updateGroupProgress(subMenuClass, groupName, count) {
         updatedCount = totalCount;
     }
 
-    const percentage = Math.round((updatedCount / totalCount) * 100); // Round percentage to nearest whole number
+    let percentage = 0;
+    if (totalCount !== 0) {
+        percentage = Math.round((updatedCount / totalCount) * 100); // Round percentage to nearest whole number
+    }
+
     progressBar.style.width = `${percentage}%`;
     progressNumber.textContent = `${updatedCount}/${totalCount} (${percentage}%)`; // Display rounded percentage
+}
+
+function updateOverallProgress() {
+    const progressNumbers = document.querySelectorAll('.president-container-box .progress-number');
+    const overallProgressBar = document.querySelector('.president-container-overall .progress-bar');
+    const overallProgressNumber = document.querySelector('.president-container-overall .progress-number-overall');
+
+    let totalCompleted = 0;
+    let totalRequired = 22; 
+
+    progressNumbers.forEach(progressNumber => {
+        const [completed] = progressNumber.textContent.split('/')[0].split(' ');
+        totalCompleted += parseInt(completed);
+    });
+
+    const overallPercentage = Math.round((totalCompleted / totalRequired) * 100); // Calculate overall percentage and round it
+    overallProgressBar.style.width = `${overallPercentage}%`;
+    overallProgressNumber.textContent = `${overallPercentage}%`; // Display overall percentage only
 }
 
 function handleCheckboxChange(checkbox) {
@@ -432,7 +438,7 @@ function handleCheckboxChange(checkbox) {
             }
         }
     }
-
+    updateOverallProgress();
     updateSpecialProgress(); 
     
     function updateSpecialProgress() {
@@ -561,5 +567,6 @@ function handleCheckboxChange(checkbox) {
 
         }
         applySelection(); 
+        updateOverallProgress();
     }
 }
