@@ -716,7 +716,7 @@ section.main {
 
 @media screen and (max-width: 768px) {
     .main-h1-badge {
-        padding-top: 30px;
+        padding:10px 20px 10px 20px;
     }
 
     .progress-box {
@@ -804,6 +804,9 @@ section.main {
         padding: 20px 0px 0px 0px;
     }
 
+    .main-p {
+        display: none;
+    }
 }
 
 @media only screen 
