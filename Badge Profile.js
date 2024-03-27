@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function side_barclose() {
-        document.getElementById("side-bar").style.left = "-500px";
+        document.getElementById("side-bar").style.left = "-9999px";
         document.body.classList.add('sidebar-open'); 
     }
 
