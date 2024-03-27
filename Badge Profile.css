@@ -715,9 +715,15 @@ section.main {
 }
 
 @media screen and (max-width: 768px) {
+    .main-h1-badge {
+        padding-top: 30px;
+    }
+
     .progress-box {
         flex-direction: column;
-    }
+        padding: 10px;             
+        max-width: 350px;
+        }
 
     .progress-column {
         width: 100%; 
@@ -733,20 +739,18 @@ section.main {
     
     }
 
-    .side_barclose {
-        width: 50%; 
-    }
-
-    .side-bar {
-        width: 50%;
-    }
-
     body.sidebar-open {
         padding-left: 0; 
     }
-    
-    .side-barclose {
-        width: 100%; 
+
+    .side-bar, .side_barclose{
+        width: 99%; 
+        position: fixed;
+    }
+
+    .side-bar-button {
+        width: 99%;
+        position: fixed; 
     }
 
     .fa-bars, .fa-up-long {
@@ -774,17 +778,15 @@ section.main {
 
     .president-header {
         display: block;
-    }
-
-    .progress-box {
-        max-width: 90%; 
-        padding: 10px; 
+        margin: 0%;
+        padding: 0px 0px 20px 0px;
     }
 
     .president-container-overall {
         width: 100%;
         height: auto;
-        border-radius: 0;
+        border-bottom-left-radius: 40px;
+        border-bottom-right-radius: 40px;
     }
 
     .progress-column {
@@ -795,6 +797,20 @@ section.main {
         width: 80%;
         justify-content: center;
     }
+
+    .fa-circle-info {
+        margin-left: 45%; 
+        display: block; 
+        padding: 20px 0px 0px 0px;
+    }
+
+}
+
+@media only screen 
+    and (min-device-width: 768px) 
+    and (max-device-width: 1024px) 
+    and (-webkit-min-device-pixel-ratio: 1) 
+    and (orientation: portrait) {
 
     .main-p {
         display: none;
