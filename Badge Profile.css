@@ -744,12 +744,12 @@ section.main {
     }
 
     .side-bar, .side_barclose{
-        width: 50%; 
+        width: 98%; 
         position: fixed;
     }
 
     .side-bar-button {
-        width: 50%;
+        width: 98%;
         position: fixed; 
     }
 
