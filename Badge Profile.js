@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function () {
             correspondingCheckbox.checked = true;
         }
 
-        // Handle DOFE checkboxes
         if (checkbox.classList.contains('dofe-checkbox')) {
             handleDofeCheckboxChange(checkbox);
         }
@@ -58,7 +57,6 @@ document.addEventListener('DOMContentLoaded', function () {
         applySelection(); 
     }
 
-    // Function to handle DOFE checkbox change
     function handleDofeCheckboxChange(checkbox) {
         const dofeCheckboxes = document.querySelectorAll('.dofe-checkbox');
         dofeCheckboxes.forEach(otherCheckbox => {
@@ -342,7 +340,7 @@ function renderRightBox(rightBox, badgesData, layoutStructure) {
         updateProgress('Service Awards', 'sub-menu-right1', 4);
         updateProgress('Special Awards', 'sub-menu-right2', 8);
         updateProgress('Total Basic Proficiency Award', 'sub-menu .checkbox:checked, .sub-menu1 .checkbox:checked, .sub-menu2 .checkbox:checked, .sub-menu3 .checkbox:checked, .sub-menu4 .checkbox:checked, .sub-menu4 .checkbox-right:checked ', 31, false); 
-        updateProgress('Total Advance Proficiency Award', 'sub-menu .right-checkbox:checked, .sub-menu1 .right-checkbox:checked, .sub-menu2 .right-checkbox:checked, .sub-menu3 .right-checkbox:checked, .sub-menu4 .right-checkbox:checked, .sub-menu4 .checkbox-right:checked', 30, false); 
+        updateProgress('Total Advanced Proficiency Award', 'sub-menu .right-checkbox:checked, .sub-menu1 .right-checkbox:checked, .sub-menu2 .right-checkbox:checked, .sub-menu3 .right-checkbox:checked, .sub-menu4 .right-checkbox:checked, .sub-menu4 .checkbox-right:checked', 30, false); 
           
         function updateProgress(section, subMenuClass, totalItems, addSpace = true) {
             const selectedItems = $(`.${subMenuClass} .checkbox:checked, .${subMenuClass} .right-checkbox:checked, .${subMenuClass} .checkbox-right:checked`).length;
@@ -353,7 +351,6 @@ function renderRightBox(rightBox, badgesData, layoutStructure) {
             $(`.progress-row:contains(${section}) .progress-number`).html(progressNumber);
         }
     });
-      
 }
 
 document.addEventListener('change', function (event) {
@@ -426,7 +423,7 @@ function handleCheckboxChange(checkbox) {
                     advanceCheckbox.checked = false;
                     // Check the total number of .right-checkbox elements checked before decrementing
                     if (checkedRightCheckboxes <= 4) {
-                        updateGroupProgress('.sub-menu .right-checkbox', '4 of Advance Proficiency Award', -1);
+                        updateGroupProgress('.sub-menu .right-checkbox', '4 of Advanced Proficiency Award', -1);
                     }
                     if (checkedCheckboxes <= 5) {
                     updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', -1);
@@ -443,14 +440,14 @@ function handleCheckboxChange(checkbox) {
             if (checkbox.checked) {
                 if (!basicCheckbox.checked) {
                     basicCheckbox.checked = true;
-                    updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', 1); // staraight away press Advance
+                    updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', 1); // staraight away press Advanced
                 }
-                updateGroupProgress('.sub-menu .right-checkbox', '4 of Advance Proficiency Award', 1); // staraight away press Advance
+                updateGroupProgress('.sub-menu .right-checkbox', '4 of Advanced Proficiency Award', 1); // staraight away press Advanced
             } else {
                 if (basicCheckbox.checked) {
                     // Only decrement the total count if the total checked right-checkboxes is less than or equal to 6
                     if (checkedRightCheckboxes <= 5) {
-                        updateGroupProgress('.sub-menu .right-checkbox', '4 of Advance Proficiency Award', -1); //cancel advance only
+                        updateGroupProgress('.sub-menu .right-checkbox', '4 of Advanced Proficiency Award', -1); //cancel advanced only
                     }
                 }
             }
