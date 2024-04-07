@@ -471,6 +471,20 @@ section.main {
     padding: 0px;
 }
 
+.right-box img[src="image/Left/Presidents.png"] {
+    width: 100px;
+    height: 100px;
+    margin: 0;
+    padding: 0px;
+}
+
+.right-box img[src="image/Left/Founder.png"] {
+    width: 130px;
+    height: 130px;
+    margin: 0;
+    padding: 0px;
+}
+
 .leftmost-badge {
     margin-right: 10px;
 }
@@ -744,12 +758,12 @@ section.main {
     }
 
     .side-bar, .side_barclose{
-        width: 98%; 
+        width: 99%; 
         position: fixed;
     }
 
     .side-bar-button {
-        width: 98%;
+        width: 99%;
         position: fixed; 
     }
 
