@@ -49,7 +49,23 @@ document.addEventListener('DOMContentLoaded', function () {
             const correspondingCheckbox = subBox.querySelector('.checkbox');
             correspondingCheckbox.checked = true;
         }
+
+        // Handle DOFE checkboxes
+        if (checkbox.classList.contains('dofe-checkbox')) {
+            handleDofeCheckboxChange(checkbox);
+        }
+        
         applySelection(); 
+    }
+
+    // Function to handle DOFE checkbox change
+    function handleDofeCheckboxChange(checkbox) {
+        const dofeCheckboxes = document.querySelectorAll('.dofe-checkbox');
+        dofeCheckboxes.forEach(otherCheckbox => {
+            if (otherCheckbox !== checkbox) {
+                otherCheckbox.checked = false;
+            }
+        });
     }
 
     var modal = document.getElementById('presidentAwardModal');
@@ -258,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!hasThreeYearServiceBadge && !hasLongYearServiceBadge) {
         layoutStructure = [
             [null, null,null, "FOUNDER’S AWARD", null, null, null],
-            [null,null,null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null, null, null],
+            [null,null,null, "PRESIDENT’S AWARD", "DOFE Bronze","DOFE Silver","DOFE Gold", "GOLD AWARD", null, null, null],
             [null,null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null, null],
             [null,null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null, null],
             [null,null, "JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", null, null]
@@ -266,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else if (hasThreeYearServiceBadge) {
         layoutStructure = [
             [null, null,null, "FOUNDER’S AWARD", null, null, null],
-            [null,null,null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null, null, null],
+            [null,null,null, "PRESIDENT’S AWARD", "DOFE Bronze","DOFE Silver","DOFE Gold", "GOLD AWARD", null, null, null],
             [null,null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null, null],
             [null,null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null, null],
             [null,null, "JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", null, null]
@@ -274,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } if (hasLongYearServiceBadge && hasThreeYearServiceBadge) {
         layoutStructure = [
             [null, null,null, "FOUNDER’S AWARD", null, null, null],
-            [null,null,null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null, null, null],
+            [null,null,null, "PRESIDENT’S AWARD", "DOFE Bronze","DOFE Silver","DOFE Gold", "GOLD AWARD", null, null, null],
             [null,null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null, null],
             [null,null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null, null],
             [null, null, "JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", null, null]
@@ -282,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else if (hasLongYearServiceBadge) {
         layoutStructure = [
             [null, null,null, "FOUNDER’S AWARD", null, null, null],
-            [null,null,null, "PRESIDENT’S AWARD", "DOE", "GOLD AWARD", null, null, null],
+            [null,null,null, "PRESIDENT’S AWARD", "DOFE Bronze","DOFE Silver","DOFE Gold", "GOLD AWARD", null, null, null],
             [null,null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null, null],
             [null,null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null, null],
             [null,null,"JUNIOR SECTION SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE", "ONE YEAR SERVICE BADGE",null, null]
@@ -291,6 +307,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     renderRightBox(rightBox, badgesData, layoutStructure);
 }
+
+
 
 function renderRightBox(rightBox, badgesData, layoutStructure) {
     layoutStructure.forEach(rowData => {
