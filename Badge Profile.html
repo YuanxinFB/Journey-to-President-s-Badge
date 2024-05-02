@@ -9,13 +9,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="icon" href="https://bbmalaysia.org/badges/award/4312%20Presidents.png">
     <script src="Badge Profile.js"></script>
-
 </head> 
 
 <body>
     <button class="goBackbutton" id="goBack" title="Go Back to Homepage">Go Back</button>
 
-    <button id="toggleSidebar" class="bars"><i class="fas fa-bars" title="Menu"></i></button>
+    <a id="toggleSidebar" class="bars"><i class="fas fa-bars" title="Menu"></i></a>
 
     <i id="goToTopBtn" class="fa-solid fa-up-long" title="Go to Top"></i>
 
@@ -547,16 +546,15 @@
     <section class="main">
         <h1 class="main-h1-badge">BADGES ARRANGEMENT</h1>
 
-        <div class="main-p">
-            <p class="arm">Right Arm</p>
-            <p class="arm1">Left Arm</p>
-        </div>
+
     
         <div class="main-box">
+            <div class="arm">Right Arm</div>
             <div class="box left-box" id="leftBox">
                 <div id="selectedBadgesContainer"></div>
             </div>
             
+            <div class="arm1">Left Arm</div>
             <div class="box right-box" id="rightBox">
                 <div id="selectedBadgesContainer"></div>
             </div>
@@ -751,16 +749,15 @@
                 </div>
                 <div class="progress-number">0/1 (0%)</div>
             </div>
-        </div>
 
-        <div class="president-container-overall">
-            <h4 class="text">Overall</h4>
-            <div class="progress-bar-containers-overall">
-                <div class="progress-bar" style="width: 0%"></div>
+            <div class="president-container-overall">
+                <h4 class="text">Overall</h4>
+                <div class="progress-bar-containers-overall">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-number-overall">0%</div>
             </div>
-            <div class="progress-number-overall">0%</div>
         </div>
-
     </section>
 
 </body>
