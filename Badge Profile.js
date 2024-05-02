@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Open sidebar
     side_baropen();
 
     document.getElementById('toggleSidebar').addEventListener('click', function () {
@@ -142,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
             icon.classList.add('fa-caret-right');
         });
     }
-    // Toggle submenu button
+
     function toggleSubMenu(btn) {
         const subMenu = btn.nextElementSibling;
         const icon = btn.querySelector('i');
@@ -227,35 +226,37 @@ document.addEventListener('DOMContentLoaded', function () {
             badgesData.unshift(targetBadgeData);
         }
 
-        // Clear previous selection
         selectedBadgesContainer.innerHTML = '';
         rightBox.innerHTML = '';
 
-        // Display sorted badges in the appropriate container
         badgesData.forEach((badgeData, index) => {
             const img = document.createElement('img');
             img.src = badgeData.imageUrl;
 
-            if (!badgeData.isRightSubMenu) {
-                // If the badge is not from .sub-menu1, display it in the left box
-                if (badgeData.checkboxType === 'right-checkbox') {
-                    // Check if the badge is already displayed in the selectedBadgesContainer
-                    const existingRightBadge = selectedBadgesContainer.querySelector(`img[src="${badgeData.imageUrl}"]`);
 
-                    if (existingRightBadge) {
-                        // Update the checkbox type for the existing badge
-                        existingRightBadge.classList.remove('checkbox-only');
-                        existingRightBadge.classList.add('red-cloth');
+            if (!badgeData.isRightSubMenu) {
+                if (badgeData.checkboxType === 'right-checkbox') {
+                    const existingImage = selectedBadgesContainer.querySelector(`img[src="${badgeData.imageUrl}"]`);
+
+                    if (existingImage) {
+                        const existingWrapper = existingImage.parentElement;
+                        if (!existingWrapper.classList.contains('red-cloths')) {
+                            const redClothDiv = document.createElement('div');
+                            existingImage.classList.add('leftmost-badge');
+                            redClothDiv.classList.add('red-cloths');
+                            existingImage.parentNode.replaceChild(redClothDiv, existingImage); 
+                            redClothDiv.appendChild(existingImage); 
+                        }
                     } else {
-                        // If "right-checkbox" is checked, display one time of the badge with red cloth
-                        img.classList.add('red-cloth');
-                        selectedBadgesContainer.appendChild(img);
+                        const redClothDiv = document.createElement('div');
+                        redClothDiv.classList.add('red-cloths');
+                        existingImage.classList.add('leftmost-badge');
+                        redClothDiv.appendChild(img);
+                        selectedBadgesContainer.appendChild(redClothDiv);
                     }
                 } else {
-                    // Display the regular badge in the selectedBadgesContainer
                     selectedBadgesContainer.appendChild(img);
 
-                    // Special layout for the first five badges
                     if (index < 5) {
                         img.classList.add('leftmost-badge');
                     } else {
@@ -579,7 +580,6 @@ function handleCheckboxChange(checkbox) {
                 progressBar.style.width = '100%';
                 progressNumber.textContent = '1/1 (100%)';
             }
-
         }
         applySelection(); 
         updateOverallProgress();
