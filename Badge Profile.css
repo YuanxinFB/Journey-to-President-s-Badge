@@ -785,6 +785,10 @@ section.main {
         height: 60px; 
     }
 
+    .arm {
+        padding-left: 10px;
+    }
+
     .president-header {
         display: block;
         margin: 0%; 
