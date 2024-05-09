@@ -240,6 +240,7 @@ body.sidebar-open {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
+    padding-left: 5px;
     text-align: left;
 }
 
@@ -269,6 +270,7 @@ body.sidebar-open {
 
 .sub-box-text {
     font-size: 12px;
+    text-decoration: none; 
 }
 
 .checkbox, .right-checkbox, .checkbox-right {
@@ -318,6 +320,22 @@ body.sidebar-open {
     position: absolute;
     opacity: 0;
     pointer-events: none;
+}
+
+select {
+    padding: 4px; 
+    font-size: 12px; 
+    border: 2px solid #333;
+    border-radius: 5px; 
+    width: 50px;
+    background-color: #fff; 
+    color: #333; 
+    margin-left: auto;
+    margin-right: 10px;
+}
+  
+select:hover {
+    border-color: black; 
 }
 
 .right-checkbox-none{
@@ -440,19 +458,7 @@ section.main {
     grid-template-columns: repeat(5, 1fr); 
 }
 
-.left-box {
-    width: 550px; 
-    height: 720px;
-    margin: 5px 20px 20px 20px;
-    padding: 10px;
-    border-radius: 10px;
-    box-sizing: border-box;
-    display: flex;
-    flex-wrap: wrap; 
-    justify-content: center;
-    text-align: center;
-    background: #2B2A2F;
-}
+
 
 .left-box img {
     width: 90px;
@@ -481,6 +487,7 @@ section.main {
     border-radius: 10px;
     box-sizing: border-box;
     background: #2B2A2F;
+    margin-bottom: auto;
 }
 
 .right-box img {
@@ -522,10 +529,15 @@ section.main {
     align-items: center;
 }
 
+.progress-box-h1 {
+    font-size: 26px;
+    font-weight: bold;
+}
+
 .progress-box {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap; 
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    grid-gap: 20px; 
     background: #2B2A2F;
     color: white;
     padding: 20px;
@@ -535,16 +547,21 @@ section.main {
     margin: auto;
 }
 
+.progress-box-h1 {
+    grid-column: 1 / span 2; 
+    text-align: center;
+}
+
 .progress-column {
     display: flex;
     flex-direction: column;
-    width: 45%; 
-    margin: 10px;
+    align-items: center;
 }
 
 .progress-row {
     display: flex;
     justify-content: space-between;
+    width: 100%;
     margin-bottom: 10px;
     padding: 10px;
     background: #333;
@@ -741,44 +758,63 @@ section.main {
     border-radius: 50px;
 }
 
-.progress-box-h1 {
-    font-size: 26px;
-    font-weight: bold;
-}
-
-.footer {
-    text-align: center;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
 @media screen and (max-width: 768px) {
+    .main-h1-badge {
+        padding:10px 20px 10px 20px;
+    }
+
+    .progress-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .progress-box-h1 {
+        text-align: center;
+        margin-bottom: 20px; 
+    }
+
+    .progress-column {
+        width: 100%; 
+    }
+
+    .progress-row {
+        flex-direction: column;
+        align-items: center; 
+        margin-bottom: 20px; 
+    }
+
+    .progress-cell {
+        width: 100%; 
+        text-align: center; 
+    }
+
+    .president-container {
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 10px;
+    }
+    
     body.sidebar-open {
         padding-left: 300px; 
+    
     }
 
     body.sidebar-open {
         padding-left: 0; 
     }
 
-    .side-bar, .side_barclose {
-        width: 100%;
-        position: fixed; 
+    .side-bar, .side_barclose{
+        width: 99%; 
+        position: fixed;
     }
 
     .side-bar-button {
-        width: 100%; 
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        width: 99%;
+        position: fixed; 
     }
 
     .fa-bars, .fa-up-long {
         display: none; 
-    }
-
-    .sub-box {
-        flex-grow: 2;
     }
 
     .main-box {
@@ -786,75 +822,48 @@ section.main {
     }
 
     .left-box, .right-box {
-        width: 420px; 
+        width: 450px; 
         height: 600px; 
         margin: 10px 0; 
     }
 
     .left-box img, .right-box img {
         width: 60px; 
-        height: 60px; 
-    }
-
-    .arm {
-        padding-left: 10px;
-    }
-
-    .president-header {
-        display: block;
-        margin: 0%; 
-        padding: 0px 0px 20px 0px; 
-    }
-
-    .progress-column {
-        width: 100%; 
-    }
-
-    .modal-content {
-        width: 80%;
-        justify-content: center; 
-    }
-
-    .fa-circle-info {
-        margin-left: 45%; 
-        display: block;
-        padding: 20px 0px 0px 0px; 
-    }
-
-    .red-cloths {
-        display: inline-block;
-        margin-bottom: 10px; 
-        margin-right: 0; 
-        width: 20%; 
-        height: 12%; 
+        height: 60px;
     }
 
     .main-h1 {
         padding-left: 0px;
     }
 
-    .main-h1-badge {
-        padding: 10px 10px 10px 30px;
+    .president-header {
+        display: block;
+        margin: 0%;
+        padding: 0px 0px 20px 0px;
     }
 
-    .progress-box {
-        flex-direction: column; 
-        max-width: 100%; 
+    .modal-content {
+        width: 80%;
+        justify-content: center;
     }
 
-    .president-container {
-        grid-template-columns: 1fr; 
-        padding: 20px; 
-        gap: 10px; 
-        width: 100%; 
+    .fa-circle-info {
+        margin-left: 45%; 
+        display: block; 
+        padding: 20px 0px 0px 0px;
     }
 
-    .president-container-overall {
-        grid-column: auto; 
-        margin-bottom: 20px; 
+    .red-cloths {
+        display: inline-block; 
+        margin-bottom: 10px; 
+        margin-right: 0; 
+        width: 20%;
+        height: 12%;
     }
+}
 
-    .progress-bar-containers-overall {
-        margin: 5px 0; 
-    }
+.footer {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
