@@ -741,6 +741,17 @@ section.main {
     border-radius: 50px;
 }
 
+.progress-box-h1 {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.footer {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
 @media screen and (max-width: 768px) {
     body.sidebar-open {
         padding-left: 300px; 
