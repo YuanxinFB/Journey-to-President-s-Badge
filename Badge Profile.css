@@ -742,42 +742,32 @@ section.main {
 }
 
 @media screen and (max-width: 768px) {
-    .main-h1-badge {
-        padding:10px 20px 10px 20px;
-    }
-
-    .progress-box {
-        flex-direction: column;
-        padding: 10px;             
-        max-width: 90%;
-        }
-
-    .president-container {
-        grid-template-columns: repeat(2, 1fr); 
-        gap: 10px;
-    }
-    
     body.sidebar-open {
         padding-left: 300px; 
-    
     }
 
     body.sidebar-open {
         padding-left: 0; 
     }
 
-    .side-bar, .side_barclose{
-        width: 99%; 
-        position: fixed;
+    .side-bar, .side_barclose {
+        width: 100%;
+        position: fixed; 
     }
 
     .side-bar-button {
-        width: 99%;
-        position: fixed; 
+        width: 100%; 
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .fa-bars, .fa-up-long {
         display: none; 
+    }
+
+    .sub-box {
+        flex-grow: 2;
     }
 
     .main-box {
@@ -785,24 +775,20 @@ section.main {
     }
 
     .left-box, .right-box {
-        width: 450px; 
+        width: 420px; 
         height: 600px; 
         margin: 10px 0; 
     }
 
     .left-box img, .right-box img {
         width: 60px; 
-        height: 60px;
-    }
-
-    .main-h1 {
-        padding-left: 0px;
+        height: 60px; 
     }
 
     .president-header {
         display: block;
-        margin: 0%;
-        padding: 0px 0px 20px 0px;
+        margin: 0%; 
+        padding: 0px 0px 20px 0px; 
     }
 
     .progress-column {
@@ -811,20 +797,49 @@ section.main {
 
     .modal-content {
         width: 80%;
-        justify-content: center;
+        justify-content: center; 
     }
 
     .fa-circle-info {
         margin-left: 45%; 
-        display: block; 
-        padding: 20px 0px 0px 0px;
+        display: block;
+        padding: 20px 0px 0px 0px; 
     }
 
     .red-cloths {
-        display: inline-block; 
+        display: inline-block;
         margin-bottom: 10px; 
         margin-right: 0; 
-        width: 20%;
-        height: 12%;
+        width: 20%; 
+        height: 12%; 
+    }
+
+    .main-h1 {
+        padding-left: 0px;
+    }
+
+    .main-h1-badge {
+        padding: 10px 10px 10px 30px;
+    }
+
+    .progress-box {
+        flex-direction: column; 
+        max-width: 100%; 
+    }
+
+    .president-container {
+        grid-template-columns: 1fr; 
+        padding: 20px; 
+        gap: 10px; 
+        width: 100%; 
+    }
+
+    .president-container-overall {
+        grid-column: auto; 
+        margin-bottom: 20px; 
+    }
+
+    .progress-bar-containers-overall {
+        margin: 5px 0; 
     }
 }
