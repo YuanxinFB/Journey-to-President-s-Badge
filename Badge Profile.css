@@ -599,6 +599,20 @@ section.main {
     position: relative;
 }
 
+.left-box img[src="image/Right/Safety.png"],
+.left-box img[src="image/Right/Financial Stewardship.png"] { 
+    width: 90px;
+    height: 90px;
+    padding: 0 5px 6px 0;
+}
+
+.left-box img[src="image/Right/Drill.png"],
+.left-box img[src="image/Right/Camping.png"] { 
+    width: 90px;
+    height: 90px;
+    padding: 7px 5px 0 0;
+}
+
 #link-badge img {
     width: 90px;
     height: 90px;
@@ -690,7 +704,7 @@ section.main {
 #nametag {
     border: 2px solid black;
     padding: 5px;  /* follow BBM */
-    width: 350px;  /* follow BBM */
+    width: 400px;  /* follow BBM */
     text-align: center;
     font-size: 20px;
     background-color: #ffffff;
@@ -700,10 +714,14 @@ section.main {
 .editable {
     outline: none;
     line-height: 1.5;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
     color: black;
+    white-space: nowrap; 
+    overflow: hidden;    
+    text-overflow: ellipsis; 
 }
+
 
 .editable[data-placeholder]:empty:before {
     content: attr(data-placeholder);
@@ -925,6 +943,10 @@ section.main {
 .president-container-box[title="DRILL"] img {
     width: 75px; 
     height: 75px; 
+}
+
+.president-container-box[title="DRILL"] img {
+    margin-top: 10px;
 }
 
 .progress-bar-container {
