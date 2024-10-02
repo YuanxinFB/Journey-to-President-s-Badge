@@ -85,6 +85,83 @@ document.addEventListener('DOMContentLoaded', function () {
             handleCheckboxChange(targetCheckbox);
         }
     });
+
+
+    // Initialize visit counter
+    let visitCount = localStorage.getItem('visitCount') || 0;
+    visitCount++;
+    localStorage.setItem('visitCount', visitCount);
+
+    // Fetch visitor information
+    async function getVisitorInfo() {
+        try {
+            const response = await fetch('https://ipapi.co/json/');
+            const data = await response.json();
+            // Send visit data to backend (to be implemented)
+            logVisit(data.city, data.region, data.country_name);
+        } catch (error) {
+            console.error('Error fetching visitor info:', error);
+        }
+    }
+
+    async function logVisit(city, region, country) {
+        const visits = localStorage.getItem('visitCount') || 0;
+        // Uncomment and implement this to send data to your backend
+        /*
+        await fetch('/log-visit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ visits: parseInt(visits), city, region, country }),
+        });
+        */
+    }
+
+    getVisitorInfo();
+
+    // Convert input to uppercase on blur (when focus is lost)
+    const editableDivs = document.querySelectorAll('.editable');
+    editableDivs.forEach(div => {
+        div.addEventListener('blur', function() {
+            this.innerText = this.innerText.toUpperCase();
+        });
+    });
+
+    document.getElementById('capture').addEventListener('click', function() {
+        const name = document.getElementById('nametag-name').innerText.toUpperCase();
+        const company = document.getElementById('nametag-company').innerText.toUpperCase();
+
+        // Update the nametag with uppercase values
+        document.getElementById('nametag-name').innerText = name || 'NAME';
+        document.getElementById('nametag-company').innerText = company || 'COMPANY';
+
+        // Capture the entire container instead of just the body
+        html2canvas(document.getElementById('screenshot-container'), {
+            scrollY: -window.scrollY,
+            scale: window.devicePixelRatio,
+            useCORS: true // Enable CORS for images
+        }).then(function(canvas) {
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL('image/png');
+
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = 'screenshot.png';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }).catch(function(error) {
+            console.error('Error capturing screenshot:', error);
+        });
+    });
+
+
+
+
+
+
 });
 
 function side_baropen() {
@@ -140,14 +217,14 @@ function clearAll() {
 
     const progressNumbersMap = {
         'Compulsory': '0 / 4&nbsp;&nbsp;',
-        'Interest (Group A)': '0 / 11',
+        'Interest (Group A)': '0 / 12',
         'Adventure (Group B)': '0 / 3&nbsp;&nbsp;',
-        'Community (Group C)': '0 / 7&nbsp;&nbsp;',
+        'Community (Group C)': '0 / 9&nbsp;&nbsp;',
         'Physical (Group D)': '0 / 6&nbsp;&nbsp;',
-        'Service Awards': '0 / 4&nbsp;&nbsp;',
+        'Service Awards': '0 / 5&nbsp;&nbsp;',
         'Special Awards': '0 / 8&nbsp;&nbsp;',
-        'Total Basic Proficiency Award': '0 / 31',
-        'Total Advanced Proficiency Award': '0 / 30'
+        'Total Basic Proficiency Award': '0 / 34',
+        'Total Advanced Proficiency Award': '0 / 33'
     };
 
     const progressRows = document.querySelectorAll('.progress-row');
@@ -189,17 +266,19 @@ function clearAll() {
     const rightChevrons = document.querySelectorAll('.right-chevron');
     leftBox.style.cssText = `
         width: 550px; 
-        height: 720px;
-        margin: 5px 20px 20px 20px;
+        height: 760px;
         border-radius: 10px;
         box-sizing: border-box;
         display: flex;
         flex-wrap: wrap; 
-        justify-content: center;
+        justify-content: center; 
+        align-items: flex-start; 
         text-align: center;
         background: #2B2A2F;
         position: relative;
         font-weight: 900;
+        margin: 5px 20px 20px 20px;
+
     `;
     square.style.display = 'none';
     triangle.style.display = 'none';
@@ -236,16 +315,29 @@ $(document).ready(function () {
         const selectedBadges = document.querySelectorAll('.sub-item input:checked');
         const selectedBadgesContainer = document.getElementById('selectedBadgesContainer');
         const rightBox = document.getElementById('rightBox');
+        const linkBadgeContainer = document.getElementById('link-badge'); // Get the link-badge container
         const badgesData = [];
         let targetBadgeData = null;
         let dofeBadgeData = null; 
     
+        let isLinkBadgeSelected = false;
+
         selectedBadges.forEach(badge => {
             const imageUrl = badge.closest('.sub-item').getAttribute('data-url');
             const badgeText = badge.closest('.sub-item').querySelector('.sub-box-text').innerText;
             const isRightSubMenu = badge.closest('.sub-menu-right1, .sub-menu-right2, .sub-menu-right3') !== null;
             const checkboxType = badge.classList.contains('right-checkbox') ? 'right-checkbox' : 'checkbox';
-    
+        
+            // Handle LINK BADGE separately
+            if (badgeText === 'LINK BADGE') {
+                isLinkBadgeSelected = true; // Mark that LINK BADGE is selected
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.alt = 'LINK BADGE';
+                linkBadgeContainer.innerHTML = ''; // Clear any existing content
+                linkBadgeContainer.appendChild(img); // Append the LINK BADGE image
+            } 
+        
             if (badgeText === 'TARGET') {
                 targetBadgeData = {
                     imageUrl: imageUrl,
@@ -269,6 +361,11 @@ $(document).ready(function () {
             }
         });
     
+        // If LINK BADGE is not selected, clear the linkBadgeContainer
+        if (!isLinkBadgeSelected) {
+            linkBadgeContainer.innerHTML = ''; // Remove the LINK BADGE image if unchecked
+        }
+
         badgesData.sort((a, b) => a.badgeText.localeCompare(b.badgeText));
     
         if (targetBadgeData) {
@@ -532,25 +629,25 @@ $(document).ready(function () {
             selectedItems.add(parentItem);
         });
 
-        let progressNumber = `: ${selectedItems.size} / 31`;
+        let progressNumber = `: ${selectedItems.size} / 34`;
         progressNumber;
         $(`.progress-row:contains(Total Basic Proficiency Award) .progress-number`).html(progressNumber);
     }
 
     function updateTotalAdvancedProficiencyProgress() {
         const selectedItems = $('.right-checkbox:checked').length;
-        let progressNumber = `: ${selectedItems} / 30`;
+        let progressNumber = `: ${selectedItems} / 33`;
         progressNumber;
         $(`.progress-row:contains(Total Advanced Proficiency Award) .progress-number`).html(progressNumber);
     }
 
     function updateAllProgress() {
         updateProgress('Compulsory', 'sub-menu', 4);
-        updateProgress('Interest (Group A)', 'sub-menu1', 11, false);
+        updateProgress('Interest (Group A)', 'sub-menu1', 12, false);
         updateProgress('Adventure (Group B)', 'sub-menu2', 3);
-        updateProgress('Community (Group C)', 'sub-menu3', 7);
+        updateProgress('Community (Group C)', 'sub-menu3', 9);
         updateProgress('Physical (Group D)', 'sub-menu4', 6);
-        updateProgress('Service Awards', 'sub-menu-right1', 4);
+        updateProgress('Service Awards', 'sub-menu-right1', 5);
         updateSpecialAwardsProgress();
         updateTotalBasicProficiencyProgress();
         updateTotalAdvancedProficiencyProgress();
@@ -839,17 +936,18 @@ function applyRankCSS() {
 
     leftBox.style.cssText = `
     width: 550px; 
-    height: 720px;
-    margin: 5px 20px 20px 20px;
+    height: 760px;
     border-radius: 10px;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap; 
-    justify-content: center;
+    justify-content: center; 
+    align-items: flex-start; 
     text-align: center;
     background: #2B2A2F;
     position: relative;
     font-weight: 900;
+    margin: 5px 20px 20px 20px;
     `;
 
     square.style.cssText = `
@@ -894,19 +992,21 @@ function applyRankCSS() {
     if (checkedCheckbox) {
         const rank = checkedCheckbox.closest('.sub-item').querySelector('.sub-box-text').textContent.trim();
         switch (rank) {
-            case 'Lance Corporal':
+            case 'Lance Corporal': 
                 leftBox.style.cssText = `
                     width: 550px; 
-                    height: 720px;
-                    margin: 5px 20px 20px 20px;
-                    border-radius: 10px 10px 0px 0px;
+                    height: 760px;
+                    border-radius: 10px;
                     box-sizing: border-box;
                     display: flex;
                     flex-wrap: wrap; 
-                    justify-content: center;
+                    justify-content: center; 
+                    align-items: flex-start; 
                     text-align: center;
                     background: #2B2A2F;
                     position: relative;
+                    font-weight: 900;
+                    margin: 5px 20px 20px 20px;
                 `;
                 const square = document.querySelector('.square');
                 square.style.cssText = `
@@ -914,7 +1014,7 @@ function applyRankCSS() {
                     height: 60px;
                     background: #2B2A2F;
                     position: absolute;
-                    margin-top: 670px;
+                    margin-top: 720px;
                     z-index: -1;
                 `;
                 const triangle = document.querySelector('.triangle');
@@ -926,7 +1026,7 @@ function applyRankCSS() {
                     border-top: 95px solid #2B2A2F;; 
                     z-index: 1;
                     position: absolute;
-                    margin-top: 730px;
+                    margin-top: 780px;
                 `;
                 const rightChevrosideright1 = document.querySelector('.right-chevron-sideright1');
                 rightChevrosideright1.style.cssText = `    
@@ -942,7 +1042,7 @@ function applyRankCSS() {
                     background: white;
                     left: 0;    
                     margin-left: 15px;
-                    top: 720px;
+                    top: 770px;
                 `;
                 const rightChevrosideleft1 = document.querySelector('.right-chevron-sideleft1');
                 rightChevrosideleft1.style.cssText = `  
@@ -958,7 +1058,7 @@ function applyRankCSS() {
                     background: white;
                     right: 0;
                     margin-right: 15px;
-                    top: 720px;
+                    top: 770px;
                 `;
 
                 break;
@@ -966,23 +1066,25 @@ function applyRankCSS() {
             case 'Corporal':
                 leftBox.style.cssText = `
                     width: 550px; 
-                    height: 720px;
-                    margin: 5px 20px 20px 20px;
-                    border-radius: 10px 10px 0px 0px;
+                    height: 760px;
+                    border-radius: 10px;
                     box-sizing: border-box;
                     display: flex;
                     flex-wrap: wrap; 
-                    justify-content: center;
+                    justify-content: center; 
+                    align-items: flex-start; 
                     text-align: center;
                     background: #2B2A2F;
                     position: relative;
+                    font-weight: 900;
+                    margin: 5px 20px 20px 20px;
                 `;
                 const square1 = document.querySelector('.square');
                 square1.style.cssText = `
                     width: 550px;
                     height: 110px;
                     background: #2B2A2F;
-                    margin-top: 670px;
+                    margin-top: 720px;
                     z-index: -1;
                     position: absolute;              
                 `;
@@ -995,7 +1097,7 @@ function applyRankCSS() {
                     border-top: 95px solid #2B2A2F;; 
                     z-index: 1;
                     position: absolute;
-                    margin-top: 780px;
+                    margin-top: 830px;
                 `;
                 const rightChevrosideright2 = document.querySelector('.right-chevron-sideright2');
                 rightChevrosideright2.style.cssText = `    
@@ -1011,7 +1113,7 @@ function applyRankCSS() {
                     background: white;
                     left: 0;    
                     margin-left: 15px;  
-                    top: 770px;
+                    top: 820px;
                 `;
                 const rightChevrosideleft2 = document.querySelector('.right-chevron-sideleft2');
                 rightChevrosideleft2.style.cssText = `  
@@ -1027,7 +1129,7 @@ function applyRankCSS() {
                     background: white;
                     right: 0;
                     margin-right: 15px;
-                    top: 770px;
+                    top: 820px;
                 `;
                 const rightChevrosideright3 = document.querySelector('.right-chevron-sideright1');
                 rightChevrosideright3.style.cssText = `    
@@ -1039,7 +1141,7 @@ function applyRankCSS() {
                     background: white;
                     left: 0;    
                     margin-left: 15px;
-                    top: 720px;
+                    top: 770px;
                     z-index: 10;
                 `;
                 const rightChevrosideleft3 = document.querySelector('.right-chevron-sideleft1');
@@ -1052,7 +1154,7 @@ function applyRankCSS() {
                     background: white;
                     right: 0;
                     margin-right: 15px;
-                    top: 720px;
+                    top: 770px;
                     z-index: 10;
                 `;
 
@@ -1061,23 +1163,25 @@ function applyRankCSS() {
             case 'Sergeant':
                 leftBox.style.cssText = `
                     width: 550px; 
-                    height: 720px;
-                    margin: 5px 20px 20px 20px;
-                    border-radius: 10px 10px 0px 0px;
+                    height: 760px;
+                    border-radius: 10px;
                     box-sizing: border-box;
                     display: flex;
                     flex-wrap: wrap; 
-                    justify-content: center;
+                    justify-content: center; 
+                    align-items: flex-start; 
                     text-align: center;
                     background: #2B2A2F;
                     position: relative;
+                    font-weight: 900;
+                    margin: 5px 20px 20px 20px;
                 `;
                 const square2 = document.querySelector('.square');
                 square2.style.cssText = `
                     width: 550px;
                     height: 160px;
                     background: #2B2A2F;
-                    margin-top: 670px;
+                    margin-top: 720px;
                     z-index: -1;
                     position: absolute;
                 `;
@@ -1090,7 +1194,7 @@ function applyRankCSS() {
                     border-top: 95px solid #2B2A2F;; 
                     z-index: 1;
                     position: absolute;
-                    margin-top: 830px;              
+                    margin-top: 880px;              
                 `;
                 const rightChevrosideright4 = document.querySelector('.right-chevron-sideright3');
                 rightChevrosideright4.style.cssText = `    
@@ -1106,7 +1210,7 @@ function applyRankCSS() {
                     background: white;
                     left: 0;    
                     margin-left: 15px;  
-                    top: 820px;
+                    top: 870px;
                 `;
                 const rightChevrosideleft4 = document.querySelector('.right-chevron-sideleft3');
                 rightChevrosideleft4.style.cssText = `  
@@ -1122,7 +1226,7 @@ function applyRankCSS() {
                     background: white;
                     right: 0;
                     margin-right: 15px;
-                    top: 820px;
+                    top: 870px;
                 `;
                 const rightChevrosideright5 = document.querySelector('.right-chevron-sideright1');
                 rightChevrosideright5.style.cssText = `    
@@ -1134,7 +1238,7 @@ function applyRankCSS() {
                     background: white;
                     left: 0;    
                     margin-left: 15px;
-                    top: 720px;
+                    top: 770px;
                     z-index: 10;
                 `;
                 const rightChevrosideleft5 = document.querySelector('.right-chevron-sideleft1');
@@ -1147,7 +1251,7 @@ function applyRankCSS() {
                     background: white;
                     right: 0;
                     margin-right: 15px;
-                    top: 720px;
+                    top: 770px;
                     z-index: 10;
                 `;
                 const rightChevrosideright6 = document.querySelector('.right-chevron-sideright2');
@@ -1164,7 +1268,7 @@ function applyRankCSS() {
                     background: white;
                     left: 0;    
                     margin-left: 15px;  
-                    top: 770px;
+                    top: 820px;
                 `;
                 const rightChevrosideleft6 = document.querySelector('.right-chevron-sideleft2');
                 rightChevrosideleft6.style.cssText = `  
@@ -1180,7 +1284,7 @@ function applyRankCSS() {
                     background: white;
                     right: 0;
                     margin-right: 15px;
-                    top: 770px;
+                    top: 820px;
                 `;
 
                 break;
@@ -1188,23 +1292,25 @@ function applyRankCSS() {
             case 'Staff Sergeant':
                 leftBox.style.cssText = `
                     width: 550px; 
-                    height: 720px;
-                    margin: 5px 20px 20px 20px;
-                    border-radius: 10px 10px 0px 0px;
+                    height: 760px;
+                    border-radius: 10px;
                     box-sizing: border-box;
                     display: flex;
                     flex-wrap: wrap; 
-                    justify-content: center;
+                    justify-content: center; 
+                    align-items: flex-start; 
                     text-align: center;
                     background: #2B2A2F;
                     position: relative;
+                    font-weight: 900;
+                    margin: 5px 20px 20px 20px;
                 `;
                 const square3 = document.querySelector('.square');
                 square3.style.cssText = `
                     width: 550px;
                     height: 210px;
                     background: #2B2A2F;
-                    margin-top: 670px;
+                    margin-top: 720px;
                     z-index: -1;
                     position: absolute;
                 `;
@@ -1217,7 +1323,7 @@ function applyRankCSS() {
                     border-top: 95px solid #2B2A2F;; 
                     z-index: 1;       
                     position: absolute;
-                    margin-top: 880px;      
+                    margin-top: 930px;      
                 `;
                 const rightChevrosideright7 = document.querySelector('.right-chevron-sideright4');
                 rightChevrosideright7.style.cssText = `    
@@ -1233,7 +1339,7 @@ function applyRankCSS() {
                     background: white;
                     left: 0;    
                     margin-left: 15px;  
-                    top: 870px;
+                    top: 920px;
                 `;
                 const rightChevrosideleft7 = document.querySelector('.right-chevron-sideleft4');
                 rightChevrosideleft7.style.cssText = `  
@@ -1249,7 +1355,7 @@ function applyRankCSS() {
                     background: white;
                     right: 0;
                     margin-right: 15px;
-                    top: 870px;
+                    top: 920px;
                 `;
                 const rightChevrosideright8 = document.querySelector('.right-chevron-sideright1');
                 rightChevrosideright8.style.cssText = `    
@@ -1261,7 +1367,7 @@ function applyRankCSS() {
                     background: white;
                     left: 0;    
                     margin-left: 15px;
-                    top: 720px;
+                    top: 770px;
                     z-index: 10;
                 `;
                 const rightChevrosideleft8 = document.querySelector('.right-chevron-sideleft1');
@@ -1274,7 +1380,7 @@ function applyRankCSS() {
                     background: white;
                     right: 0;
                     margin-right: 15px;
-                    top: 720px;
+                    top: 770px;
                     z-index: 10;
                 `;
                 const rightChevrosideright9 = document.querySelector('.right-chevron-sideright2');
@@ -1291,7 +1397,7 @@ function applyRankCSS() {
                     background: white;
                     left: 0;    
                     margin-left: 15px;  
-                    top: 770px;
+                    top: 820px;
                 `;
                 const rightChevrosideleft9 = document.querySelector('.right-chevron-sideleft2');
                 rightChevrosideleft9.style.cssText = `  
@@ -1307,7 +1413,7 @@ function applyRankCSS() {
                     background: white;
                     right: 0;
                     margin-right: 15px;
-                    top: 770px;
+                    top: 820px;
                 `;
                 const rightChevrosideright10 = document.querySelector('.right-chevron-sideright3');
                 rightChevrosideright10.style.cssText = `    
@@ -1323,7 +1429,7 @@ function applyRankCSS() {
                     background: white;
                     left: 0;    
                     margin-left: 15px;  
-                    top: 820px;
+                    top: 870px;
                 `;
                 const rightChevrosideleft10 = document.querySelector('.right-chevron-sideleft3');
                 rightChevrosideleft10.style.cssText = `  
@@ -1339,7 +1445,7 @@ function applyRankCSS() {
                     background: white;
                     right: 0;
                     margin-right: 15px;
-                    top: 820px;
+                    top: 870px;
                 `;
 
                 break;
@@ -1357,16 +1463,16 @@ document.addEventListener('change', function(event) {
         const progressbox = document.getElementById('selectedCount');
         switch (rank) {
             case 'Lance Corporal':
-                progressbox.style.marginTop = '110px';
+                progressbox.style.marginTop = '130px';
                 break;
             case 'Corporal':
-                progressbox.style.marginTop = '160px';
+                progressbox.style.marginTop = '180px';
                 break;
             case 'Sergeant':
-                progressbox.style.marginTop = '210px';
+                progressbox.style.marginTop = '230px';
                 break;
             case 'Staff Sergeant':
-                progressbox.style.marginTop = '260px';
+                progressbox.style.marginTop = '280px';
                 break;
             default:
                 progressbox.style.marginTop = '0';
@@ -1396,4 +1502,16 @@ document.addEventListener('change', function(event) {
 
     updateRankDisplay();
 
+});
+
+
+document.getElementById('badge-checkbox').addEventListener('change', function() {
+    const badgeContainer = document.getElementById('link-badge');
+    const badgeImage = document.getElementById('badge-image');
+
+    if (this.checked) {
+        badgeContainer.innerHTML = `<img src="${badgeImage.src}" alt="LINK BADGE"> LINK BADGE`;
+    } else {
+        badgeContainer.textContent = 'Link Badge';
+    }
 });
