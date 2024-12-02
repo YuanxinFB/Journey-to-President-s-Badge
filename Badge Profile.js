@@ -1515,3 +1515,22 @@ document.getElementById('badge-checkbox').addEventListener('change', function() 
         badgeContainer.textContent = 'Link Badge';
     }
 });
+
+
+document.getElementById('nametag-name').addEventListener('input', function(e) {
+    const nameField = this;
+    const maxLength = 15;
+
+    // If text content exceeds 15 characters, truncate it
+    if (nameField.textContent.length > maxLength) {
+        nameField.textContent = nameField.textContent.slice(0, maxLength);
+        
+        // Move cursor to the end of the content
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.setStart(nameField.childNodes[0], maxLength);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+});
