@@ -707,7 +707,7 @@ section.main {
     width: 400px;  /* follow BBM */
     text-align: center;
     background-color: #ffffff;
-    
+    color: inherit; 
 }
 
 .editable {
@@ -715,10 +715,10 @@ section.main {
     line-height: 1.5;
     font-size: 20px;
     font-weight: bold;
-    color: black;
     white-space: nowrap; 
     overflow: hidden;    
     text-overflow: ellipsis; 
+    color: inherit;
 }
 
 #nametag-name {
