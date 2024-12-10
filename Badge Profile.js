@@ -159,10 +159,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    const nameField = document.getElementById('nametag-name');
+    const companyField = document.getElementById('nametag-company');
+    const nametag = document.getElementById('nametag');
+
+    // Restrict name field to 15 characters
+    nameField.addEventListener('input', function () {
+        const maxLength = 15;
+        if (this.textContent.length > maxLength) {
+            this.textContent = this.textContent.slice(0, maxLength);
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.setStart(this.childNodes[0], maxLength);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            alert("Cannot add any more characters.");
+        }
+    });
+
+    // Toggle the nametag background color and font color
+    // Toggle the nametag background color and font color
+    nametag.addEventListener('click', function () {
+        const currentColor = window.getComputedStyle(this).backgroundColor;
+
+        if (currentColor === 'rgb(255, 255, 255)' || currentColor === 'white') { // White background
+            this.style.backgroundColor = '#3498db'; // Set blue background
+            this.style.color = '#ffffff'; // Set white font color
+        } else { 
+            this.style.backgroundColor = '#ffffff'; // Set white background
+            this.style.color = '#000000'; // Set black font color
+        }
+    });
+
+
+
 
 
 
 });
+
+
+
 
 function side_baropen() {
     document.getElementById("side-bar").style.left = "0";
@@ -1513,24 +1551,5 @@ document.getElementById('badge-checkbox').addEventListener('change', function() 
         badgeContainer.innerHTML = `<img src="${badgeImage.src}" alt="LINK BADGE"> LINK BADGE`;
     } else {
         badgeContainer.textContent = 'Link Badge';
-    }
-});
-
-
-document.getElementById('nametag-name').addEventListener('input', function(e) {
-    const nameField = this;
-    const maxLength = 15;
-
-    // If text content exceeds 15 characters, truncate it
-    if (nameField.textContent.length > maxLength) {
-        nameField.textContent = nameField.textContent.slice(0, maxLength);
-        
-        // Move cursor to the end of the content
-        const range = document.createRange();
-        const sel = window.getSelection();
-        range.setStart(nameField.childNodes[0], maxLength);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
     }
 });
