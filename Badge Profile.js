@@ -1,51 +1,95 @@
 document.addEventListener('DOMContentLoaded', function () {
     side_baropen();
 
-    document.getElementById('toggleSidebar').addEventListener('click', function () {
-        toggleSidebar();
-    });
-    
+    document.getElementById('toggleSidebar').addEventListener('click', toggleSidebar);
+
     const subMenus = document.querySelectorAll('.sub-menu, .sub-menu1, .sub-menu2, .sub-menu3, .sub-menu4, .sub-menu-right1, .sub-menu-right2, .sub-menu-right3');
-    subMenus.forEach(subMenu => {
-        subMenu.style.display = 'none';
-    });
-    
+    subMenus.forEach(subMenu => subMenu.style.display = 'none');
+
     document.addEventListener('change', function (event) {
-        const targetCheckbox = event.target.closest('.checkbox, .right-checkbox, check');
+        const targetCheckbox = event.target.closest('.checkbox, .right-checkbox');
         if (targetCheckbox) {
-            handleCheckboxChange(targetCheckbox);
-        }
-    });
-
-    function handleCheckboxChange(checkbox) {
-        const subBox = checkbox.closest('.sub-item');
-        const checkboxesInSubBox = subBox.querySelectorAll('.checkbox, .right-checkbox');
-    
-        checkboxesInSubBox.forEach(otherCheckbox => {
-            if (otherCheckbox !== checkbox) {
-                otherCheckbox.checked = false;
-            }
-        });
-    
-        if (checkbox.classList.contains('right-checkbox')) {
-            const correspondingCheckbox = subBox.querySelector('.checkbox');
-            correspondingCheckbox.checked = true;
-        }
-
-        if (checkbox.classList.contains('dofe-checkbox')) {
-            handleDofeCheckboxChange(checkbox);
+            updateCheckboxState(targetCheckbox);
         }
         
-        applySelection(); 
+        const isTargetBadge = event.target.closest('.sub-item[data-url="image/Right/Target.png"] .checkbox');
+        if (isTargetBadge) {
+            handleTargetBadgeChange(isTargetBadge);
+        }
+    });
+        
+    function handleTargetBadgeChange(targetCheckbox) {
+        if (!targetCheckbox.checked) {
+            document.querySelectorAll('.checkbox, .right-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+
+            document.querySelectorAll('.president-container-box').forEach(box => {
+                const title = box.getAttribute('title');
+                if (
+                    title === "NCO PROFICIENCY" ||
+                    title === "THREE YEAR SERVICE BADGE" ||
+                    title === "NCO in the Company"
+                ) {
+                    return; 
+                }
+
+                const progressBar = box.querySelector('.progress-bar');
+                const progressNumber = box.querySelector('.progress-number');
+
+                progressBar.style.width = '0%';
+
+                const match = progressNumber.textContent.match(/\/(\d+)/);
+                const totalCount = match ? match[1] : '0'; 
+
+                progressNumber.textContent = `0/${totalCount} (0%)`;
+            });
+
+            updateOverallProgress();
+        }
     }
 
-    function handleDofeCheckboxChange(checkbox) {
-        const dofeCheckboxes = document.querySelectorAll('.dofe-checkbox');
-        dofeCheckboxes.forEach(otherCheckbox => {
-            if (otherCheckbox !== checkbox) {
-                otherCheckbox.checked = false;
+    function updateCheckboxState(checkbox) {
+        const targetCheckbox = document.querySelector('.sub-item[data-url="image/Right/Target.png"] .checkbox');
+        
+        if (!targetCheckbox) {
+            console.error("Target Badge checkbox not found.");
+            return;
+        }
+        
+        const allCheckboxes = document.querySelectorAll('.checkbox, .right-checkbox');
+        
+        if (!targetCheckbox.checked) {
+            allCheckboxes.forEach(cb => {
+                if (cb !== targetCheckbox) {
+                    cb.checked = false;
+                }
+            });
+
+            if (checkbox !== targetCheckbox && (checkbox.classList.contains('checkbox') || checkbox.classList.contains('right-checkbox'))) {
+                showCustomAlert("You must check the Target Badge first before selecting any other badges.");
             }
-        });
+            return;
+        }
+
+        const subBox = checkbox.closest('.sub-item');
+        if (subBox) {
+            const checkboxesInSubBox = subBox.querySelectorAll('.checkbox, .right-checkbox');
+            checkboxesInSubBox.forEach(otherCheckbox => {
+                if (otherCheckbox !== checkbox) {
+                    otherCheckbox.checked = false;
+                }
+            });
+
+            if (checkbox.classList.contains('right-checkbox')) {
+                const basicCheckbox = subBox.querySelector('.checkbox');
+                if (basicCheckbox) {
+                    setTimeout(() => { basicCheckbox.checked = true; }, 0);
+                }
+            }
+        }
+
+        applySelection();
     }
 
     var modal = document.getElementById('presidentAwardModal');
@@ -66,141 +110,288 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-        document.getElementById('goToTopBtn').addEventListener('click', function () {
-            scrollToTop();
-        });
-            
+    document.getElementById('goToTopBtn').addEventListener('click', function () {
+        scrollToTop();
+    });
+        
     function scrollToTop() {
         const scrollOptions = {
             top: 0,
             behavior: 'smooth'
         };
-    
+
         window.scrollTo(scrollOptions);
     }
 
-    document.addEventListener('change', function (event) {
-        const targetCheckbox = event.target.closest('.checkbox, .right-checkbox, .checkbox-right');
-        if (targetCheckbox) {
-            handleCheckboxChange(targetCheckbox);
-        }
-    });
-
-
-    // Initialize visit counter
-    let visitCount = localStorage.getItem('visitCount') || 0;
-    visitCount++;
-    localStorage.setItem('visitCount', visitCount);
-
-    // Fetch visitor information
-    async function getVisitorInfo() {
-        try {
-            const response = await fetch('https://ipapi.co/json/');
-            const data = await response.json();
-            // Send visit data to backend (to be implemented)
-            logVisit(data.city, data.region, data.country_name);
-        } catch (error) {
-            console.error('Error fetching visitor info:', error);
-        }
-    }
-
-    async function logVisit(city, region, country) {
-        const visits = localStorage.getItem('visitCount') || 0;
-        // Uncomment and implement this to send data to your backend
-        /*
-        await fetch('/log-visit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ visits: parseInt(visits), city, region, country }),
-        });
-        */
-    }
-
-    getVisitorInfo();
-
-    // Convert input to uppercase on blur (when focus is lost)
-    const editableDivs = document.querySelectorAll('.editable');
-    editableDivs.forEach(div => {
+    document.querySelectorAll('.editable').forEach(div => {
         div.addEventListener('blur', function() {
             this.innerText = this.innerText.toUpperCase();
         });
     });
 
-    document.getElementById('capture').addEventListener('click', function() {
+    const suggestionsMap = {
+        "1": ["1st KUALA LUMPUR COMPANY", "1st JOHOR BAHRU COMPANY", "1st MELAKA COMPANY", "1st SEREMBAN COMPANY", "1st PENANG COMPANY", "1st BINTULU COMPANY", "1st KUCHING COMPANY","1st PENGKALAN KEMPAS COMPANY", "1st MUAR COMPANY", "1st SIMPANG RENGAM COMPANY", "1st TRIANG COMPANY","1st IPOH COMPANY", "1st SANDAKAN COMPANY", "1st PENAMPANG COMPANY", "1st SARIKEI COMPANY", "1st PITAS COMPANY", "1st TAWAU COMPANY", "1st MIRI COMPANY", "1st BINTANGOR COMPANY"],
+        "2": ["2nd KUALA LUMPUR COMPANY", "2nd SIBU COMPANY", "2nd MELAKA COMPANY", "2nd MANJUNG COMPANY", "2nd SEREMBAN COMPANY", "2nd KLUANG COMPANY", "2nd PENANG COMPANY", "2nd SANDAKAN COMPANY", "2nd BINTULU COMPANY", "2nd PITAS COMPANY", "2nd TAWAU COMPANY", "2nd K. KINABALU COMPANY"],
+        "3": ["3rd KUALA LUMPUR COMPANY", "3rd MELAKA COMPANY", "3rd MANJUNG COMPANY", "3rd K. KINABALU COMPANY", "3rd BINTANGOR COMPANY", "3rd KUCHING COMPANY", "3rd SARIKEI COMPANY", "3rd SIBU COMPANY", "3rd TAWAU COMPANY", "3rd PITAS COMPANY", "3rd BUTTERWORTH COMPANY"],
+        "4": ["4th KUALA LUMPUR COMPANY", "4th JOHOR BAHRU COMPANY", "4th MELAKA COMPANY", "4th KAMPAR COMPANY", "4th KUCHING COMPANY", "4th PETALING JAYA COMPANY", "4th BINTULU COMPANY", "4th K. KINABALU COMPANY", "4th SUNGAI PETANI COMPANY", "4th MIRI COMPANY", "4th JOHOR BAHRU COMPANY"],
+        "5": ["5th KUALA LUMPUR COMPANY", "5th JOHOR BAHRU COMPANY", "5th PETALING JAYA COMPANY", "5th SANDAKAN COMPANY", "5th MIRI COMPANY", "5th KAJANG COMPANY", "5th JOHOR BAHRU COMPANY"],
+        "6": ["6th KUALA LUMPUR COMPANY", "6th KUCHING COMPANY", "6th MIRI COMPANY", "6th KAJANG COMPANY", "6th Ipoh COMPANY"],
+        "7": ["7th KUALA LUMPUR COMPANY", "7th KUCHING COMPANY", "7th MIRI COMPANY", "7th PETALING JAYA COMPANY", "7th Ipoh COMPANY", "7th SIBU COMPANY"],
+        "8": ["8th KUALA LUMPUR COMPANY", "8th KUCHING COMPANY", "8th PETALING JAYA COMPANY", "8th Ipoh COMPANY", "8th PENANG COMPANY", "8th SIBU COMPANY"],
+        "9": ["9th KUALA LUMPUR COMPANY", "9th PETALING JAYA COMPANY", "9th SIBU COMPANY", "9th KUCHING COMPANY"],
+        "10": ["10th KUALA LUMPUR COMPANY", "10th SIBU COMPANY", "10th KUCHING COMPANY"],
+        "11": ["11th KUALA LUMPUR COMPANY", "11th SIBU COMPANY", "11th K. KINABALU COMPANY"],
+        "12": ["12th KUALA LUMPUR COMPANY", "12th SIBU COMPANY", "12th PENANG COMPANY", "12th K. KINABALU COMPANY"],
+        "13": ["13th KUALA LUMPUR COMPANY", "13th K. KINABALU COMPANY", "13th KUCHING COMPANY"],
+        "14": ["14th KUALA LUMPUR COMPANY", "14th SIBU COMPANY", "14th PENANG COMPANY", "14th KUCHING COMPANY"],
+        "15": ["15th KUALA LUMPUR COMPANY", "15th SIBU COMPANY", "15th KUCHING COMPANY"],
+        "16": ["16th KUALA LUMPUR COMPANY", "16th PENANG COMPANY", "16th KUCHING COMPANY"],
+        "17": ["17th KUALA LUMPUR COMPANY", "17th KUCHING COMPANY"],
+        "18": ["18th KUALA LUMPUR COMPANY", "18th PENANG COMPANY", "18th KUCHING COMPANY"],
+        "19": ["19th KUALA LUMPUR COMPANY", "19th SIBU COMPANY", "19th K. KINABALU COMPANY"],
+        "20": ["20th KUALA LUMPUR COMPANY", "20th SIBU COMPANY", "20th PENANG COMPANY"],
+        "21": ["21st PENANG COMPANY"],
+        "28": ["28th KUALA LUMPUR COMPANY"],
+        "1s": ["1st KUALA LUMPUR COMPANY", "1st SIBU COMPANY"],
+        "1st": ["1st KUALA LUMPUR COMPANY", "1st SIBU COMPANY"],
+        "2nd": ["2nd KUALA LUMPUR COMPANY", "2nd SIBU COMPANY"],
+        "3rd": ["3rd KUALA LUMPUR COMPANY"],
+        "4th": ["4th KUALA LUMPUR COMPANY"],
+        "5th": ["5th KUALA LUMPUR COMPANY"],
+        "6th": ["6th KUALA LUMPUR COMPANY"],
+        "7th": ["7th KUALA LUMPUR COMPANY"],
+        "8th": ["8th KUALA LUMPUR COMPANY"],
+        "9th": ["9th KUALA LUMPUR COMPANY"],
+        "10th": ["10th KUALA LUMPUR COMPANY"],
+        "11th": ["11th KUALA LUMPUR COMPANY"],
+        "12th": ["12th KUALA LUMPUR COMPANY"],
+        "13th": ["13th KUALA LUMPUR COMPANY"],
+        "14th": ["14th KUALA LUMPUR COMPANY"],
+        "15th": ["15th KUALA LUMPUR COMPANY"],
+        "16th": ["16th KUALA LUMPUR COMPANY"],
+        "17th": ["17th KUALA LUMPUR COMPANY"],
+        "18th": ["18th KUALA LUMPUR COMPANY"],
+        "19th": ["19th KUALA LUMPUR COMPANY"],
+        "20th": ["20th KUALA LUMPUR COMPANY"],
+        "28th": ["28th KUALA LUMPUR COMPANY"],
+        "MELAKA": ["1st MELAKA COMPANY", "2nd MELAKA COMPANY", "3rd MELAKA COMPANY", "4th MELAKA COMPANY"],
+        "MUAR": ["1st MUAR COMPANY"],
+        "JOHOR": ["1st JOHOR BAHRU COMPANY", "4th JOHOR BAHRU COMPANY", "5th JOHOR BAHRU COMPANY"],
+        "SEREMBAN": ["1st SEREMBAN COMPANY", "2nd SEREMBAN COMPANY"],
+        "PENANG": ["1st PENANG COMPANY", "2nd PENANG COMPANY", "8th PENANG COMPANY", "12th PENANG COMPANY", "14th PENANG COMPANY", "16th PENANG COMPANY", "18th PENANG COMPANY", "19th PENANG COMPANY", "21st PENANG COMPANY"],
+        "KUCHING": ["1st KUCHING COMPANY", "2nd KUCHING COMPANY", "3rd KUCHING COMPANY", "4th KUCHING COMPANY", "6th KUCHING COMPANY", "7th KUCHING COMPANY", "8th KUCHING COMPANY", "9th KUCHING COMPANY", "10th KUCHING COMPANY", "11th KUCHING COMPANY", "12th KUCHING COMPANY", "13th KUCHING COMPANY", "14th KUCHING COMPANY", "15th KUCHING COMPANY", "16th KUCHING COMPANY", "17th KUCHING COMPANY"],
+        "BINTULU": ["1st BINTULU COMPANY", "2nd BINTULU COMPANY", "4th BINTULU COMPANY"],
+        "K. KINABALU": ["2nd K. KINABALU COMPANY", "3rd K. KINABALU COMPANY", "4th K. KINABALU COMPANY", "11th K. KINABALU COMPANY", "12th K. KINABALU COMPANY", "13th K. KINABALU COMPANY", "19th K. KINABALU COMPANY"],
+        "SANDAKAN": ["1st SANDAKAN COMPANY", "2nd SANDAKAN COMPANY", "5th SANDAKAN COMPANY"],
+        "TAWAU": ["1st TAWAU COMPANY", "2nd TAWAU COMPANY", "3rd TAWAU COMPANY"],
+        "PITAS": ["1st PITAS COMPANY", "2nd PITAS COMPANY", "3rd PITAS COMPANY"],
+        "SARIKEI": ["1st SARIKEI COMPANY", "3rd SARIKEI COMPANY"],
+        "MIRI": ["1st MIRI COMPANY", "2nd MIRI COMPANY", "3rd MIRI COMPANY", "4th MIRI COMPANY", "5th MIRI COMPANY", "6th MIRI COMPANY", "7th MIRI COMPANY"],
+        "PETALING JAYA": ["1st PETALING JAYA COMPANY", "4th PETALING JAYA COMPANY", "5th PETALING JAYA COMPANY", "7th PETALING JAYA COMPANY", "8th PETALING JAYA COMPANY", "9th PETALING JAYA COMPANY"],
+        "PENAMPANG": ["1st PENAMPANG COMPANY"],
+        "PENANG": ["1st PENANG COMPANY", "2nd PENANG COMPANY", "8th PENANG COMPANY", "12th PENANG COMPANY", "14th PENANG COMPANY", "16th PENANG COMPANY", "18th PENANG COMPANY", "19th PENANG COMPANY", "21st PENANG COMPANY"],
+        "PENGKALAN KEMPAS": ["1st PENGKALAN KEMPAS COMPANY"],
+        "PITAS": ["1st PITAS COMPANY", "2nd PITAS COMPANY", "3rd PITAS COMPANY"],
+        "PUCHONG": ["1st PUCHONG COMPANY", "2nd PUCHONG COMPANY"],
+        "PUTRAJAYA": ["1st PUTRAJAYA COMPANY"] 
+    };
+
+    const companyInput = document.getElementById('nametag-company');
+    const suggestionsList = document.getElementById('suggestionsList');
+
+    function showSuggestions() {
+        const input = companyInput.innerText.toLowerCase(); 
+        suggestionsList.innerHTML = ''; 
+
+        if (input) {
+            const filteredSuggestions = Object.keys(suggestionsMap)
+                .filter(shortcut => shortcut.toLowerCase().startsWith(input))
+                .flatMap(shortcut => suggestionsMap[shortcut]);
+
+            if (filteredSuggestions.length > 0) {
+                const suggestionElements = filteredSuggestions.map(fullTerm => {
+                    const div = document.createElement('div');
+                    div.textContent = fullTerm;
+                    div.classList.add('autocomplete-suggestion');
+                    div.addEventListener('click', () => {
+                        companyInput.innerText = fullTerm;
+                        suggestionsList.style.display = 'none'; 
+                    });
+                    return div;
+                });
+
+                suggestionsList.append(...suggestionElements);
+                suggestionsList.style.display = 'block';
+            } else {
+                suggestionsList.style.display = 'none';
+            }
+        } else {
+            suggestionsList.style.display = 'none';
+        }
+    }
+
+    companyInput.addEventListener('input', showSuggestions);
+    companyInput.addEventListener('keyup', showSuggestions); 
+
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('#nametag-company') && !event.target.closest('#suggestionsList')) {
+            suggestionsList.style.display = 'none';
+        }
+    });
+
+    document.getElementById('capture').addEventListener('click', async function() {
         const name = document.getElementById('nametag-name').innerText.toUpperCase();
         const company = document.getElementById('nametag-company').innerText.toUpperCase();
 
-        // Update the nametag with uppercase values
         document.getElementById('nametag-name').innerText = name || 'NAME';
         document.getElementById('nametag-company').innerText = company || 'COMPANY';
 
-        // Capture the entire container instead of just the body
-        html2canvas(document.getElementById('screenshot-container'), {
-            scrollY: -window.scrollY,
-            scale: window.devicePixelRatio,
-            useCORS: true // Enable CORS for images
-        }).then(function(canvas) {
-            const img = document.createElement('img');
-            img.src = canvas.toDataURL('image/png');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const originalDisplay = toggleSidebar.style.display;
+        toggleSidebar.style.display = 'none';
 
-            const link = document.createElement('a');
-            link.href = img.src;
-            link.download = 'screenshot.png';
+        try {
+            const canvas = await html2canvas(document.getElementById('screenshot-container'), {
+                scrollY: -window.scrollY,
+                scale: window.devicePixelRatio,
+                useCORS: true 
+            });
 
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }).catch(function(error) {
+            if ('showSaveFilePicker' in window) {
+                canvas.toBlob(async function(blob) {
+                    try {
+                        const handle = await window.showSaveFilePicker({
+                            suggestedName: 'screenshot.png',
+                            types: [{
+                                description: 'PNG Image',
+                                accept: {'image/png': ['.png']},
+                            }],
+                        });
+
+                        const writable = await handle.createWritable();
+                        await writable.write(blob);
+                        await writable.close();
+
+                        console.log('Screenshot saved successfully.');
+                    } catch (err) {
+                        console.error('Error saving file:', err);
+                    } finally {
+                        toggleSidebar.style.display = originalDisplay;
+                    }
+                }, 'image/png');
+            } else {
+                const img = document.createElement('img');
+                img.src = canvas.toDataURL('image/png');
+
+                const link = document.createElement('a');
+                link.href = img.src;
+                link.download = 'screenshot.png';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                toggleSidebar.style.display = originalDisplay;
+            }
+        } catch (error) {
             console.error('Error capturing screenshot:', error);
-        });
+            toggleSidebar.style.display = originalDisplay;
+        }
     });
 
-
-
     const nameField = document.getElementById('nametag-name');
-    const companyField = document.getElementById('nametag-company');
-    const nametag = document.getElementById('nametag');
-
-    // Restrict name field to 15 characters
     nameField.addEventListener('input', function () {
         const maxLength = 15;
-        if (this.textContent.length > maxLength) {
-            this.textContent = this.textContent.slice(0, maxLength);
+        if (this.innerText.length > maxLength) { 
+            this.innerText = this.innerText.slice(0, maxLength);
             const range = document.createRange();
             const sel = window.getSelection();
             range.setStart(this.childNodes[0], maxLength);
             range.collapse(true);
             sel.removeAllRanges();
             sel.addRange(range);
-            alert("Cannot add any more characters.");
+            showCustomAlert("Cannot add any more characters.");
         }
     });
 
-    // Toggle the nametag background color and font color
-    // Toggle the nametag background color and font color
+    const nametag = document.getElementById('nametag');
     nametag.addEventListener('click', function () {
         const currentColor = window.getComputedStyle(this).backgroundColor;
-
-        if (currentColor === 'rgb(255, 255, 255)' || currentColor === 'white') { // White background
-            this.style.backgroundColor = '#3498db'; // Set blue background
-            this.style.color = '#ffffff'; // Set white font color
+        if (currentColor === 'rgb(255, 255, 255)' || currentColor === 'white') {
+            this.style.backgroundColor = '#3498db';
+            this.style.color = '#ffffff';
         } else { 
-            this.style.backgroundColor = '#ffffff'; // Set white background
-            this.style.color = '#000000'; // Set black font color
+            this.style.backgroundColor = '#ffffff';
+            this.style.color = '#000000';
         }
     });
-
-
-
-
-
 
 });
 
+function enforcePrerequisites() {
+    document.addEventListener('change', function (event) {
+        const checkbox = event.target;
+        
+        const firstAidCheckbox = document.querySelector('[data-url="image/Right/First Aid.png"] .checkbox');
+        const swimmingCheckbox = document.querySelector('[data-url="image/Right/Swimming.png"] .checkbox');
+        const presidentCheckbox = document.querySelector('[data-url="image/Left/Presidents.png"] .checkbox-right');
+        const founderCheckbox = document.querySelector('[data-url="image/Left/Founder.png"] .checkbox-right');
+
+        if (checkbox.closest('[data-url="image/Right/Expedition.png"]') && checkbox.checked) {
+            if (firstAidCheckbox && !firstAidCheckbox.checked) {
+                showCustomAlert("We recommend earning the First Aid badge before selecting Expedition for a safer and better experience.");
+            }
+        }
+
+        if (checkbox.closest('[data-url="image/Right/Water Adventure.png"]') && checkbox.checked) {
+            if (swimmingCheckbox && !swimmingCheckbox.checked) {
+                showCustomAlert("We recommend earning the Swimming badge before selecting Water Adventure for a safer and better experience.");
+            }
+        }
+
+        if (checkbox === founderCheckbox && checkbox.checked) {
+            if (presidentCheckbox && !presidentCheckbox.checked) {
+                showCustomAlert("You must check the President's Award before selecting the Founder's Award.");
+                checkbox.checked = false;
+            }
+        }
+
+        if (checkbox === presidentCheckbox && !checkbox.checked) {
+            if (founderCheckbox) {
+                founderCheckbox.checked = false;
+            }
+        }
+    });
+}
+
+enforcePrerequisites();
+
+function showCustomAlert(message) {
+    document.getElementById("alertMessage").innerText = message;
+    document.getElementById("customAlert").style.display = "block";
+    document.getElementById("customAlertOverlay").style.display = "block";
+}
+
+function closeCustomAlert() {
+    document.getElementById("customAlert").style.display = "none";
+    document.getElementById("customAlertOverlay").style.display = "none";
+}
 
 
+
+
+function toggleSidebar() {
+    var sidebar = document.getElementById("side-bar");
+    var isOpen = sidebar.style.left === "0px" || sidebar.style.left === "";
+
+    if (isOpen) {
+        side_barclose();
+        document.body.classList.remove('sidebar-open');
+    } else {
+        side_baropen();
+        document.body.classList.add('sidebar-open');
+    }
+}
 
 function side_baropen() {
     document.getElementById("side-bar").style.left = "0";
@@ -210,10 +401,6 @@ function side_baropen() {
 function side_barclose() {
     document.getElementById("side-bar").style.left = "-9999px";
     document.body.classList.add('sidebar-open'); 
-}
-
-function navigateTo(page) {
-    window.location.href = page;
 }
 
 function collapseAllSubmenus() {
@@ -242,6 +429,76 @@ function toggleSubMenu(btn) {
     }
 }
 
+function handleSelectChange(select) {
+    const value = parseInt(select.value);
+    const threeYearBadge = document.getElementById('three-year-badge');
+    const longYearBadge = document.getElementById('long-year-badge');
+
+    if (value >= 3 && value <= 4) {
+        threeYearBadge.checked = true;
+        longYearBadge.checked = false;
+        
+        const progressBar = document.querySelector('.president-container-box[title="THREE YEAR SERVICE BADGE"] .progress-bar');
+        const progressNumber = document.querySelector('.president-container-box[title="THREE YEAR SERVICE BADGE"] .progress-number');
+    
+        progressBar.style.width = '100%';
+        progressNumber.textContent = '1/1 (100%)';
+    } else if (value >= 5) {
+        longYearBadge.checked = true;
+        threeYearBadge.checked = true;
+        
+        const progressBar = document.querySelector('.president-container-box[title="THREE YEAR SERVICE BADGE"] .progress-bar');
+        const progressNumber = document.querySelector('.president-container-box[title="THREE YEAR SERVICE BADGE"] .progress-number');
+    
+        progressBar.style.width = '100%';
+        progressNumber.textContent = '1/1 (100%)';
+    } else {
+        threeYearBadge.checked = false;
+        longYearBadge.checked = false;
+    
+        const progressBar = document.querySelector('.president-container-box[title="THREE YEAR SERVICE BADGE"] .progress-bar');
+        const progressNumber = document.querySelector('.president-container-box[title="THREE YEAR SERVICE BADGE"] .progress-number');
+    
+        progressBar.style.width = '0%';
+        progressNumber.textContent = '0/1 (0%)';
+    }
+}
+
+function handleThreeYearBadge(checkbox) {
+    const oneYearService = document.getElementById('one-year-service');
+    const longYearBadge = document.getElementById('long-year-badge');
+
+    if (checkbox.checked) {
+        if (longYearBadge.checked) {
+            oneYearService.value = '5';
+        } else {
+            oneYearService.value = '3';
+        }
+    } else {
+        oneYearService.value = '0';
+        longYearBadge.checked = false; 
+    }
+}
+
+function handleLongYearBadge(checkbox) {
+    const oneYearService = document.getElementById('one-year-service');
+    const threeYearBadge = document.getElementById('three-year-badge');
+    const progressBar = document.querySelector('.president-container-box[title="THREE YEAR SERVICE BADGE"] .progress-bar');
+    const progressNumber = document.querySelector('.president-container-box[title="THREE YEAR SERVICE BADGE"] .progress-number');
+
+    if (checkbox.checked) {
+        oneYearService.value = '5';
+        threeYearBadge.checked = true;
+        progressBar.style.width = '100%';
+        progressNumber.textContent = '1/1 (100%)';
+    } else {
+        oneYearService.value = '0';
+        threeYearBadge.checked = false;
+        progressBar.style.width = '0%';
+        progressNumber.textContent = '0/1 (0%)';
+    }
+}
+
 function clearAll() {
     const checkboxes = document.querySelectorAll('.sub-item input, .checkbox, .right-checkbox, .right-checkbox-none');
     checkboxes.forEach(checkbox => {
@@ -252,6 +509,25 @@ function clearAll() {
     progressBars.forEach(bar => {
         bar.style.width = '0%';
     });
+
+    const presidentBoxes = document.querySelectorAll('.president-container-box');
+    presidentBoxes.forEach(box => {
+        const progressNumber = box.querySelector('.progress-number');
+        if (progressNumber) {
+            const totalCount = progressNumber.textContent.split('/')[1].split(' ')[0]; 
+            progressNumber.textContent = `0/${totalCount} (0%)`;
+        }
+    });
+
+    const overallProgressBar = document.querySelector('.president-container-overall .progress-bar');
+    const overallProgressNumber = document.querySelector('.president-container-overall .progress-number-overall');
+    overallProgressBar.style.width = '0%';
+    overallProgressNumber.textContent = '0%';
+
+    const oneYearServiceSelect = document.getElementById('one-year-service');
+    if (oneYearServiceSelect) {
+        oneYearServiceSelect.value = '0';
+    }
 
     const progressNumbersMap = {
         'Compulsory': '0 / 4&nbsp;&nbsp;',
@@ -273,20 +549,11 @@ function clearAll() {
         if (progressNumbersMap[key]) {
             progressNumber.innerHTML = `: ${progressNumbersMap[key]}`;
         }
-    }); 
-
-    const overallProgressBar = document.querySelector('.president-container-overall .progress-bar');
-    const overallProgressNumber = document.querySelector('.president-container-overall .progress-number-overall');
-    overallProgressBar.style.width = '0%';
-    overallProgressNumber.textContent = '0%';
-
-    const oneYearServiceSelect = document.getElementById('one-year-service');
-    if (oneYearServiceSelect) {
-        oneYearServiceSelect.value = '0';
-    }
+    });
 
     const selectedBadgesContainer = document.getElementById('selectedBadgesContainer');
     selectedBadgesContainer.innerHTML = '';
+
     const rightBox = document.getElementById('rightBox');
     rightBox.innerHTML = '';
 
@@ -316,7 +583,6 @@ function clearAll() {
         position: relative;
         font-weight: 900;
         margin: 5px 20px 20px 20px;
-
     `;
     square.style.display = 'none';
     triangle.style.display = 'none';
@@ -327,55 +593,57 @@ function clearAll() {
     const progressbox = document.getElementById('selectedCount');
     progressbox.style.marginTop = '0';
 
-    applySelection();
+    const badgeContainer = document.getElementById('link-badge');
+    badgeContainer.textContent = '';
+
     updateAllProgress();
     updateOverallProgress();
     updateRankDisplay();
+    updateSpecialProgress();
+    updateNCOProgress();
 }
-
-
-function toggleSidebar() {
-    var sidebar = document.getElementById("side-bar");
-    var isOpen = sidebar.style.left === "0px" || sidebar.style.left === "";
-
-    if (isOpen) {
-        side_barclose();
-        document.body.classList.remove('sidebar-open');
-    } else {
-        side_baropen();
-        document.body.classList.add('sidebar-open');
-    }
-}
-
 
 $(document).ready(function () {
     function applySelection() {
         const selectedBadges = document.querySelectorAll('.sub-item input:checked');
         const selectedBadgesContainer = document.getElementById('selectedBadgesContainer');
         const rightBox = document.getElementById('rightBox');
-        const linkBadgeContainer = document.getElementById('link-badge'); // Get the link-badge container
+        const leftBox = document.getElementById('leftBox');
+        const linkBadgeContainer = document.getElementById('link-badge');
+        const progressbox = document.getElementById('selectedCount');
         const badgesData = [];
         let targetBadgeData = null;
-        let dofeBadgeData = null; 
+        let dofeBadgeData = null;
     
         let isLinkBadgeSelected = false;
-
+        let rankSelected = false;
+        let badgeCount = 0;
+    
+        const uniqueBadges = new Set();
+    
         selectedBadges.forEach(badge => {
-            const imageUrl = badge.closest('.sub-item').getAttribute('data-url');
-            const badgeText = badge.closest('.sub-item').querySelector('.sub-box-text').innerText;
-            const isRightSubMenu = badge.closest('.sub-menu-right1, .sub-menu-right2, .sub-menu-right3') !== null;
+            const badgeItem = badge.closest('.sub-item');
+            const badgeId = badgeItem.getAttribute('data-url'); 
+    
+            if (!uniqueBadges.has(badgeId)) {
+                uniqueBadges.add(badgeId);
+                badgeCount++;
+            }
+    
+            const imageUrl = badgeItem.getAttribute('data-url');
+            const badgeText = badgeItem.querySelector('.sub-box-text').innerText;
+            const isRightSubMenu = badgeItem.closest('.sub-menu-right1, .sub-menu-right2, .sub-menu-right3') !== null;
             const checkboxType = badge.classList.contains('right-checkbox') ? 'right-checkbox' : 'checkbox';
-        
-            // Handle LINK BADGE separately
+    
             if (badgeText === 'LINK BADGE') {
-                isLinkBadgeSelected = true; // Mark that LINK BADGE is selected
+                isLinkBadgeSelected = true;
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.alt = 'LINK BADGE';
-                linkBadgeContainer.innerHTML = ''; // Clear any existing content
-                linkBadgeContainer.appendChild(img); // Append the LINK BADGE image
-            } 
-        
+                linkBadgeContainer.innerHTML = '';
+                linkBadgeContainer.appendChild(img);
+            }
+    
             if (badgeText === 'TARGET') {
                 targetBadgeData = {
                     imageUrl: imageUrl,
@@ -397,13 +665,16 @@ $(document).ready(function () {
                     checkboxType: checkboxType
                 });
             }
+    
+            if (badge.classList.contains('rank-checkbox')) {
+                rankSelected = true;
+            }
         });
     
-        // If LINK BADGE is not selected, clear the linkBadgeContainer
         if (!isLinkBadgeSelected) {
-            linkBadgeContainer.innerHTML = ''; // Remove the LINK BADGE image if unchecked
+            linkBadgeContainer.innerHTML = '';
         }
-
+    
         badgesData.sort((a, b) => a.badgeText.localeCompare(b.badgeText));
     
         if (targetBadgeData) {
@@ -448,8 +719,37 @@ $(document).ready(function () {
             }
         });
     
-        renderRightBox(badgesData, dofeBadgeData); 
-        updateAllProgress(); 
+        if (rankSelected) {
+            if (badgeCount <= 10) {
+                leftBox.style.height = '350px';
+            } else if (badgeCount >= 11 && badgeCount <= 15) {
+                leftBox.style.height = '400px';
+                progressbox.style.marginTop = '50px';
+
+            } else if (badgeCount >= 16 && badgeCount <= 20) {
+                leftBox.style.height = '500px';
+                progressbox.style.marginTop = '130px';
+
+            } else if (badgeCount >= 21 && badgeCount <= 25) {
+                leftBox.style.height = '600px';
+                progressbox.style.marginTop = '210px';
+
+            } else if (badgeCount >= 26 && badgeCount <= 30) {
+                leftBox.style.height = '700px';
+                progressbox.style.marginTop = '290px';
+
+            } else {
+                leftBox.style.height = '760px';
+                progressbox.style.marginTop = '290px';
+            }
+        } else {
+            leftBox.style.height = '760px'; 
+        } 
+
+        applyRankCSS();
+    
+        renderRightBox(badgesData, dofeBadgeData);
+        updateAllProgress();
     }
     
     function handleCheckboxChange(checkbox) {
@@ -487,6 +787,7 @@ $(document).ready(function () {
         const targetCheckbox = event.target.closest('.checkbox, .right-checkbox, .checkbox-right');
         if (targetCheckbox) {
             handleCheckboxChange(targetCheckbox);
+            updateOverallProgress();
         }
     });
 
@@ -658,7 +959,265 @@ $(document).ready(function () {
         $(`.progress-row:contains(Special Awards) .progress-number`).html(progressNumber);
     }
     
+    function updateTotalBasicProficiencyProgress() {
+        const selectedItems = new Set();
 
+        $('.checkbox:checked, .right-checkbox:checked').each(function () {
+            const parentItem = $(this).closest('.sub-item').attr('data-url');
+            selectedItems.add(parentItem);
+        });
+
+        let progressNumber = `: ${selectedItems.size} / 34`;
+        progressNumber;
+        $(`.progress-row:contains(Total Basic Proficiency Award) .progress-number`).html(progressNumber);
+    }
+
+    function updateTotalAdvancedProficiencyProgress() {
+        const selectedItems = $('.right-checkbox:checked').length;
+        let progressNumber = `: ${selectedItems} / 33`;
+        progressNumber;
+        $(`.progress-row:contains(Total Advanced Proficiency Award) .progress-number`).html(progressNumber);
+    }
+
+    function updateAllProgress() {
+        updateProgress('Compulsory', 'sub-menu', 4);
+        updateProgress('Interest (Group A)', 'sub-menu1', 12, false);
+        updateProgress('Adventure (Group B)', 'sub-menu2', 3);
+        updateProgress('Community (Group C)', 'sub-menu3', 9);
+        updateProgress('Physical (Group D)', 'sub-menu4', 6);
+        updateProgress('Service Awards', 'sub-menu-right1', 5);
+        updateSpecialAwardsProgress();
+        updateTotalBasicProficiencyProgress();
+        updateTotalAdvancedProficiencyProgress();
+    }
+
+    function handleCheckboxChange() {
+        applySelection(); 
+        updateAllProgress();
+        updateSpecialAwardsProgress(); 
+    }
+
+    $('.sub-item input.checkbox, .sub-item input.right-checkbox, .sub-item input.checkbox-right').on('change', function () {
+        handleCheckboxChange();
+    });
+
+    updateAllProgress(); 
+    applySelection();
+    
+    function handleCheckboxChange(checkbox) {
+        const subBox = checkbox.closest('.sub-item');
+        const checkboxesInSubBox = subBox.querySelectorAll('.checkbox, .right-checkbox');
+    
+        checkboxesInSubBox.forEach(otherCheckbox => {
+            if (otherCheckbox !== checkbox) {
+                otherCheckbox.checked = false;
+            }
+        });
+    
+        if (checkbox.classList.contains('right-checkbox')) {
+            const correspondingCheckbox = subBox.querySelector('.checkbox');
+            correspondingCheckbox.checked = true;
+        }
+
+        if (checkbox.classList.contains('dofe-checkbox')) {
+            handleDofeCheckboxChange(checkbox);
+        }
+        
+        applySelection(); 
+    }
+
+    function handleDofeCheckboxChange(checkbox) {
+        const dofeCheckboxes = document.querySelectorAll('.dofe-checkbox');
+        dofeCheckboxes.forEach(otherCheckbox => {
+          if (otherCheckbox !== checkbox) {
+            otherCheckbox.checked = false;
+          }
+        });
+    }
+
+    document.addEventListener('change', function (event) {
+        const targetCheckbox = event.target.closest('.dofe-checkbox');
+        if (targetCheckbox) {
+            handleDofeCheckboxChange(targetCheckbox);
+        }
+    });
+
+    document.addEventListener('change', function (event) {
+    const targetCheckbox = event.target.closest('.checkbox, .right-checkbox, .checkbox-right');
+    if (targetCheckbox) {
+        handleCheckboxChange(targetCheckbox);
+        updateOverallProgress();
+    }
+    });
+
+    function renderRightBox(badgesData, dofeBadgeData) {
+        const rightBox = document.getElementById('rightBox');
+        const oneYearServiceCount = parseInt(document.getElementById('one-year-service').value) || 0;
+        const layoutStructure = [
+            [null, null, null, "FOUNDER’S AWARD", null, null, null],
+            [null, "PRESIDENT’S AWARD", "GOLD AWARD", null],
+            [null, null, "GOLD SCHOLASTIC AWARDS", "SILVER SCHOLASTIC AWARDS", "BRONZE SCHOLASTIC AWARDS", null, null],
+            [null, null, "LONG YEAR SERVICE BADGE", "NCO PROFICIENCY", "THREE YEAR SERVICE BADGE", null, null],
+        ];
+    
+        const oneYearServiceRow = Array(10).fill(null);
+        const juniorServiceChecked = badgesData.some(badge => badge.badgeText === "JUNIOR SECTION SERVICE BADGE");
+        const juniorServiceIndex = Math.max(0, 4 - Math.floor(oneYearServiceCount / 2));
+    
+        if (juniorServiceChecked) {
+            oneYearServiceRow[juniorServiceIndex] = "JUNIOR SECTION SERVICE BADGE";
+            for (let i = 0; i < oneYearServiceCount; i++) {
+                oneYearServiceRow[juniorServiceIndex + 1 + i] = "ONE YEAR SERVICE BADGE";
+            }
+        } else {
+            for (let i = 0; i < oneYearServiceCount; i++) {
+                oneYearServiceRow[juniorServiceIndex + i] = "ONE YEAR SERVICE BADGE";
+            }
+        }
+    
+        if (oneYearServiceCount === 1 && !juniorServiceChecked) {
+            oneYearServiceRow[juniorServiceIndex] = "ONE YEAR SERVICE BADGE";
+        }
+    
+        layoutStructure.push(oneYearServiceRow);
+    
+        const newContent = document.createElement('div');
+    
+        layoutStructure.forEach(rowData => {
+            const rowContainer = document.createElement('div');
+            rowContainer.classList.add('right-box-row');
+            rowContainer.style.display = 'flex';
+            rowContainer.style.justifyContent = 'center';
+            const badgeItems = rowData.filter(badgeText => badgeText !== null);
+    
+            if (badgeItems.length === 1) {
+                const singleBadgeText = badgeItems[0];
+                let badgeData = badgesData.find(b => b.badgeText === singleBadgeText);
+    
+                if (singleBadgeText === "JUNIOR SECTION SERVICE BADGE") {
+                    if (oneYearServiceCount === 0) {
+                        badgeData = { imageUrl: "image/Left/Junior One-Year.png", badgeText: "JUNIOR SECTION SERVICE BADGE" };
+                    } else {
+                        badgeData = { imageUrl: "image/Left/Junior One-Year1.png", badgeText: "JUNIOR SECTION SERVICE BADGE" };
+                    }
+                }
+    
+                if (singleBadgeText === "ONE YEAR SERVICE BADGE" && !juniorServiceChecked) {
+                    badgeData = { imageUrl: "image/Left/One-Year.png", badgeText: "ONE YEAR SERVICE BADGE" };
+                }
+    
+                if (badgeData) {
+                    const img = document.createElement('img');
+                    img.src = badgeData.imageUrl;
+                    img.alt = singleBadgeText;
+                    rowContainer.style.justifyContent = 'center'; 
+                    rowContainer.appendChild(img);
+                }
+            } else {
+                rowData.forEach(badgeText => {
+                    let badgeData = badgesData.find(b => b.badgeText === badgeText);
+    
+                    if (badgeText === "JUNIOR SECTION SERVICE BADGE") {
+                        if (oneYearServiceCount === 0) {
+                            badgeData = { imageUrl: "image/Left/Junior One-Year.png", badgeText: "JUNIOR SECTION SERVICE BADGE" };
+                        } else {
+                            badgeData = { imageUrl: "image/Left/Junior One-Year1.png", badgeText: "JUNIOR SECTION SERVICE BADGE" };
+                        }
+                    }
+    
+                    if (badgeData) {
+                        const img = document.createElement('img');
+                        img.src = badgeData.imageUrl;
+                        img.alt = badgeText;
+                        rowContainer.appendChild(img);
+                    } else if (badgeText === "ONE YEAR SERVICE BADGE") {
+                        const img = document.createElement('img');
+                        img.src = "image/Left/One-Year1.png"; 
+                        img.alt = "ONE YEAR SERVICE BADGE";
+                        rowContainer.appendChild(img);
+                    } else if (badgeText !== null) {
+                        const placeholder = document.createElement('div');
+                        placeholder.classList.add('badge-placeholder');
+                        placeholder.style.visibility = 'hidden'; 
+                        rowContainer.appendChild(placeholder);
+                    } else {
+                        const emptySpace = document.createElement('div');
+                        emptySpace.classList.add('empty-space');
+                        rowContainer.appendChild(emptySpace);
+                    }
+                });
+            }
+            newContent.appendChild(rowContainer); 
+        });
+    
+        rightBox.innerHTML = ''; 
+        rightBox.appendChild(newContent); 
+    
+        if (dofeBadgeData) {
+            const presidentAwardRow = newContent.children[1]; 
+
+            const existingDofeBadges = presidentAwardRow.querySelectorAll('img[alt^="DOFE"]');
+            existingDofeBadges.forEach(badge => badge.remove());
+    
+            const dofeImg = document.createElement('img');
+            dofeImg.src = dofeBadgeData.imageUrl;
+            dofeImg.alt = dofeBadgeData.badgeText; 
+            presidentAwardRow.insertBefore(dofeImg, presidentAwardRow.children[2]); 
+        }
+    }
+
+    function updateProgress(section, subMenuClass, totalItems, addSpace = true) {
+        let selectedItems = 0;
+
+        if (subMenuClass === 'sub-menu-right1') {
+            const oneYearServiceValue = parseInt($('.one-year-service').val());
+            selectedItems += oneYearServiceValue > 0 ? 1 : 0;
+            selectedItems += $(`.${subMenuClass} .checkbox-right:checked`).length;
+
+            $('.one-year-service').off('change').on('change', function () {
+                const selectedValue = parseInt($(this).val());
+                const selectedItemsWithOneYearService = selectedValue > 0 ? 1 : 0;
+                selectedItems = selectedItemsWithOneYearService + $(`.${subMenuClass} .checkbox-right:checked`).length;
+                updateProgress(section, subMenuClass, totalItems, addSpace);
+                applySelection();
+            });
+
+        } else {
+            const subMenu = $(`.${subMenuClass}`);
+            const uniqueItems = new Set();
+
+            subMenu.each(function () {
+                const checkboxes = $(this).find('.checkbox:checked');
+                const rightCheckboxes = $(this).find('.right-checkbox:checked');
+
+                checkboxes.each(function () {
+                    const parentItem = $(this).closest('.sub-item').attr('data-url');
+                    uniqueItems.add(parentItem);
+                });
+
+                rightCheckboxes.each(function () {
+                    const parentItem = $(this).closest('.sub-item').attr('data-url');
+                    uniqueItems.add(parentItem);
+                });
+            });
+
+            selectedItems = uniqueItems.size;
+        }
+
+        let progressNumber = `: ${selectedItems} / ${totalItems}`;
+        if (addSpace) {
+            progressNumber += '&nbsp;&nbsp;';
+        }
+        $(`.progress-row:contains(${section}) .progress-number`).html(progressNumber);
+    }
+
+    function updateSpecialAwardsProgress() {
+        const selectedItems = $('.sub-menu-right2 .checkbox-right:checked').length;
+        let progressNumber = `: ${selectedItems} / 8`;
+        progressNumber += '&nbsp;&nbsp;';
+        $(`.progress-row:contains(Special Awards) .progress-number`).html(progressNumber);
+    }
+    
     function updateTotalBasicProficiencyProgress() {
         const selectedItems = new Set();
 
@@ -704,8 +1263,6 @@ $(document).ready(function () {
     updateAllProgress(); 
     applySelection();
 });
-
-
 
 document.addEventListener('change', function (event) {
     const targetCheckbox = event.target.closest('.checkbox, .right-checkbox, .checkbox-right');
@@ -756,19 +1313,30 @@ function updateOverallProgress() {
     overallProgressNumber.textContent = `${overallPercentage}%`; 
 }
 
+
 function handleCheckboxChange(checkbox) {
+    const targetCheckbox = document.querySelector('.sub-item[data-url="image/Right/Target.png"] .checkbox');
     const subItem = checkbox.closest('.sub-item');
-    const subBoxText = subItem.querySelector('.sub-box-text').innerText;
+    const subBoxText = subItem.querySelector('.sub-box-text').innerText.trim(); 
+
+    const isSpecialBadge =
+        subBoxText === "NCO PROFICIENCY" ||
+        subBoxText === "THREE YEAR SERVICE BADGE" ||
+        subBoxText === "NCO IN THE COMPANY"; 
+
+    if (!isSpecialBadge && !targetCheckbox.checked) {
+        updateNCOProgress();
+        return;
+    }
+
     const presidentBox = document.querySelector(`.president-container-box[title="${subBoxText}"]`);
     const checkedCheckboxes = document.querySelectorAll('.checkbox:checked:not(.ccheckbox-container .checkbox)').length;
     const checkedRightCheckboxes = document.querySelectorAll('.right-checkbox:checked:not(.ccheckbox-container .right-checkbox)').length;
-    
-    if (!checkbox.closest('.ccheckbox-container')) {
 
+    if (!checkbox.closest('.ccheckbox-container')) {
         if (checkbox.classList.contains('checkbox')) {
             if (checkbox.checked) {
                 updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', 1);
-                
             } else {
                 const advanceCheckbox = subItem.querySelector('.right-checkbox');
                 if (advanceCheckbox.checked) {
@@ -777,8 +1345,8 @@ function handleCheckboxChange(checkbox) {
                         updateGroupProgress('.sub-menu .right-checkbox', '4 of Advanced Proficiency Award', -1);
                     }
                     if (checkedCheckboxes <= 5) {
-                    updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', -1);
-                }
+                        updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', -1);
+                    }
                 } else {
                     if (checkedCheckboxes <= 5) {
                         updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', -1);
@@ -790,28 +1358,26 @@ function handleCheckboxChange(checkbox) {
             if (checkbox.checked) {
                 if (!basicCheckbox.checked) {
                     basicCheckbox.checked = true;
-                    updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', 1); 
+                    updateGroupProgress('.sub-menu .checkbox', '6 of Basic Proficiency Award', 1);
                 }
-                updateGroupProgress('.sub-menu .right-checkbox', '4 of Advanced Proficiency Award', 1); 
+                updateGroupProgress('.sub-menu .right-checkbox', '4 of Advanced Proficiency Award', 1);
             } else {
                 if (basicCheckbox.checked) {
                     if (checkedRightCheckboxes <= 5) {
-                        updateGroupProgress('.sub-menu .right-checkbox', '4 of Advanced Proficiency Award', -1); 
+                        updateGroupProgress('.sub-menu .right-checkbox', '4 of Advanced Proficiency Award', -1);
                     }
                 }
             }
         }
 
-
         if (checkbox.classList.contains('rank-checkbox')) {
             updateNCOProgress();
         }
-    }
+}
+
     updateOverallProgress();
-    updateSpecialProgress(); 
+    updateSpecialProgress();
     updateNCOProgress();
-
-
 
     function updateNCOProgress() {
         const anyRankChecked = !!document.querySelector('.rank-checkbox:checked');
@@ -877,8 +1443,8 @@ function handleCheckboxChange(checkbox) {
                     progressBar.style.width = '100%';
                     progressNumber.textContent = '1/1 (100%)';
                 } else {
-                    progressBar.style.width = '100%';
-                    progressNumber.textContent = '1/1 (100%)';
+                    progressBar.style.width = '0%';
+                    progressNumber.textContent = '0/1 (0%)';
                 }
             }
         updateOverallProgress();
@@ -933,7 +1499,7 @@ function handleCheckboxChange(checkbox) {
                 progressBar.style.width = `${percentage}%`;
                 progressNumber.textContent = `${checkedCheckboxes.length + checkedRightCheckboxes.length + checkedCheckboxesRight.length}/${totalCheckboxes} (${percentage}%)`;
             }
-            if ((subBoxText === 'NCO PROFICIENCY' || subBoxText === 'THREE YEAR SERVICE BADGE') && checkbox.classList.contains('checkbox-right') && checkedCheckboxesRight.length > 0) {
+            if ((subBoxText === 'NCO PROFICIENCY' || subBoxText === 'THREE YEAR SERVICE BADGE' || subBoxText === 'LONG YEAR SERVICE BADGE') && checkbox.classList.contains('checkbox-right') && checkedCheckboxesRight.length > 0) {
                 progressBar.style.width = '100%';
                 progressNumber.textContent = '1/1 (100%)';
             }
@@ -951,7 +1517,6 @@ document.addEventListener('change', function(event) {
     if (target) handleRankCheckboxChange(target);
 });
 
-
 function handleRankCheckboxChange(checkbox) {
     const checkboxes = checkbox.closest('.sub-menu-right3').querySelectorAll('.rank-checkbox');
     checkboxes.forEach(other => { if (other !== checkbox) other.checked = false; });
@@ -959,567 +1524,94 @@ function handleRankCheckboxChange(checkbox) {
 }
 
 function applyRankCSS() {
-    const leftBox = document.querySelector('.left-box');
-    const square = document.querySelector('.square');
-    const triangle = document.querySelector('.triangle');
-    const rightChevrosideright1 = document.querySelector('.right-chevron-sideright1');
-    const rightChevrosideleft1 = document.querySelector('.right-chevron-sideleft1');
-    const rightChevrosideright2 = document.querySelector('.right-chevron-sideright2');
-    const rightChevrosideleft2 = document.querySelector('.right-chevron-sideleft2');
-    const rightChevrosideright3 = document.querySelector('.right-chevron-sideright3');
-    const rightChevrosideleft3 = document.querySelector('.right-chevron-sideleft3');
-    const rightChevrosideright4 = document.querySelector('.right-chevron-sideright4');
-    const rightChevrosideleft4 = document.querySelector('.right-chevron-sideleft4');
+    const elements = {
+        leftBox: document.querySelector('.left-box'),
+        square: document.querySelector('.square'),
+        triangle: document.querySelector('.triangle'),
+        chevrons: [
+            '.right-chevron-sideright1', '.right-chevron-sideleft1',
+            '.right-chevron-sideright2', '.right-chevron-sideleft2',
+            '.right-chevron-sideright3', '.right-chevron-sideleft3',
+            '.right-chevron-sideright4', '.right-chevron-sideleft4'
+        ].map(selector => document.querySelector(selector))
+    };
 
+    const leftBoxHeight = parseInt(window.getComputedStyle(elements.leftBox).height, 9);
 
-    leftBox.style.cssText = `
-    width: 550px; 
-    height: 760px;
-    border-radius: 10px;
-    box-sizing: border-box;
-    display: flex;
-    flex-wrap: wrap; 
-    justify-content: center; 
-    align-items: flex-start; 
-    text-align: center;
-    background: #2B2A2F;
-    position: relative;
-    font-weight: 900;
-    margin: 5px 20px 20px 20px;
-    `;
-
-    square.style.cssText = `
-        display: none;
-    `
-    triangle.style.cssText = `
-        display: none;
-    `
-
-    rightChevrosideright1.style.cssText = `
-        display: none;
-    `
-
-    rightChevrosideleft1.style.cssText = `
-        display: none;
-    `
-
-    rightChevrosideright2.style.cssText = `
-        display: none;
-    `
-
-    rightChevrosideleft2.style.cssText = `
-        display: none;
-    `
-
-    rightChevrosideright3.style.cssText = `
-        display: none;
-    `
-
-    rightChevrosideleft3.style.cssText = `
-        display: none;
-    `
-
-    rightChevrosideright4.style.cssText = `
-        display: none;
-    `
-
-    rightChevrosideleft4.style.cssText = `
-        display: none;
-    `
     const checkedCheckbox = document.querySelector('.rank-checkbox:checked');
-    if (checkedCheckbox) {
-        const rank = checkedCheckbox.closest('.sub-item').querySelector('.sub-box-text').textContent.trim();
-        switch (rank) {
-            case 'Lance Corporal': 
-                leftBox.style.cssText = `
-                    width: 550px; 
-                    height: 760px;
-                    border-radius: 10px;
-                    box-sizing: border-box;
-                    display: flex;
-                    flex-wrap: wrap; 
-                    justify-content: center; 
-                    align-items: flex-start; 
-                    text-align: center;
-                    background: #2B2A2F;
-                    position: relative;
-                    font-weight: 900;
-                    margin: 5px 20px 20px 20px;
-                `;
-                const square = document.querySelector('.square');
-                square.style.cssText = `
-                    width: 550px;
-                    height: 60px;
-                    background: #2B2A2F;
-                    position: absolute;
-                    margin-top: 720px;
-                    z-index: -1;
-                `;
-                const triangle = document.querySelector('.triangle');
-                triangle.style.cssText = `
-                    width: 0;
-                    height: 0;
-                    border-left: 275px solid transparent; 
-                    border-right: 275px solid transparent; 
-                    border-top: 95px solid #2B2A2F;; 
-                    z-index: 1;
-                    position: absolute;
-                    margin-top: 780px;
-                `;
-                const rightChevrosideright1 = document.querySelector('.right-chevron-sideright1');
-                rightChevrosideright1.style.cssText = `    
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;            
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, 20deg);
-                    background: white;
-                    left: 0;    
-                    margin-left: 15px;
-                    top: 770px;
-                `;
-                const rightChevrosideleft1 = document.querySelector('.right-chevron-sideleft1');
-                rightChevrosideleft1.style.cssText = `  
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;              
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, -20deg);
-                    background: white;
-                    right: 0;
-                    margin-right: 15px;
-                    top: 770px;
-                `;
-
-                break;
-                
-            case 'Corporal':
-                leftBox.style.cssText = `
-                    width: 550px; 
-                    height: 760px;
-                    border-radius: 10px;
-                    box-sizing: border-box;
-                    display: flex;
-                    flex-wrap: wrap; 
-                    justify-content: center; 
-                    align-items: flex-start; 
-                    text-align: center;
-                    background: #2B2A2F;
-                    position: relative;
-                    font-weight: 900;
-                    margin: 5px 20px 20px 20px;
-                `;
-                const square1 = document.querySelector('.square');
-                square1.style.cssText = `
-                    width: 550px;
-                    height: 110px;
-                    background: #2B2A2F;
-                    margin-top: 720px;
-                    z-index: -1;
-                    position: absolute;              
-                `;
-                const triangle1 = document.querySelector('.triangle');
-                triangle1.style.cssText = `
-                    width: 0;
-                    height: 0;
-                    border-left: 275px solid transparent; 
-                    border-right: 275px solid transparent; 
-                    border-top: 95px solid #2B2A2F;; 
-                    z-index: 1;
-                    position: absolute;
-                    margin-top: 830px;
-                `;
-                const rightChevrosideright2 = document.querySelector('.right-chevron-sideright2');
-                rightChevrosideright2.style.cssText = `    
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;            
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, 20deg);
-                    background: white;
-                    left: 0;    
-                    margin-left: 15px;  
-                    top: 820px;
-                `;
-                const rightChevrosideleft2 = document.querySelector('.right-chevron-sideleft2');
-                rightChevrosideleft2.style.cssText = `  
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;              
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, -20deg);
-                    background: white;
-                    right: 0;
-                    margin-right: 15px;
-                    top: 820px;
-                `;
-                const rightChevrosideright3 = document.querySelector('.right-chevron-sideright1');
-                rightChevrosideright3.style.cssText = `    
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, 20deg);
-                    background: white;
-                    left: 0;    
-                    margin-left: 15px;
-                    top: 770px;
-                    z-index: 10;
-                `;
-                const rightChevrosideleft3 = document.querySelector('.right-chevron-sideleft1');
-                rightChevrosideleft3.style.cssText = `              
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, -20deg);
-                    background: white;
-                    right: 0;
-                    margin-right: 15px;
-                    top: 770px;
-                    z-index: 10;
-                `;
-
-                break;
-
-            case 'Sergeant':
-                leftBox.style.cssText = `
-                    width: 550px; 
-                    height: 760px;
-                    border-radius: 10px;
-                    box-sizing: border-box;
-                    display: flex;
-                    flex-wrap: wrap; 
-                    justify-content: center; 
-                    align-items: flex-start; 
-                    text-align: center;
-                    background: #2B2A2F;
-                    position: relative;
-                    font-weight: 900;
-                    margin: 5px 20px 20px 20px;
-                `;
-                const square2 = document.querySelector('.square');
-                square2.style.cssText = `
-                    width: 550px;
-                    height: 160px;
-                    background: #2B2A2F;
-                    margin-top: 720px;
-                    z-index: -1;
-                    position: absolute;
-                `;
-                const triangle2 = document.querySelector('.triangle');
-                triangle2.style.cssText = `
-                    width: 0;
-                    height: 0;
-                    border-left: 275px solid transparent; 
-                    border-right: 275px solid transparent; 
-                    border-top: 95px solid #2B2A2F;; 
-                    z-index: 1;
-                    position: absolute;
-                    margin-top: 880px;              
-                `;
-                const rightChevrosideright4 = document.querySelector('.right-chevron-sideright3');
-                rightChevrosideright4.style.cssText = `    
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;            
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, 20deg);
-                    background: white;
-                    left: 0;    
-                    margin-left: 15px;  
-                    top: 870px;
-                `;
-                const rightChevrosideleft4 = document.querySelector('.right-chevron-sideleft3');
-                rightChevrosideleft4.style.cssText = `  
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;              
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, -20deg);
-                    background: white;
-                    right: 0;
-                    margin-right: 15px;
-                    top: 870px;
-                `;
-                const rightChevrosideright5 = document.querySelector('.right-chevron-sideright1');
-                rightChevrosideright5.style.cssText = `    
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, 20deg);
-                    background: white;
-                    left: 0;    
-                    margin-left: 15px;
-                    top: 770px;
-                    z-index: 10;
-                `;
-                const rightChevrosideleft5 = document.querySelector('.right-chevron-sideleft1');
-                rightChevrosideleft5.style.cssText = `              
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, -20deg);
-                    background: white;
-                    right: 0;
-                    margin-right: 15px;
-                    top: 770px;
-                    z-index: 10;
-                `;
-                const rightChevrosideright6 = document.querySelector('.right-chevron-sideright2');
-                rightChevrosideright6.style.cssText = `    
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;            
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, 20deg);
-                    background: white;
-                    left: 0;    
-                    margin-left: 15px;  
-                    top: 820px;
-                `;
-                const rightChevrosideleft6 = document.querySelector('.right-chevron-sideleft2');
-                rightChevrosideleft6.style.cssText = `  
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;              
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, -20deg);
-                    background: white;
-                    right: 0;
-                    margin-right: 15px;
-                    top: 820px;
-                `;
-
-                break;
-
-            case 'Staff Sergeant':
-                leftBox.style.cssText = `
-                    width: 550px; 
-                    height: 760px;
-                    border-radius: 10px;
-                    box-sizing: border-box;
-                    display: flex;
-                    flex-wrap: wrap; 
-                    justify-content: center; 
-                    align-items: flex-start; 
-                    text-align: center;
-                    background: #2B2A2F;
-                    position: relative;
-                    font-weight: 900;
-                    margin: 5px 20px 20px 20px;
-                `;
-                const square3 = document.querySelector('.square');
-                square3.style.cssText = `
-                    width: 550px;
-                    height: 210px;
-                    background: #2B2A2F;
-                    margin-top: 720px;
-                    z-index: -1;
-                    position: absolute;
-                `;
-                const triangle3 = document.querySelector('.triangle');
-                triangle3.style.cssText = `
-                    width: 0;
-                    height: 0;
-                    border-left: 275px solid transparent; 
-                    border-right: 275px solid transparent; 
-                    border-top: 95px solid #2B2A2F;; 
-                    z-index: 1;       
-                    position: absolute;
-                    margin-top: 930px;      
-                `;
-                const rightChevrosideright7 = document.querySelector('.right-chevron-sideright4');
-                rightChevrosideright7.style.cssText = `    
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;            
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, 20deg);
-                    background: white;
-                    left: 0;    
-                    margin-left: 15px;  
-                    top: 920px;
-                `;
-                const rightChevrosideleft7 = document.querySelector('.right-chevron-sideleft4');
-                rightChevrosideleft7.style.cssText = `  
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;              
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, -20deg);
-                    background: white;
-                    right: 0;
-                    margin-right: 15px;
-                    top: 920px;
-                `;
-                const rightChevrosideright8 = document.querySelector('.right-chevron-sideright1');
-                rightChevrosideright8.style.cssText = `    
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, 20deg);
-                    background: white;
-                    left: 0;    
-                    margin-left: 15px;
-                    top: 770px;
-                    z-index: 10;
-                `;
-                const rightChevrosideleft8 = document.querySelector('.right-chevron-sideleft1');
-                rightChevrosideleft8.style.cssText = `              
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, -20deg);
-                    background: white;
-                    right: 0;
-                    margin-right: 15px;
-                    top: 770px;
-                    z-index: 10;
-                `;
-                const rightChevrosideright9 = document.querySelector('.right-chevron-sideright2');
-                rightChevrosideright9.style.cssText = `    
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;            
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, 20deg);
-                    background: white;
-                    left: 0;    
-                    margin-left: 15px;  
-                    top: 820px;
-                `;
-                const rightChevrosideleft9 = document.querySelector('.right-chevron-sideleft2');
-                rightChevrosideleft9.style.cssText = `  
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;              
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, -20deg);
-                    background: white;
-                    right: 0;
-                    margin-right: 15px;
-                    top: 820px;
-                `;
-                const rightChevrosideright10 = document.querySelector('.right-chevron-sideright3');
-                rightChevrosideright10.style.cssText = `    
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;            
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, 20deg);
-                    background: white;
-                    left: 0;    
-                    margin-left: 15px;  
-                    top: 870px;
-                `;
-                const rightChevrosideleft10 = document.querySelector('.right-chevron-sideleft3');
-                rightChevrosideleft10.style.cssText = `  
-                    text-align: center;
-                    width: 520px;
-                    position: absolute;
-                    z-index: 100;              
-                    content: '';
-                    position: absolute;
-                    height: 40px;
-                    width: 260px;
-                    transform: skew(0deg, -20deg);
-                    background: white;
-                    right: 0;
-                    margin-right: 15px;
-                    top: 870px;
-                `;
-
-                break;
-
-        }
+    if (!checkedCheckbox) {
+        elements.square.style.display = "none";
+        elements.triangle.style.display = "none";
+        elements.chevrons.forEach(chevron => chevron.style.display = "none");
+        return;
     }
-}
 
-document.addEventListener('change', function(event) {
-    const checkedCheckbox = document.querySelector('.rank-checkbox:checked');
-    
-    if (checkedCheckbox) {
-        const rank = checkedCheckbox.closest('.sub-item').querySelector('.sub-box-text').textContent.trim();
+    const rank = checkedCheckbox.closest('.sub-item').querySelector('.sub-box-text').textContent.trim();
+    const rankStyles = {
+        'Lance Corporal': { squareHeight: 165, chevrons: 1 },
+        'Corporal': { squareHeight: 215, chevrons: 2 },
+        'Sergeant': { squareHeight: 265, chevrons: 3 },
+        'Staff Sergeant': { squareHeight: 315, chevrons: 4 }
+    };
+
+    if (rankStyles[rank]) {
+        const { squareHeight, chevrons } = rankStyles[rank];
+
+        elements.square.style.cssText = `
+            display: block;
+            width: 550px;
+            height: ${squareHeight}px;
+            background: #2B2A2F; 
+            border-left: 275px solid transparent; 
+            border-right: 275px solid transparent; 
+            position: absolute;
+            top: ${leftBoxHeight}px; /* Align below left-box */
+            z-index: -1;
+        `;
+
+        elements.triangle.style.cssText = `
+            display: block;
+            width: 0;
+            height: 0;
+            border-left: 275px solid transparent; 
+            border-right: 275px solid transparent; 
+            border-top: 95px solid #2B2A2F; 
+            position: absolute;
+            top: ${leftBoxHeight + squareHeight}px; /* Align below square */
+            z-index: 1;
+        `;
+
+        elements.chevrons.forEach(chevron => chevron.style.display = "none");
+
+        for (let i = 1; i <= chevrons; i++) {
+            let chevronOffset = leftBoxHeight + (i * 50) + 105; 
         
-        const progressbox = document.getElementById('selectedCount');
-        switch (rank) {
-            case 'Lance Corporal':
-                progressbox.style.marginTop = '130px';
-                break;
-            case 'Corporal':
-                progressbox.style.marginTop = '180px';
-                break;
-            case 'Sergeant':
-                progressbox.style.marginTop = '230px';
-                break;
-            case 'Staff Sergeant':
-                progressbox.style.marginTop = '280px';
-                break;
-            default:
-                progressbox.style.marginTop = '0';
-                break;
+            document.querySelector(`.right-chevron-sideright${i}`).style.cssText = `
+                display: block;
+                height: 40px;
+                width: 260px;
+                transform: skew(0deg, 20deg);
+                background: white;
+                left: 0;
+                margin-left: 15px;
+                position: absolute;
+                top: ${chevronOffset}px; /* Move down */
+                z-index: 10;
+            `;
+        
+            document.querySelector(`.right-chevron-sideleft${i}`).style.cssText = `
+                display: block;
+                height: 40px;
+                width: 260px;
+                transform: skew(0deg, -20deg);
+                background: white;
+                right: 0;
+                margin-right: 15px;
+                position: absolute;
+                top: ${chevronOffset}px; /* Move down */
+                z-index: 10;
+            `;
         }
-    } else {
-
-        const progressbox = document.getElementById('selectedCount');
-        progressbox.style.marginTop = '0'; 
     }
 
     function updateRankDisplay() {
@@ -1539,17 +1631,81 @@ document.addEventListener('change', function(event) {
     });
 
     updateRankDisplay();
+}
 
+function updateVisitCount() {
+    let visitCount = parseInt(localStorage.getItem('visitCount') || 0, 10);
+
+    visitCount += 1;
+
+    localStorage.setItem('visitCount', visitCount);
+
+    return visitCount;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const visitCountElement = document.getElementById('visitCount');
+    if (visitCountElement) {
+        const updatedCount = updateVisitCount();
+        visitCountElement.textContent = updatedCount;
+    } else {
+        console.error('Visit count element not found.');
+    }
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    emailjs.init("jwnrle_0zxuB29XxH"); 
+});
 
-document.getElementById('badge-checkbox').addEventListener('change', function() {
-    const badgeContainer = document.getElementById('link-badge');
-    const badgeImage = document.getElementById('badge-image');
+function toggleFeedbackForm() {
+    const form = document.getElementById('feedbackForm');
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+}
 
-    if (this.checked) {
-        badgeContainer.innerHTML = `<img src="${badgeImage.src}" alt="LINK BADGE"> LINK BADGE`;
-    } else {
-        badgeContainer.textContent = 'Link Badge';
+function sendFeedback() {
+    const feedbackText = document.getElementById('feedbackText').value;
+    console.log("Feedback to send:", feedbackText);
+
+    if (!feedbackText.trim()) {
+        showCustomAlert('Please write some feedback before sending.');
+        return;
     }
+
+    emailjs.send("service_9tjtma8", "template_k2kcz19", {
+        message: feedbackText,
+        to_email: "joshuang.ng2004@gmail.com",
+    }).then(
+        function(response) {
+            console.log("Feedback sent successfully:", response);
+            showCustomAlert("Feedback sent successfully!");
+            toggleFeedbackForm();
+            document.getElementById('feedbackText').value = "";
+        },
+        function(error) {
+            console.error("Failed to send feedback:", error);
+            showCustomAlert("Failed to send feedback. Please try again later.");
+        }
+    );
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    let supportButton = document.getElementById("support-button");
+    let supportPopup = document.getElementById("support-popup");
+    let closeButton = document.querySelector(".popup-close");
+
+    supportPopup.style.display = "none";
+
+    supportButton.addEventListener("click", function () {
+        supportPopup.style.display = "flex";
+    });
+
+    closeButton.addEventListener("click", function () {
+        supportPopup.style.display = "none";
+    });
+
+    window.addEventListener("click", function (event) {
+        if (event.target === supportPopup) {
+            supportPopup.style.display = "none";
+        }
+    });
 });
