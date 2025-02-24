@@ -1633,67 +1633,26 @@ function applyRankCSS() {
     updateRankDisplay();
 }
 
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDpbG4_fOcjCiaC0j4cguKNnaUlS48BvxA",
-            authDomain: "journey-to-president-s-badge.firebaseapp.com",
-            projectId: "journey-to-president-s-badge",
-            storageBucket: "journey-to-president-s-badge.firebasestorage.app",
-            messagingSenderId: "764713061754",
-            appId: "1:764713061754:web:8e31b5348aef31902f1ac3",
-            measurementId: "G-TDQ7XJXZJ7"
-        };
+        // Function to update the visit count
+        function updateVisitCount() {
+            // Get the current count from localStorage
+            let visitCount = localStorage.getItem('visitCount');
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // Function to get visitor details
-        function getVisitorDetails() {
-            return {
-                ip: '', // Will be fetched from an external API
-                userAgent: navigator.userAgent, // Browser and device info
-                referrer: document.referrer, // Where the user came from
-                timestamp: new Date().toISOString() // Current time
-            };
-        }
-
-        // Function to fetch IP address using a free API
-        async function fetchIP() {
-            try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                return data.ip;
-            } catch (error) {
-                console.error('Error fetching IP:', error);
-                return 'Unknown';
-            }
-        }
-
-        // Function to update and fetch the visit count
-        async function updateVisitCount() {
-            const counterRef = db.collection('counters').doc('visitCount');
-            const doc = await counterRef.get();
-
-            let count = 0;
-            if (doc.exists) {
-                count = doc.data().count + 1;
+            // If it doesn't exist, initialize it to 0
+            if (visitCount === null) {
+                visitCount = 0;
             } else {
-                count = 1;
+                visitCount = parseInt(visitCount, 10);
             }
 
-            // Update the count in Firestore
-            await counterRef.set({ count });
+            // Increment the count
+            visitCount += 1;
 
-            // Display the count
-            document.getElementById('visitCount').textContent = count;
+            // Save the updated count back to localStorage
+            localStorage.setItem('visitCount', visitCount);
 
-            // Get visitor details
-            const visitorDetails = getVisitorDetails();
-            visitorDetails.ip = await fetchIP(); // Fetch IP address
-
-            // Save visitor details to Firestore
-            await db.collection('visits').add(visitorDetails);
+            // Display the updated count
+            document.getElementById('visitCount').textContent = visitCount;
         }
 
         // Update the visit count when the page loads
@@ -1755,3 +1714,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+
