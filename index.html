@@ -9,10 +9,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="icon" href="https://bbmalaysia.org/badges/award/4312%20Presidents.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="Badge Profile.js"></script>
+    <script src="Badge Profile Test.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
 </head> 
 
 <body>
+    <div id="customAlertOverlay" class="custom-alert-overlay"></div>
+    <div id="customAlert" class="custom-alert">
+        <div class="custom-alert-content">
+            <p id="alertMessage"></p>
+            <button onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
+    
     <div id="screenshot-container">
         <a id="toggleSidebar" class="bars"><i class="fas fa-bars" title="Menu"></i></a>
 
@@ -443,7 +455,6 @@
                         </a>
                     </div>
 
-
                     <!-- <div class="item"> -->
                         <a class="sub-btn" onclick="toggleSubMenu(this)">
                             Rank
@@ -530,7 +541,7 @@
                             <div class="sub-box">
                                 <img src="image/Left/Three-Years.png" alt="THREE YEAR SERVICE BADGE">
                                 <p class="sub-box-text">THREE YEAR SERVICE BADGE</p>
-                                <input class="checkbox-right" type="checkbox">
+                                <input class="checkbox-right" id="three-year-badge" type="checkbox" onclick="handleThreeYearBadge(this)">
                             </div>
                         </a>
 
@@ -538,7 +549,7 @@
                             <div class="sub-box">
                                 <img src="image/Left/Long-Year.png" alt="LONG YEAR SERVICE BADGE">
                                 <p class="sub-box-text">LONG YEAR SERVICE BADGE</p>
-                                <input class="checkbox-right" type="checkbox">
+                                <input class="checkbox-right" id="long-year-badge" type="checkbox" onclick="handleLongYearBadge(this)">
                             </div>
                         </a>
                     </div>
@@ -669,14 +680,15 @@
                     <div id="selectedBadgesContainer"></div>
                 </div>
 
-                <div class="badge-container">
+                <div>
                     <div class="box link-box" id="link-badge"></div>
                     <div class="box nametag-box" id="nametag">
                         <div id="nametag-name" class="editable" contenteditable="true" data-placeholder="NAME"></div>
                         <div id="nametag-company" class="editable" contenteditable="true" data-placeholder="COMPANY"></div>
+                        <div id="suggestionsList" class="autocomplete-suggestions"></div>
                     </div>
-                                        
                 </div>
+            
             </div>
         </section>
         
@@ -896,12 +908,45 @@
         </section>
 
         <footer class="footer">
-            Journey to President's Badge @2024 Created by Sergeant <a href="https://www.instagram.com/joshuang04/" target="_blank" style="text-decoration: underline; color:blue; font-size: large;">Ng Yuan Xin</a>, 1st Kuala Lumpur Company, as a project for the Founder's Badge Qualification
+            Journey to President's Badge @2024 Created by Sergeant <a href="https://www.instagram.com/joshuang04/" target="_blank" style="text-decoration: underline; color:#007BFF; font-size: large;">Ng Yuan Xin</a>, 1st Kuala Lumpur Company, as a project for the Founder's Badge Qualification
         </footer>
-        
-            </div>
+    </div>
 
     <button id="capture" class="capture"><i class="fa-solid fa-camera"></i> Screenshot</button>
+
+    <button class="feedback-button" onclick="toggleFeedbackForm()">💬</button>
+
+    <div class="feedback-form-container" id="feedbackForm" style="display: none;">
+      <h2>Send us your feedback</h2>
+      <textarea id="feedbackText" placeholder="Please share your thoughts with us..."></textarea>
+      <button onclick="sendFeedback()">Send Feedback</button>
+      <button class="close-button" onclick="toggleFeedbackForm()">Close</button>
+    </div>
+
+    <div class="last-container">
+        <div class="visit-counter">
+            <h1>Total Visits: <strong id="visitCount">0</strong></h1>
+        </div>
+        <div class="support-container">
+            <button id="support-button">
+                <i class="fas fa-coffee"></i> Support Me
+            </button>
+        </div>
+    </div>
+    <div id="support-popup" class="support-popup">
+        <div class="popup-content">
+            <span class="popup-close">&times;</span>
+            <h2>Support Me</h2>
+            <div class="qr-wrapper">
+                <div class="qr-box">
+                    <img src="image/TNG-Code.jpg" alt="TNG QR Code" class="qr-image">
+                </div>
+            </div>
+            
+            <p class="thank-you">Thank you for your kindness! Your support helps keep this project alive and growing. ❤️</p>
+        </div>
+    </div>
+    
 
 </body>
 
