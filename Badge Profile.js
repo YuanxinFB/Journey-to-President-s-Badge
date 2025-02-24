@@ -1633,71 +1633,71 @@ function applyRankCSS() {
     updateRankDisplay();
 }
 
-// Your Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyDpbG4_fOcjCiaC0j4cguKNnaUlS48BvxA",
-    authDomain: "journey-to-president-s-badge.firebaseapp.com",
-    projectId: "journey-to-president-s-badge",
-    storageBucket: "journey-to-president-s-badge.firebasestorage.app",
-    messagingSenderId: "764713061754",
-    appId: "1:764713061754:web:8e31b5348aef31902f1ac3",
-    measurementId: "G-TDQ7XJXZJ7"
-};
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDpbG4_fOcjCiaC0j4cguKNnaUlS48BvxA",
+            authDomain: "journey-to-president-s-badge.firebaseapp.com",
+            projectId: "journey-to-president-s-badge",
+            storageBucket: "journey-to-president-s-badge.firebasestorage.app",
+            messagingSenderId: "764713061754",
+            appId: "1:764713061754:web:8e31b5348aef31902f1ac3",
+            measurementId: "G-TDQ7XJXZJ7"
+        };
 
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-// Function to get visitor details
-function getVisitorDetails() {
-    return {
-        ip: '', // Will be fetched from an external API
-        userAgent: navigator.userAgent, // Browser and device info
-        referrer: document.referrer, // Where the user came from
-        timestamp: new Date().toISOString() // Current time
-    };
-}
+        // Function to get visitor details
+        function getVisitorDetails() {
+            return {
+                ip: '', // Will be fetched from an external API
+                userAgent: navigator.userAgent, // Browser and device info
+                referrer: document.referrer, // Where the user came from
+                timestamp: new Date().toISOString() // Current time
+            };
+        }
 
-// Function to fetch IP address using a free API
-async function fetchIP() {
-    try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        return data.ip;
-    } catch (error) {
-        console.error('Error fetching IP:', error);
-        return 'Unknown';
-    }
-}
+        // Function to fetch IP address using a free API
+        async function fetchIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('Error fetching IP:', error);
+                return 'Unknown';
+            }
+        }
 
-// Function to update and fetch the visit count
-async function updateVisitCount() {
-    const counterRef = db.collection('counters').doc('visitCount');
-    const doc = await counterRef.get();
+        // Function to update and fetch the visit count
+        async function updateVisitCount() {
+            const counterRef = db.collection('counters').doc('visitCount');
+            const doc = await counterRef.get();
 
-    let count = 0;
-    if (doc.exists) {
-        count = doc.data().count + 1;
-    } else {
-        count = 1;
-    }
+            let count = 0;
+            if (doc.exists) {
+                count = doc.data().count + 1;
+            } else {
+                count = 1;
+            }
 
-    // Update the count in Firestore
-    await counterRef.set({ count });
+            // Update the count in Firestore
+            await counterRef.set({ count });
 
-    // Display the count
-    document.getElementById('visitCount').textContent = count;
+            // Display the count
+            document.getElementById('visitCount').textContent = count;
 
-    // Get visitor details
-    const visitorDetails = getVisitorDetails();
-    visitorDetails.ip = await fetchIP(); // Fetch IP address
+            // Get visitor details
+            const visitorDetails = getVisitorDetails();
+            visitorDetails.ip = await fetchIP(); // Fetch IP address
 
-    // Save visitor details to Firestore
-    await db.collection('visits').add(visitorDetails);
-}
+            // Save visitor details to Firestore
+            await db.collection('visits').add(visitorDetails);
+        }
 
-// Update the visit count when the page loads
-document.addEventListener('DOMContentLoaded', updateVisitCount);
+        // Update the visit count when the page loads
+        document.addEventListener('DOMContentLoaded', updateVisitCount);
 
 document.addEventListener('DOMContentLoaded', function() {
     emailjs.init("jwnrle_0zxuB29XxH"); 
