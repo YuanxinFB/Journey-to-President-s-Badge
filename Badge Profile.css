@@ -1267,45 +1267,15 @@ section.main {
     display: none;
 }
 
-.last-container {
-    display: flex;  
-    align-items: center; 
-    justify-content: center;
-    gap: 100px; 
-    width: 100%;
-    max-width: 1200px; 
-    margin: 0 auto;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.visit-counter {
-    text-align: left;
-}
-
-.visit-counter h1 {
-    font-size: 20px;
-    color: #333;
-}
-
-.visit-counter strong {
-    font-size: 20px;
-    display: inline-block;
-    animation: colorChange 10s infinite;
-}
-
-@keyframes colorChange {
-    0% { color: #FF5733; } 
-    20% { color: #33FF57; } 
-    40% { color: #3357FF; } 
-    60% { color: #FF33A1; } 
-    80% { color: #A133FF; } 
-    100% { color: #FF5733; } 
-}
-
+.hidden {
+    display: none;
+  }
+  
+/* Support Me Section */
 .support-container {
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
 }
 
 .support-container button {
@@ -1369,8 +1339,8 @@ section.main {
     padding: 30px;
     border-radius: 15px;
     text-align: center;
-    width: 90%; 
-    max-width: 500px; 
+    width: 100%; 
+    max-width: 600px; 
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     animation: fadeIn 0.3s;
     position: relative;
