@@ -1682,3 +1682,315 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Shared Image Arrays
+    const leftImages = [
+      "image/Left/Dofe Bronze.png",
+      "image/Left/Dofe Gold.png",
+      "image/Left/Dofe Silver.png",
+      "image/Left/Founder.png",
+      "image/Left/Gold.png",
+      "image/Left/Junior One-Year.png",
+      "image/Left/Link Badge.png",
+      "image/Left/NCO Proficiency Star.png",
+      "image/Left/One-Year.png",
+      "image/Left/Presidents.png",
+      "image/Left/Scholastic Bronze.png",
+      "image/Left/Scholastic Gold.png",
+      "image/Left/Scholastic Silver.png",
+      "image/Left/Three-Years.png",
+    ];
+  
+    const rightImages = [
+      "image/Right/Arts.png",
+      "image/Right/Athletics.png",
+      "image/Right/Bandsmans.png",
+      "image/Right/Buglers.png",
+      "image/Right/Camping.png",
+      "image/Right/Christian Education.png",
+      "image/Right/Citizenship.png",
+      "image/Right/Communication.png",
+      "image/Right/Community Service.png",
+      "image/Right/Computer Knowledge.png",
+      "image/Right/Crafts.png",
+      "image/Right/Drill.png",
+      "image/Right/Drummers.png",
+      "image/Right/Environmental Conservation.png",
+      "image/Right/Expedition.png",
+      "image/Right/Financial Stewardship.png",
+      "image/Right/Fireman.png",
+      "image/Right/First Aid.png",
+      "image/Right/Gymnastics.png",
+      "image/Right/Hobbies.png",
+      "image/Right/International Relations.png",
+      "image/Right/Life Saving.png",
+      "image/Right/Martial Art.png",
+      "image/Right/Nature Awareness.png",
+      "image/Right/Physical Training.png",
+      "image/Right/Pipers.png",
+      "image/Right/Recruitment.png",
+      "image/Right/Safety.png",
+      "image/Right/Social Entreprenuership.png",
+      "image/Right/Sports.png",
+      "image/Right/Sustainability.png",
+      "image/Right/Swimming.png",
+      "image/Right/Target.png",
+      "image/Right/Water Adventure.png",
+    ];
+  
+    // Modal Logic
+    function showModal(type) {
+      const modal = document.getElementById("modal");
+      const modalTitle = document.getElementById("modal-title");
+      const modalText = document.getElementById("modal-text");
+  
+      if (type === "matching-rules") {
+        modalTitle.textContent = "Matching Pairs Game Rules";
+        modalText.textContent = `
+          1. Click on two cards to flip them.
+          2. If the cards match, they will stay flipped.
+          3. If they don't match, they will flip back.
+          4. Match all pairs to win the game!
+        `;
+      } else if (type === "solitaire-rules") {
+        modalTitle.textContent = "羊了个羊 (Sheep a Sheep) Rules";
+        modalText.textContent = `
+          1. Click on a tile to move it to the stack area.
+          2. Stack 3 identical tiles to clear them.
+          3. If the stack area reaches 6 tiles, you lose.
+          4. Clear all tiles to win the game!
+        `;
+      } else if (type === "congratulations") {
+        modalTitle.textContent = "Congratulations!";
+        modalText.textContent = "You've matched all pairs! Starting a new game...";
+      }
+  
+      modal.style.display = "flex";
+    }
+  
+    function hideModal() {
+      const modal = document.getElementById("modal");
+      modal.style.display = "none";
+    }
+  
+    // Matching Pairs Game Logic
+    const startMatchingGameButton = document.getElementById("startMatchingGame");
+    const restartMatchingGameButton = document.getElementById("restartMatchingGame");
+    const matchingGameBoard = document.getElementById("matching-game-board");
+  
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let currentImages = [];
+  
+    startMatchingGameButton.addEventListener("click", initializeMatchingGame);
+    restartMatchingGameButton.addEventListener("click", initializeMatchingGame);
+  
+    function initializeMatchingGame() {
+      currentImages = getRandomImages(8);
+      const cards = [...currentImages, ...currentImages];
+      matchingGameBoard.innerHTML = "";
+      cards.sort(() => Math.random() - 0.5).forEach((card) => {
+        const cardElement = document.createElement("div");
+        cardElement.classList.add("card");
+        cardElement.dataset.value = card;
+        cardElement.innerHTML = `
+          <div class="front"><img src="${card}" alt="Card Image"></div>
+          <div class="back"></div>
+        `;
+        cardElement.addEventListener("click", flipCard);
+        matchingGameBoard.appendChild(cardElement);
+      });
+      flippedCards = [];
+      matchedPairs = 0;
+    }
+  
+    function flipCard() {
+      if (flippedCards.length < 2 && !this.classList.contains("flipped")) {
+        this.classList.add("flipped");
+        flippedCards.push(this);
+        if (flippedCards.length === 2) setTimeout(checkMatch, 500);
+      }
+    }
+  
+    function checkMatch() {
+      const [card1, card2] = flippedCards;
+      if (card1.dataset.value === card2.dataset.value) {
+        card1.removeEventListener("click", flipCard);
+        card2.removeEventListener("click", flipCard);
+        matchedPairs++;
+        if (matchedPairs === currentImages.length) {
+          showModal("congratulations");
+          setTimeout(initializeMatchingGame, 2000);
+        }
+      } else {
+        card1.classList.remove("flipped");
+        card2.classList.remove("flipped");
+      }
+      flippedCards = [];
+    }
+  
+    // Sheep a Sheep Logic (Stacked Layout)
+    const startSolitaireGameButton = document.getElementById("startSolitaireGame");
+    const restartSolitaireGameButton = document.getElementById("restartSolitaireGame");
+    const solitaireGameBoard = document.getElementById("solitaire-game-board");
+    const stackArea = document.getElementById("stack");
+  
+    let solitaireTiles = [];
+    let stack = [];
+  
+    startSolitaireGameButton.addEventListener("click", initializeSolitaireGame);
+    restartSolitaireGameButton.addEventListener("click", initializeSolitaireGame);
+  
+    function initializeSolitaireGame() {
+      solitaireTiles = createTiles();
+      stack = [];
+      renderTiles();
+      renderStack();
+    }
+  
+    function createTiles() {
+      const allImages = [...leftImages, ...rightImages];
+      const selectedImages = [];
+      for (let i = 0; i < 24; i++) {
+        const randomImage = allImages[Math.floor(Math.random() * allImages.length)];
+        selectedImages.push(randomImage);
+      }
+      return selectedImages;
+    }
+  
+    function renderTiles() {
+      solitaireGameBoard.innerHTML = "";
+      solitaireTiles.forEach((tile, index) => {
+        const tileElement = document.createElement("div");
+        tileElement.classList.add("tile");
+        tileElement.style.backgroundImage = `url(${tile})`;
+        tileElement.dataset.value = tile;
+        tileElement.addEventListener("click", () => moveToStack(tileElement));
+        solitaireGameBoard.appendChild(tileElement);
+      });
+    }
+  
+    function moveToStack(tile) {
+      if (stack.length < 6) {
+        stack.push(tile);
+        renderStack();
+        tile.remove();
+        checkStack();
+      } else {
+        alert("Stack is full! You lose!");
+        initializeSolitaireGame();
+      }
+    }
+  
+    function renderStack() {
+      stackArea.innerHTML = "";
+      stack.forEach((tile) => {
+        const stackCard = document.createElement("div");
+        stackCard.classList.add("stack-card");
+        stackCard.style.backgroundImage = `url(${tile.dataset.value})`;
+        stackArea.appendChild(stackCard);
+      });
+    }
+  
+    function checkStack() {
+      if (stack.length >= 3) {
+        const lastThree = stack.slice(-3);
+        if (lastThree.every((card) => card.dataset.value === lastThree[0].dataset.value)) {
+          stack.splice(-3, 3);
+          renderStack();
+          if (solitaireTiles.length === 0 && stack.length === 0) {
+            showModal("congratulations");
+          }
+        }
+      }
+    }
+  
+    // Helper Function
+    function getRandomImages(count) {
+      const allImages = [...leftImages, ...rightImages];
+      return allImages.sort(() => Math.random() - 0.5).slice(0, count);
+    }
+  });
