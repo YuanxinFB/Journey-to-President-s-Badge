@@ -9,13 +9,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="icon" href="https://bbmalaysia.org/badges/award/4312%20Presidents.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="Badge Profile.js"></script>
+    <script src="Badge Profile Test.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js"></script>
-
 
 </head> 
 
@@ -926,30 +923,25 @@
       <button class="close-button" onclick="toggleFeedbackForm()">Close</button>
     </div>
 
-    <div class="last-container">
-        <div class="visit-counter">
-            <h1>Total Visits: <strong id="visitCount">0</strong></h1>
-        </div>
-        <div class="support-container">
-            <button id="support-button">
-                <i class="fas fa-coffee"></i> Support Me
-            </button>
-        </div>
-    </div>
-    <div id="support-popup" class="support-popup">
+  <!-- Support Me Section -->
+  <div class="support-container">
+    <button id="support-button">
+      <i class="fas fa-coffee"></i> Support Me
+    </button>
+  </div>
+
+<!-- Support Popup -->
+    <div id="support-popup" class="support-popup hidden">
         <div class="popup-content">
-            <span class="popup-close">&times;</span>
+            <span class="popup-close" onclick="hideSupportPopup()">&times;</span>
             <h2>Support Me</h2>
             <div class="qr-wrapper">
-                <div class="qr-box">
-                    <img src="image/TNG-Code.jpg" alt="TNG QR Code" class="qr-image">
-                </div>
+            <img src="image/TNG-Code.jpg" alt="TNG QR Code" class="qr-image">
             </div>
-            
             <p class="thank-you">Thank you for your kindness! Your support helps keep this project alive and growing. ❤️</p>
         </div>
     </div>
-    
+
 
 </body>
 
