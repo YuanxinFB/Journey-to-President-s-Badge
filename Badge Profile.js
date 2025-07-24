@@ -34,15 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     return; 
                 }
 
-                const progressBar = box.querySelector('.progress-bar');
-                const progressNumber = box.querySelector('.progress-number');
-
-                progressBar.style.width = '0%';
-
-                const match = progressNumber.textContent.match(/\/(\d+)/);
-                const totalCount = match ? match[1] : '0'; 
-
-                progressNumber.textContent = `0/${totalCount} (0%)`;
             });
 
             updateOverallProgress();
@@ -73,20 +64,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const subBox = checkbox.closest('.sub-item');
-        if (subBox) {
-            const checkboxesInSubBox = subBox.querySelectorAll('.checkbox, .right-checkbox');
-            checkboxesInSubBox.forEach(otherCheckbox => {
-                if (otherCheckbox !== checkbox) {
-                    otherCheckbox.checked = false;
-                }
-            });
-
-            if (checkbox.classList.contains('right-checkbox')) {
-                const basicCheckbox = subBox.querySelector('.checkbox');
-                if (basicCheckbox) {
-                    setTimeout(() => { basicCheckbox.checked = true; }, 0);
-                }
+        const checkboxesInSubBox = subBox.querySelectorAll('.checkbox, .right-checkbox');
+    
+        checkboxesInSubBox.forEach(otherCheckbox => {
+            if (otherCheckbox !== checkbox) {
+                otherCheckbox.checked = false;
             }
+        });
+    
+        if (checkbox.classList.contains('right-checkbox')) {
+            const correspondingCheckbox = subBox.querySelector('.checkbox');
+            correspondingCheckbox.checked = true;
+        }
+
+        if (checkbox.classList.contains('dofe-checkbox')) {
+            handleDofeCheckboxChange(checkbox);
         }
 
         applySelection();
@@ -1443,8 +1435,8 @@ function handleCheckboxChange(checkbox) {
                     progressBar.style.width = '100%';
                     progressNumber.textContent = '1/1 (100%)';
                 } else {
-                    progressBar.style.width = '0%';
-                    progressNumber.textContent = '0/1 (0%)';
+                    progressBar.style.width = '100%';
+                    progressNumber.textContent = '1/1 (100%)';
                 }
             }
         updateOverallProgress();
@@ -1689,60 +1681,3 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-
-
-const firebaseConfig = {
-    apiKey: "AIzaSyDpbG4_fOcjCiaC0j4cguKNnaUlS48BvxA",
-    authDomain: "journey-to-president-s-badge.firebaseapp.com",
-    projectId: "journey-to-president-s-badge",
-    storageBucket: "journey-to-president-s-badge.firebasestorage.app",
-    messagingSenderId: "764713061754",
-    appId: "1:764713061754:web:8e31b5348aef31902f1ac3",
-    measurementId: "G-TDQ7XJXZJ7"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-function getVisitorDetails() {
-    return {
-        ip: '', 
-        userAgent: navigator.userAgent, 
-        referrer: document.referrer, 
-        timestamp: new Date().toISOString() 
-    };
-}
-
-async function fetchIP() {
-    try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        return data.ip;
-    } catch (error) {
-        console.error('Error fetching IP:', error);
-        return 'Unknown';
-    }
-}
-
-async function updateVisitCount() {
-    const counterRef = db.collection('counters').doc('visitCount');
-    const doc = await counterRef.get();
-
-    let count = 0;
-    if (doc.exists) {
-        count = doc.data().count + 1;
-    } else {
-        count = 1;
-    }
-
-    await counterRef.set({ count });
-
-    document.getElementById('visitCount').textContent = count;
-
-    const visitorDetails = getVisitorDetails();
-    visitorDetails.ip = await fetchIP(); 
-
-    await db.collection('visits').add(visitorDetails);
-}
-
-document.addEventListener('DOMContentLoaded', updateVisitCount);
