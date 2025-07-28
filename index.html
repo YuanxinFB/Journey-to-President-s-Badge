@@ -942,27 +942,95 @@
         </div>
     </div>
 
+    <section class="games-banner">
+        <div class="banner-content">
+            <h1 class="banner-title">Mini Games</h1>
+        </div>
+    </section>
 
+    <div class="game-selection-container">
+        <!-- Matching Pairs Game Box -->
+        <div class="game-box">
+            <div class="game-header">
+                <h2>Matching Pairs</h2>
+                <span class="game-info-icon" data-modal="matching-rules" title="Matching Pairs Rules">?</span>
+            </div>
+            <div class="game-stats">
+                <span id="matching-moves">Moves: 0</span>
+                <span id="matching-timer">Time: 0s</span>
+            </div>
+            <div class="level-selection">
+                <button class="level-button active" data-level="1">Level 1</button>
+                <button class="level-button" data-level="2">Level 2</button>
+                <button class="level-button" data-level="3">Level 3</button>
+            </div>
+            <div id="matching-game-board" class="board"></div>
+            <div class="game-buttons">
+                <button class="start-game-button" id="startMatchingGame">Start Game</button>
+                <button class="restart-game-button" id="restartMatchingGame" disabled>Restart Game</button>
+            </div>
+        </div>
 
+        <!-- Triplix Match Game Box -->
+        <div class="game-box">
+            <div class="game-header">
+                <h2>Triplix Match</h2>
+                <span class="game-info-icon" data-modal="solitaire-rules" title="Triplix Match Rules">?</span>
+            </div>
+            <div class="game-stats">
+                <span id="solitaire-stack">Stack: 0/8</span>
+                <span id="solitaire-timer">Time: 0s</span>
+            </div>
+            <div class="level-selection">
+                <button class="level-button active" data-level="1">Level 1</button>
+                <button class="level-button" data-level="2">Level 2</button>
+                <button class="level-button" data-level="3">Level 3</button>
+            </div>
+            <div id="solitaire-game-board"></div>
+            <div id="stack-area">
+                <h3>Stack Area</h3>
+                <div id="stack"></div>
+            </div>
+            <div class="game-buttons">
+                <button class="start-game-button" id="startSolitaireGame">Start Game</button>
+                <button class="restart-game-button" id="restartSolitaireGame">Restart Game</button>
+                <button class="action-button" id="reshuffleButton" disabled>Reshuffle (3)</button>
+                <button class="action-button" id="undoButton" disabled>Undo (3)</button>
+            </div>
+        </div>
+    </div>
 
+    <div id="modal" class="modal-game">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="modal-header">
+                <img id="modal-image" src="" alt="Modal Image">
+                <h2 id="modal-title"></h2>
+            </div>
+            <div class="modal-body">
+                <p id="modal-text"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-confirm-btn">Got it!</button>
+            </div>
+        </div>
+    </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <div id="game-over-modal" class="modal-game">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="modal-header">
+                <img id="game-over-image" src="" alt="Game Over Image">
+                <h2 id="game-over-title"></h2>
+            </div>
+            <div class="modal-body">
+                <p id="game-over-text"></p>
+            </div>
+            <div class="modal-footer">
+                <button>Play Again</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 
