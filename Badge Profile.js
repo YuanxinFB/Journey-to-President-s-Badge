@@ -1678,4 +1678,681 @@ document.addEventListener("DOMContentLoaded", function () {
             supportPopup.style.display = "none";
         }
     });
+
+    // Mini Games
+    const modal = document.getElementById('modal');
+    const closeModal = () => modal.style.display = 'none';
+    
+    document.querySelector('.modal-close').onclick = closeModal;
+    document.getElementById('modal-confirm-btn').onclick = closeModal;
+    modal.onclick = e => e.target === modal && closeModal();
+    document.onkeydown = e => e.key === 'Escape' && modal.style.display === 'flex' && closeModal();
+
+
+    const leftImages = [
+        "image/Left/Dofe Bronze.png",
+        "image/Left/Dofe Gold.png",
+        "image/Left/Dofe Silver.png",
+        "image/Left/Founder.png",
+        "image/Left/Gold.png",
+        "image/Left/Junior One-Year.png",
+        "image/Left/Link Badge.png",
+        "image/Left/NCO Proficiency Star.png",
+        "image/Left/One-Year.png",
+        "image/Left/Presidents.png",
+        "image/Left/Scholastic Bronze.png",
+        "image/Left/Scholastic Gold.png",
+        "image/Left/Scholastic Silver.png",
+        "image/Left/Three-Years.png",
+    ];
+
+    const rightImages = [
+        "image/Right/Arts.png",
+        "image/Right/Athletics.png",
+        "image/Right/Bandsmans.png",
+        "image/Right/Buglers.png",
+        "image/Right/Camping.png",
+        "image/Right/Christian Education.png",
+        "image/Right/Citizenship.png",
+        "image/Right/Communication.png",
+        "image/Right/Community Service.png",
+        "image/Right/Computer Knowledge.png",
+        "image/Right/Crafts.png",
+        "image/Right/Drill.png",
+        "image/Right/Drummers.png",
+        "image/Right/Environmental Conservation.png",
+        "image/Right/Expedition.png",
+        "image/Right/Financial Stewardship.png",
+        "image/Right/Fireman.png",
+        "image/Right/First Aid.png",
+        "image/Right/Gymnastics.png",
+        "image/Right/Hobbies.png",
+        "image/Right/International Relations.png",
+        "image/Right/Life Saving.png",
+        "image/Right/Martial Art.png",
+        "image/Right/Nature Awareness.png",
+        "image/Right/Physical Training.png",
+        "image/Right/Pipers.png",
+        "image/Right/Recruitment.png",
+        "image/Right/Safety.png",
+        "image/Right/Social Entreprenuership.png",
+        "image/Right/Sports.png",
+        "image/Right/Sustainability.png",
+        "image/Right/Swimming.png",
+        "image/Right/Target.png",
+        "image/Right/Water Adventure.png",
+    ];
+
+    //GAME LEVELS CONFIGURATION
+    const gameLevels = {
+        matching: {
+            1: { pairs: 8, cols: 4, rows: 4},
+            2: { pairs: 15, cols: 5, rows: 5},
+            3: { pairs: 18, cols: 6, rows: 6}
+        },
+        solitaire: {
+            1: { uniqueTiles: 10, copies: 3, stackLimit: 8 },
+            2: { uniqueTiles: 15, copies: 3, stackLimit: 8 },
+            3: { uniqueTiles: 20, copies: 3, stackLimit: 8 }
+        }
+    };
+
+    let currentMatchingLevel = 1;
+    let currentSolitaireLevel = 1;
+
+    //MODAL FUNCTIONS
+    function showModal(type) {
+        const modal = document.getElementById("modal");
+        const modalTitle = document.getElementById("modal-title");
+        const modalText = document.getElementById("modal-text");
+        const modalImage = document.getElementById("modal-image");
+
+        if (type === "matching-rules") {
+            modalTitle.textContent = "Matching Pairs Rules";
+            modalImage.src = "image/Right/Matching Pairs.png";
+            modalText.innerHTML = `
+                <h3>How to Play:</h3>
+                <ol>
+                    <li>Click on any card to flip it over and reveal the badge.</li>
+                    <li>Then click on a second card to try to find its match.</li>
+                    <li>If the badges match, they will stay flipped over.</li>
+                    <li>If they don't match, both cards will flip back face down.</li>
+                    <li>Continue until all pairs have been matched.</li>
+                </ol>
+                <h3>Game Features:</h3>
+                <ul>
+                    <li>3 difficulty levels with increasing number of pairs.</li>
+                    <li>Timer tracks your completion time.</li>
+                    <li>Move counter shows how many attempts you've made.</li>
+                </ul>
+            `;
+        } else if (type === "solitaire-rules") {
+            modalTitle.textContent = "Triplix Match Rules";
+            modalImage.src = "image/Right/Triplix Match.png";
+            modalText.innerHTML = `
+                <h3>How to Play:</h3>
+                <ol>
+                    <li>Click on a visible tile to move it to the stack area below.</li>
+                    <li>When 3 identical tiles are in the stack, they will automatically clear.</li>
+                    <li>If the stack reaches the limit before you clear them, you lose.</li>
+                    <li>Clear all tiles from the board to win the game!</li>
+                </ol>
+                <h3>Special Features:</h3>
+                <ul>
+                    <li><strong>3 Difficulty Levels:</strong> More tiles and higher stack limit at higher levels.</li>
+                    <li><strong>Overlapping Tiles:</strong> Only the topmost tile in each stack can be clicked.</li>
+                    <li><strong>Reshuffle Button (3 uses):</strong> Rearranges all remaining tiles when you get stuck.</li>
+                    <li><strong>Undo Button (3 uses):</strong> Returns the last moved tile back to the board.</li>
+                </ul>
+            `;
+        }
+
+        modal.style.display = "flex";
+    }
+
+    function hideModal() {
+        document.getElementById("modal").style.display = "none";
+    }
+
+    function showGameOverModal(title, message, isWin) {
+        const modal = document.getElementById("game-over-modal");
+        const modalTitle = document.getElementById("game-over-title");
+        const modalText = document.getElementById("game-over-text");
+        const modalImage = document.getElementById("game-over-image");
+
+        modalTitle.textContent = title;
+        modalText.textContent = message;
+        modalImage.src = isWin ? "image/Right/Matching Pairs.png" : "image/Right/Matching Pairs.png";
+        modal.style.display = "flex";
+    }
+
+    function hideGameOverModal() {
+        document.getElementById("game-over-modal").style.display = "none";
+        initializeMatchingGame();
+        initializeSolitaireGame();
+    }
+
+    //MATCHING PAIRS GAME
+    const matchingGameBoard = document.getElementById("matching-game-board");
+    const matchingMovesDisplay = document.getElementById("matching-moves");
+    const matchingTimerDisplay = document.getElementById("matching-timer");
+    const startMatchingGameButton = document.getElementById("startMatchingGame");
+    const restartMatchingGameButton = document.getElementById("restartMatchingGame");
+    const matchingLevelButtons = document.querySelectorAll('.game-box:nth-child(1) .level-button');
+
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let currentImages = [];
+    let matchingMoves = 0;
+    let matchingTimer = 0;
+    let matchingTimerInterval;
+
+    matchingLevelButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            matchingLevelButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentMatchingLevel = parseInt(button.dataset.level);
+            initializeMatchingGame();
+        });
+    });
+
+    function initializeMatchingGame() {
+        clearInterval(matchingTimerInterval);
+        matchingMoves = 0;
+        matchingTimer = 0;
+        flippedCards = [];
+        matchedPairs = 0;
+        
+        matchingMovesDisplay.textContent = "Moves: 0";
+        matchingTimerDisplay.textContent = "Time: 0s";
+        
+        const levelConfig = gameLevels.matching[currentMatchingLevel];
+        currentImages = getRandomImages(levelConfig.pairs);
+        const cards = [...currentImages, ...currentImages];
+        
+        matchingGameBoard.innerHTML = "";
+        matchingGameBoard.style.gridTemplateColumns = `repeat(${levelConfig.cols}, 1fr)`;
+        matchingGameBoard.style.gridTemplateRows = `repeat(${levelConfig.rows}, 1fr)`;
+
+        cards.sort(() => Math.random() - 0.5).forEach((card) => {
+            const cardElement = document.createElement("div");
+            cardElement.classList.add("card");
+            cardElement.dataset.value = card;
+            cardElement.style.width = `${levelConfig.cardSize}px`;
+            cardElement.style.height = `${levelConfig.cardSize}px`;
+            cardElement.innerHTML = `
+                <div class="front"><img src="${card}" alt="Card Image"></div>
+                <div class="back"></div>
+            `;
+            cardElement.addEventListener("click", flipCard);
+            matchingGameBoard.appendChild(cardElement);
+        });
+        
+        matchingGameBoard.classList.add("disabled-game");
+        startMatchingGameButton.textContent = "Start Game";
+        startMatchingGameButton.disabled = false;
+        restartMatchingGameButton.disabled = true;
+        restartMatchingGameButton.classList.add("disabled-button"); // Add visual disabled state
+
+    }
+
+    function startMatchingGame() {
+        matchingGameBoard.classList.remove("disabled-game");
+        startMatchingGameButton.textContent = "Playing...";
+        startMatchingGameButton.disabled = true;
+        restartMatchingGameButton.disabled = false;
+        restartMatchingGameButton.classList.remove("disabled-button"); // Remove visual disabled state
+
+        
+        matchingTimerInterval = setInterval(() => {
+            matchingTimer++;
+            matchingTimerDisplay.textContent = `Time: ${matchingTimer}s`;
+        }, 1000);
+    }
+
+    function flipCard() {
+        if (flippedCards.length >= 2 || this.classList.contains("flipped")) return;
+        
+        this.classList.add("flipped");
+        flippedCards.push(this);
+        
+        if (flippedCards.length === 2) {
+            matchingMoves++;
+            matchingMovesDisplay.textContent = `Moves: ${matchingMoves}`;
+            setTimeout(checkMatch, 500);
+        }
+    }
+
+    function checkMatch() {
+        const [card1, card2] = flippedCards;
+        
+        if (card1.dataset.value === card2.dataset.value) {
+            card1.classList.add("matched");
+            card2.classList.add("matched");
+            matchedPairs++;
+            
+            if (matchedPairs === currentImages.length) {
+                clearInterval(matchingTimerInterval);
+                setTimeout(() => {
+                    showGameOverModal(
+                        "Congratulations!", 
+                        `You won in ${matchingMoves} moves and ${matchingTimer} seconds!`, 
+                        true
+                    );
+                }, 500);
+            }
+        } else {
+            card1.classList.remove("flipped");
+            card2.classList.remove("flipped");
+        }
+        
+        flippedCards = [];
+    }
+
+    //TRIPLIX MATCH GAME
+    const solitaireGameBoard = document.getElementById("solitaire-game-board");
+    const stackArea = document.getElementById("stack");
+    const solitaireStackDisplay = document.getElementById("solitaire-stack");
+    const solitaireTimerDisplay = document.getElementById("solitaire-timer");
+    const startSolitaireGameButton = document.getElementById("startSolitaireGame");
+    const restartSolitaireGameButton = document.getElementById("restartSolitaireGame");
+    const reshuffleButton = document.getElementById("reshuffleButton");
+    const undoButton = document.getElementById("undoButton");
+    const solitaireLevelButtons = document.querySelectorAll('.game-box:nth-child(2) .level-button');
+
+    let solitaireTiles = [];
+    let stack = [];
+    let solitaireTimer = 0;
+    let solitaireTimerInterval;
+    let undoStack = [];
+    let undoCount = 3;
+    let reshuffleCount = 3;
+
+    //Level selection for Triplix Match
+    solitaireLevelButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            solitaireLevelButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentSolitaireLevel = parseInt(button.dataset.level);
+            initializeSolitaireGame();
+        });
+    });
+
+    function initializeSolitaireGame() {
+        clearInterval(solitaireTimerInterval);
+        solitaireTimer = 0;
+        stack = [];
+        undoStack = [];
+        undoCount = 3;
+        reshuffleCount = 3;
+        
+        const levelConfig = gameLevels.solitaire[currentSolitaireLevel];
+        solitaireStackDisplay.textContent = `Stack: 0/${levelConfig.stackLimit}`;
+        solitaireTimerDisplay.textContent = "Time: 0s";
+        undoButton.textContent = `Undo (${undoCount})`;
+        reshuffleButton.textContent = `Reshuffle (${reshuffleCount})`;
+        
+        solitaireTiles = createTiles(levelConfig.uniqueTiles, levelConfig.copies);
+        solitaireGameBoard.style.minHeight = "300px";
+        solitaireGameBoard.style.position = "relative";
+        
+        renderTiles();
+        renderStack();
+        
+        solitaireGameBoard.classList.add("disabled-game");
+        startSolitaireGameButton.textContent = "Start Game";
+        startSolitaireGameButton.disabled = false;
+        restartSolitaireGameButton.disabled = true;
+        reshuffleButton.disabled = true;
+        undoButton.disabled = true;
+    }
+
+    function startSolitaireGame() {
+        solitaireGameBoard.classList.remove("disabled-game");
+        startSolitaireGameButton.textContent = "Playing...";
+        startSolitaireGameButton.disabled = true;
+        restartSolitaireGameButton.disabled = false;
+        reshuffleButton.disabled = false;
+        undoButton.disabled = false;
+        
+        solitaireTimerInterval = setInterval(() => {
+            solitaireTimer++;
+            solitaireTimerDisplay.textContent = `Time: ${solitaireTimer}s`;
+        }, 1000);
+    }
+
+    function createTiles(uniqueCount, copies) {
+        const allValidImages = [...new Set([
+            ...leftImages.filter(img => img && typeof img === 'string'),
+            ...rightImages.filter(img => img && typeof img === 'string')
+        ])];
+
+        if (allValidImages.length === 0) {
+            console.error("Error: No valid images found in leftImages or rightImages");
+            return [];
+        }
+
+        const uniqueImages = [];
+        const availableImages = [...allValidImages];
+        
+        while (uniqueImages.length < uniqueCount && availableImages.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableImages.length);
+            uniqueImages.push(availableImages.splice(randomIndex, 1)[0]);
+        }
+
+        const tiles = [];
+        uniqueImages.forEach(image => {
+            for (let i = 0; i < copies; i++) {
+                tiles.push(image);
+            }
+        });
+
+        return shuffleArray(tiles);
+    }
+
+    function shuffleArray(array) {
+        const newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
+    }
+
+    function renderTiles() {
+        solitaireGameBoard.innerHTML = "";
+        const tileSize = 80;
+        const boardWidth = solitaireGameBoard.clientWidth - tileSize;
+        const boardHeight = solitaireGameBoard.clientHeight - tileSize;
+        
+        solitaireTiles.forEach((tile, index) => {
+            if (!tile) return;
+            
+            const tileElement = document.createElement("div");
+            tileElement.classList.add("tile");
+            
+            const encodedImageUrl = encodeURI(tile);
+            tileElement.style.backgroundImage = `url('${encodedImageUrl}')`;
+            tileElement.dataset.value = tile;
+            
+            const x = Math.max(0, Math.min(boardWidth, Math.random() * boardWidth));
+            const y = Math.max(0, Math.min(boardHeight, Math.random() * boardHeight));
+            
+            tileElement.style.left = `${x}px`;
+            tileElement.style.top = `${y}px`;
+            tileElement.style.width = `${tileSize}px`;
+            tileElement.style.height = `${tileSize}px`;
+            tileElement.style.zIndex = index;
+            
+            tileElement.addEventListener("click", handleTileClick);
+            solitaireGameBoard.appendChild(tileElement);
+        });
+    }
+
+    function handleTileClick() {
+        if (solitaireGameBoard.classList.contains("disabled-game")) return;
+        
+        const clickedX = parseInt(this.style.left);
+        const clickedY = parseInt(this.style.top);
+        const tileSize = 80;
+        
+        const tilesInPosition = Array.from(document.querySelectorAll(".tile:not(.hidden)")).filter(t => {
+            const tX = parseInt(t.style.left);
+            const tY = parseInt(t.style.top);
+            return Math.abs(tX - clickedX) < tileSize/2 && 
+                   Math.abs(tY - clickedY) < tileSize/2;
+        });
+        
+        if (tilesInPosition.length === 0) return;
+        
+        tilesInPosition.sort((a, b) => 
+            parseInt(b.style.zIndex) - parseInt(a.style.zIndex)
+        );
+        
+        const topmostTile = tilesInPosition[0];
+        
+        if (this === topmostTile) {
+            moveToStack(this);
+        } else {
+            this.style.boxShadow = "0 0 10px 3px rgba(255, 0, 0, 0.8)";
+            setTimeout(() => {
+                this.style.boxShadow = "";
+            }, 300);
+        }
+    }
+
+    function moveToStack(tileElement) {
+        const tileValue = tileElement.dataset.value;
+        const tileIndex = solitaireTiles.indexOf(tileValue);
+        const levelConfig = gameLevels.solitaire[currentSolitaireLevel];
+        
+        if (tileIndex === -1) return; 
+        
+        undoStack.push({
+            tiles: [...solitaireTiles],
+            stack: [...stack],
+            action: "move",
+            tile: tileValue,
+            position: {
+                x: tileElement.style.left,
+                y: tileElement.style.top,
+                zIndex: tileElement.style.zIndex,
+                index: tileIndex
+            }
+        });
+        
+        solitaireTiles.splice(tileIndex, 1);
+        
+        tileElement.classList.add("hidden");
+        
+        stack.push(tileValue);
+        solitaireStackDisplay.textContent = `Stack: ${stack.length}/${levelConfig.stackLimit}`;
+        renderStack();
+        
+        checkStack();
+        
+        if (stack.length >= levelConfig.stackLimit) {
+            clearInterval(solitaireTimerInterval);
+            setTimeout(() => showGameOverModal("Game Over!", "Your stack got too full! Try again!", false), 500);
+        }
+    }
+
+    function reshuffleTiles() {
+        if (reshuffleCount <= 0) return;
+        
+        reshuffleCount--;
+        
+        undoStack.push({
+            tiles: [...solitaireTiles],
+            stack: [...stack],
+            action: "reshuffle"
+        });
+
+        const visibleTiles = Array.from(document.querySelectorAll('.tile:not(.hidden)'));
+        
+        visibleTiles.forEach(tile => {
+            const x = Math.max(0, Math.min(
+                solitaireGameBoard.clientWidth - 80, 
+                Math.random() * (solitaireGameBoard.clientWidth - 80)
+            ));
+            const y = Math.max(0, Math.min(
+                solitaireGameBoard.clientHeight - 80, 
+                Math.random() * (solitaireGameBoard.clientHeight - 80)
+            ));
+            tile.style.left = `${x}px`;
+            tile.style.top = `${y}px`;
+        });
+        
+        reshuffleButton.textContent = `Reshuffle (${reshuffleCount})`;
+        
+        if (reshuffleCount <= 0) {
+            reshuffleButton.disabled = true;
+        }
+    }
+
+    function undoMove() {
+        if (undoStack.length === 0 || undoCount <= 0) return;
+        
+        const lastAction = undoStack[undoStack.length - 1]; 
+        const levelConfig = gameLevels.solitaire[currentSolitaireLevel];
+        
+        if (lastAction.action === "reshuffle" && undoStack.length > 1) {
+            for (let i = undoStack.length - 2; i >= 0; i--) {
+                if (undoStack[i].action === "move") {
+                    undoStack.splice(i, 1); 
+                    undoCount--;
+                    
+                    const movedTile = stack.pop();
+                    
+                    const hiddenTiles = Array.from(document.querySelectorAll(`.tile.hidden[data-value="${movedTile}"]`));
+                    if (hiddenTiles.length > 0) {
+                        const tileToRestore = hiddenTiles[hiddenTiles.length - 1];
+                        tileToRestore.classList.remove('hidden');
+                        
+                        const tileSize = 80;
+                        const boardWidth = solitaireGameBoard.clientWidth - tileSize;
+                        const boardHeight = solitaireGameBoard.clientHeight - tileSize;
+                        
+                        tileToRestore.style.left = `${Math.max(0, Math.random() * boardWidth)}px`;
+                        tileToRestore.style.top = `${Math.max(0, Math.random() * boardHeight)}px`;
+                        tileToRestore.style.zIndex = solitaireTiles.length;
+                    }
+                    
+                    solitaireTiles.push(movedTile);
+                    renderStack();
+                    
+                    updateUndoUI();
+                    solitaireStackDisplay.textContent = `Stack: ${stack.length}/${levelConfig.stackLimit}`;
+                    return;
+                }
+            }
+        }
+        
+        const actionToUndo = undoStack.pop();
+        undoCount--;
+        
+        if (actionToUndo.action === "move") {
+            const movedTile = stack.pop();
+            
+            const hiddenTiles = Array.from(document.querySelectorAll(`.tile.hidden[data-value="${movedTile}"]`));
+            if (hiddenTiles.length > 0) {
+                const tileToRestore = hiddenTiles[hiddenTiles.length - 1];
+                tileToRestore.classList.remove('hidden');
+                
+                const hasReshuffled = undoStack.some(a => a.action === "reshuffle");
+                if (hasReshuffled) {
+                    const tileSize = 80;
+                    const boardWidth = solitaireGameBoard.clientWidth - tileSize;
+                    const boardHeight = solitaireGameBoard.clientHeight - tileSize;
+                    
+                    tileToRestore.style.left = `${Math.max(0, Math.random() * boardWidth)}px`;
+                    tileToRestore.style.top = `${Math.max(0, Math.random() * boardHeight)}px`;
+                }
+            }
+            
+            solitaireTiles.push(movedTile);
+            renderStack();
+            
+        } else if (actionToUndo.action === "reshuffle") {
+            return; 
+        }
+        
+        updateUndoUI();
+        solitaireStackDisplay.textContent = `Stack: ${stack.length}/${levelConfig.stackLimit}`;
+    }
+
+    function updateUndoUI() {
+        undoButton.textContent = `Undo (${undoCount})`;
+        undoButton.disabled = undoCount <= 0;
+        reshuffleButton.textContent = `Reshuffle (${reshuffleCount})`;
+        reshuffleButton.disabled = reshuffleCount <= 0;
+    }
+
+    function renderStack() {
+        stackArea.innerHTML = "";
+        
+        const tileCounts = {};
+        stack.forEach(tile => {
+            tileCounts[tile] = (tileCounts[tile] || 0) + 1;
+        });
+
+        stack.forEach((tile, index) => {
+            const stackCard = document.createElement("div");
+            stackCard.classList.add("stack-card");
+            
+            const encodedImageUrl = encodeURI(tile);
+            stackCard.style.backgroundImage = `url('${encodedImageUrl}')`;
+            
+            if (tileCounts[tile] >= 3) {
+                stackCard.classList.add("match-candidate");
+            }
+            
+            stackCard.style.backgroundSize = "contain";
+            stackCard.style.backgroundRepeat = "no-repeat";
+            stackCard.style.backgroundPosition = "center";
+            
+            stackArea.appendChild(stackCard);
+        });
+    }
+
+    function checkStack() {
+        const tileCounts = {};
+        stack.forEach(tile => {
+            tileCounts[tile] = (tileCounts[tile] || 0) + 1;
+        });
+
+        for (const [tile, count] of Object.entries(tileCounts)) {
+            if (count >= 3) {
+                let removed = 0;
+                for (let i = stack.length - 1; i >= 0 && removed < 3; i--) {
+                    if (stack[i] === tile) {
+                        stack.splice(i, 1);
+                        removed++;
+                    }
+                }
+                
+                const levelConfig = gameLevels.solitaire[currentSolitaireLevel];
+                solitaireStackDisplay.textContent = `Stack: ${stack.length}/${levelConfig.stackLimit}`;
+                renderStack();
+                
+                const matchSound = new Audio('match-sound.mp3');
+                matchSound.play().catch(e => console.log("Audio play failed:", e));
+            }
+        }
+
+        if (solitaireTiles.length === 0 && stack.length === 0) {
+            clearInterval(solitaireTimerInterval);
+            setTimeout(() => showGameOverModal("You Win!", `You cleared all tiles in ${solitaireTimer} seconds!`, true), 500);
+        }
+    }
+
+    //HELPER FUNCTIONS
+    function getRandomImages(count) {
+        const allImages = [...leftImages, ...rightImages];
+        return [...allImages].sort(() => Math.random() - 0.5).slice(0, count);
+    }
+
+    document.querySelectorAll(".game-info-icon").forEach(icon => {
+        icon.addEventListener("click", (e) => {
+            const modalType = e.target.getAttribute("data-modal");
+            showModal(modalType);
+        });
+    });
+
+    document.querySelectorAll(".modal-close").forEach(btn => {
+        btn.addEventListener("click", hideModal);
+    });
+
+    document.querySelector("#game-over-modal .modal-close").addEventListener("click", hideGameOverModal);
+    document.querySelector("#game-over-modal button").addEventListener("click", hideGameOverModal);
+
+    startMatchingGameButton.addEventListener("click", startMatchingGame);
+    restartMatchingGameButton.addEventListener("click", initializeMatchingGame);
+    startSolitaireGameButton.addEventListener("click", startSolitaireGame);
+    restartSolitaireGameButton.addEventListener("click", initializeSolitaireGame);
+    reshuffleButton.addEventListener("click", reshuffleTiles);
+    undoButton.addEventListener("click", undoMove);
+
+    initializeMatchingGame();
+    initializeSolitaireGame();
 });
