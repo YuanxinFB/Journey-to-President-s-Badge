@@ -1680,14 +1680,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Mini Games
-    const modal = document.getElementById('modal');
-    const closeModal = () => modal.style.display = 'none';
-    
-    document.querySelector('.modal-close').onclick = closeModal;
-    document.getElementById('modal-confirm-btn').onclick = closeModal;
-    modal.onclick = e => e.target === modal && closeModal();
-    document.onkeydown = e => e.key === 'Escape' && modal.style.display === 'flex' && closeModal();
-
+    (function() {
+        const gameModal = document.getElementById('modal');
+        if (!gameModal) return; 
+        
+        const closeGameModal = () => {
+            gameModal.style.display = 'none';
+        };
+        
+        const modalCloseBtn = gameModal.querySelector('.modal-close');
+        const confirmBtn = gameModal.querySelector('#modal-confirm-btn');
+        
+        if (modalCloseBtn) modalCloseBtn.onclick = closeGameModal;
+        if (confirmBtn) confirmBtn.onclick = closeGameModal;
+        
+        gameModal.onclick = (e) => {
+            if (e.target === gameModal) {
+                closeGameModal();
+            }
+        };
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && gameModal.style.display === 'flex') {
+                closeGameModal();
+            }
+        });
+    })();
 
     const leftImages = [
         "image/Left/Dofe Bronze.png",
