@@ -630,16 +630,16 @@ section.main {
 @media (max-width: 480px) {
     .left-box img[src="image/Right/Safety.png"],
     .left-box img[src="image/Right/Financial Stewardship.png"] { 
-        width: 60px;
-        height: 60px;
-        padding: 0 2px 3px 0;
+        width: 55px;
+        height: 55px;
+        padding: 0 5px 0 0; 
     }
 
     .left-box img[src="image/Right/Drill.png"],
     .left-box img[src="image/Right/Camping.png"] { 
-        width: 60px;
-        height: 60px;
-        padding: 3px 2px 0 0; 
+        width: 55px;
+        height: 55px;
+        padding: 5px 5px 0 0; 
     }
 }
 
@@ -724,14 +724,16 @@ section.main {
         width: 100%; 
     }
 
-    .left-box img, .right-box img {
+    .right-box img {
         width: 60px; 
         height: 60px;
     }
 
     .left-box img {
+    width: 55px; 
+    height: 55px;
     padding: 2px 5px 0 0;
-    margin: 5px 8px 5px 5px;
+    margin: 5px 8px 5px 8px;
     }
 
     .red-cloths {
