@@ -1585,7 +1585,7 @@ function applyRankCSS() {
         'Lance Corporal': { 
             squareHeight: 170, 
             chevrons: 1,
-            chevronWidth: '47.7%',
+            chevronWidth: '47.4%',
             chevronHeight: 25,
             spacing: 35,
             margin: 10,
@@ -1596,7 +1596,7 @@ function applyRankCSS() {
         'Corporal': { 
             squareHeight: 205, 
             chevrons: 2,
-            chevronWidth: '47.7%',
+            chevronWidth: '47.4%',
             chevronHeight: 25,
             spacing: 35,
             margin: 10,
@@ -1607,7 +1607,7 @@ function applyRankCSS() {
         'Sergeant': { 
             squareHeight: 235,
             chevrons: 3,
-            chevronWidth: '47.7%',
+            chevronWidth: '47.4%',
             chevronHeight: 25,
             spacing: 35,
             margin: 10,
@@ -1618,7 +1618,7 @@ function applyRankCSS() {
         'Staff Sergeant': { 
             squareHeight: 270, 
             chevrons: 4, 
-            chevronWidth: '47.7%', 
+            chevronWidth: '47.4%', 
             chevronHeight: 25, 
             spacing: 35,
             margin: 10, 
