@@ -1,6 +1,22 @@
 document.addEventListener('DOMContentLoaded', function () {
     side_baropen();
 
+    const upButton = document.querySelector('.fa-up-long');
+    window.addEventListener('scroll', function () {
+        if (window.scrollY > 300) {
+            upButton.classList.add('show');
+        } else {
+            upButton.classList.remove('show');
+        }
+    });
+
+    upButton.addEventListener('click', function () {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
     document.getElementById('toggleSidebar').addEventListener('click', toggleSidebar);
 
     const subMenus = document.querySelectorAll('.sub-menu, .sub-menu1, .sub-menu2, .sub-menu3, .sub-menu4, .sub-menu-right1, .sub-menu-right2, .sub-menu-right3');
@@ -712,34 +728,41 @@ $(document).ready(function () {
         });
     
         if (rankSelected) {
+            const isMobile = window.innerWidth <= 768;
+            
             if (badgeCount <= 10) {
                 leftBox.style.height = '350px';
             } else if (badgeCount >= 11 && badgeCount <= 15) {
                 leftBox.style.height = '400px';
-                progressbox.style.marginTop = '50px';
-
             } else if (badgeCount >= 16 && badgeCount <= 20) {
                 leftBox.style.height = '500px';
-                progressbox.style.marginTop = '130px';
-
             } else if (badgeCount >= 21 && badgeCount <= 25) {
                 leftBox.style.height = '600px';
-                progressbox.style.marginTop = '210px';
-
             } else if (badgeCount >= 26 && badgeCount <= 30) {
                 leftBox.style.height = '700px';
-                progressbox.style.marginTop = '290px';
-
             } else {
                 leftBox.style.height = '760px';
-                progressbox.style.marginTop = '290px';
+            }
+
+            if (!isMobile) {
+                if (badgeCount >= 11 && badgeCount <= 15) {
+                    progressbox.style.marginTop = '50px';
+                } else if (badgeCount >= 16 && badgeCount <= 20) {
+                    progressbox.style.marginTop = '130px';
+                } else if (badgeCount >= 21 && badgeCount <= 25) {
+                    progressbox.style.marginTop = '210px';
+                } else if (badgeCount >= 26) {
+                    progressbox.style.marginTop = '290px';
+                }
+            } else {
+                progressbox.style.marginTop = '0px';
             }
         } else {
-            leftBox.style.height = '760px'; 
-        } 
+            leftBox.style.height = '760px';
+            progressbox.style.marginTop = '0px';
+        }
 
         applyRankCSS();
-    
         renderRightBox(badgesData, dofeBadgeData);
         updateAllProgress();
     }
@@ -1525,9 +1548,14 @@ function applyRankCSS() {
             '.right-chevron-sideright2', '.right-chevron-sideleft2',
             '.right-chevron-sideright3', '.right-chevron-sideleft3',
             '.right-chevron-sideright4', '.right-chevron-sideleft4'
-        ].map(selector => document.querySelector(selector))
+        ].map(selector => document.querySelector(selector)),
+        rightBox: document.querySelector('.right-box'),
+        arm1: document.querySelector('.arm1')
     };
 
+    // Get responsive dimensions
+    const isMobile = window.innerWidth <= 768;
+    const leftBoxWidth = parseInt(window.getComputedStyle(elements.leftBox).width, 10);
     const leftBoxHeight = parseInt(window.getComputedStyle(elements.leftBox).height, 9);
 
     const checkedCheckbox = document.querySelector('.rank-checkbox:checked');
@@ -1535,29 +1563,95 @@ function applyRankCSS() {
         elements.square.style.display = "none";
         elements.triangle.style.display = "none";
         elements.chevrons.forEach(chevron => chevron.style.display = "none");
+        if (isMobile) {
+            elements.leftBox.style.marginBottom = '';
+            elements.rightBox.style.marginTop = '';
+        }
         return;
     }
 
     const rank = checkedCheckbox.closest('.sub-item').querySelector('.sub-box-text').textContent.trim();
-    const rankStyles = {
+    
+    // Desktop
+    const desktopStyles = {
         'Lance Corporal': { squareHeight: 165, chevrons: 1 },
         'Corporal': { squareHeight: 215, chevrons: 2 },
         'Sergeant': { squareHeight: 265, chevrons: 3 },
         'Staff Sergeant': { squareHeight: 315, chevrons: 4 }
     };
 
-    if (rankStyles[rank]) {
-        const { squareHeight, chevrons } = rankStyles[rank];
+    // Mobile
+    const mobileStyles = {
+        'Lance Corporal': { 
+            squareHeight: 170, 
+            chevrons: 1,
+            chevronWidth: '48%',
+            chevronHeight: 25,
+            spacing: 35,
+            margin: 10,
+            triangleHeight: 50,
+            bottomMargin: 250,
+            moveUpAdjustment: -65
+        },
+        'Corporal': { 
+            squareHeight: 205, 
+            chevrons: 2,
+            chevronWidth: '48%',
+            chevronHeight: 25,
+            spacing: 35,
+            margin: 10,
+            triangleHeight: 50,
+            bottomMargin: 330,
+            moveUpAdjustment: -100
+        },
+        'Sergeant': { 
+            squareHeight: 235,
+            chevrons: 3,
+            chevronWidth: '48%',
+            chevronHeight: 25,
+            spacing: 35,
+            margin: 10,
+            triangleHeight: 50,
+            bottomMargin: 390,
+            moveUpAdjustment: -135
+        },
+        'Staff Sergeant': { 
+            squareHeight: 270, 
+            chevrons: 4, 
+            chevronWidth: '48%', 
+            chevronHeight: 25, 
+            spacing: 35,
+            margin: 10, 
+            triangleHeight: 50,
+            bottomMargin: 460,
+            moveUpAdjustment: -170
+        }
+    };
+
+    if (isMobile) {
+        const { 
+            squareHeight, 
+            chevrons, 
+            chevronWidth, 
+            chevronHeight, 
+            spacing, 
+            margin, 
+            triangleHeight, 
+            bottomMargin,
+            moveUpAdjustment 
+        } = mobileStyles[rank];
+        
+        const halfWidth = leftBoxWidth / 2;
 
         elements.square.style.cssText = `
             display: block;
-            width: 550px;
+            width: ${leftBoxWidth}px;
             height: ${squareHeight}px;
             background: #2B2A2F; 
-            border-left: 275px solid transparent; 
-            border-right: 275px solid transparent; 
+            border-left: ${halfWidth}px solid transparent; 
+            border-right: ${halfWidth}px solid transparent; 
             position: absolute;
-            top: ${leftBoxHeight}px; /* Align below left-box */
+            top: ${leftBoxHeight}px;
             z-index: -1;
         `;
 
@@ -1565,65 +1659,138 @@ function applyRankCSS() {
             display: block;
             width: 0;
             height: 0;
-            border-left: 275px solid transparent; 
-            border-right: 275px solid transparent; 
-            border-top: 95px solid #2B2A2F; 
+            border-left: ${halfWidth}px solid transparent; 
+            border-right: ${halfWidth}px solid transparent; 
+            border-top: ${triangleHeight}px solid #2B2A2F; 
             position: absolute;
-            top: ${leftBoxHeight + squareHeight}px; /* Align below square */
+            top: ${leftBoxHeight + squareHeight}px;
+            z-index: 1;
+        `;
+
+        elements.chevrons.forEach(chevron => chevron.style.display = "none");
+
+    for (let i = 1; i <= chevrons; i++) {
+        const chevronOffset = leftBoxHeight + squareHeight + triangleHeight + ((i - 1) * spacing) + moveUpAdjustment;
+        
+        document.querySelector(`.right-chevron-sideright${i}`).style.cssText = `
+            display: block;
+            height: ${chevronHeight}px;
+            width: ${chevronWidth};
+            transform: skew(0deg, 15deg);
+            background: white;
+            left: 0;
+            margin-left: ${margin}px;
+            position: absolute;
+            top: ${chevronOffset}px;
+            z-index: 10;
+        `;
+        
+        document.querySelector(`.right-chevron-sideleft${i}`).style.cssText = `
+            display: block;
+            height: ${chevronHeight}px;
+            width: ${chevronWidth};
+            transform: skew(0deg, -15deg);
+            background: white;
+            right: 0;
+            margin-right: ${margin}px;
+            position: absolute;
+            top: ${chevronOffset}px;
+            z-index: 10;
+        `;
+        }
+
+        const adjustedBottomMargin = bottomMargin + moveUpAdjustment;
+        elements.leftBox.style.marginBottom = `${Math.max(adjustedBottomMargin, 0)}px`;
+
+
+    } else {
+        //Desktop
+        const { squareHeight, chevrons } = desktopStyles[rank];
+        const halfWidth = leftBoxWidth / 2;
+        const chevronWidth = 260;
+        const chevronHeight = 40;
+        const chevronMargin = 15;
+        const chevronSpacing = 50;
+        const triangleHeight = 95;
+
+        elements.square.style.cssText = `
+            display: block;
+            width: ${leftBoxWidth}px;
+            height: ${squareHeight}px;
+            background: #2B2A2F; 
+            border-left: ${halfWidth}px solid transparent; 
+            border-right: ${halfWidth}px solid transparent; 
+            position: absolute;
+            top: ${leftBoxHeight}px;
+            z-index: -1;
+        `;
+
+        elements.triangle.style.cssText = `
+            display: block;
+            width: 0;
+            height: 0;
+            border-left: ${halfWidth}px solid transparent; 
+            border-right: ${halfWidth}px solid transparent; 
+            border-top: ${triangleHeight}px solid #2B2A2F; 
+            position: absolute;
+            top: ${leftBoxHeight + squareHeight}px;
             z-index: 1;
         `;
 
         elements.chevrons.forEach(chevron => chevron.style.display = "none");
 
         for (let i = 1; i <= chevrons; i++) {
-            let chevronOffset = leftBoxHeight + (i * 50) + 105; 
+            let chevronOffset = leftBoxHeight + (i * chevronSpacing) + 105;
         
             document.querySelector(`.right-chevron-sideright${i}`).style.cssText = `
                 display: block;
-                height: 40px;
-                width: 260px;
+                height: ${chevronHeight}px;
+                width: ${chevronWidth}px;
                 transform: skew(0deg, 20deg);
                 background: white;
                 left: 0;
-                margin-left: 15px;
+                margin-left: ${chevronMargin}px;
                 position: absolute;
-                top: ${chevronOffset}px; /* Move down */
+                top: ${chevronOffset}px;
                 z-index: 10;
             `;
         
             document.querySelector(`.right-chevron-sideleft${i}`).style.cssText = `
                 display: block;
-                height: 40px;
-                width: 260px;
+                height: ${chevronHeight}px;
+                width: ${chevronWidth}px;
                 transform: skew(0deg, -20deg);
                 background: white;
                 right: 0;
-                margin-right: 15px;
+                margin-right: ${chevronMargin}px;
                 position: absolute;
-                top: ${chevronOffset}px; /* Move down */
+                top: ${chevronOffset}px;
                 z-index: 10;
             `;
         }
+
+        elements.leftBox.style.marginBottom = '';
+        elements.rightBox.style.marginTop = '';
+        elements.arm1.style.marginTop = '';
     }
-
-    function updateRankDisplay() {
-        const rankDisplay = document.querySelector('.progress-rank'); 
-        const checkedCheckbox = document.querySelector('.sub-menu-right3 .rank-checkbox:checked'); 
-        
-        if (checkedCheckbox) {
-            const rank = checkedCheckbox.closest('.sub-item').querySelector('.sub-box-text').textContent.trim();
-            rankDisplay.textContent = rank;
-        } else {
-            rankDisplay.textContent = 'Private';
-        }
-    }
-
-    document.querySelectorAll('.sub-menu-right3 .rank-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', updateRankDisplay);
-    });
-
-    updateRankDisplay();
 }
+
+function updateRankDisplay() {
+    const rankDisplay = document.querySelector('.progress-rank'); 
+    const checkedCheckbox = document.querySelector('.sub-menu-right3 .rank-checkbox:checked'); 
+    
+    if (checkedCheckbox) {
+        const rank = checkedCheckbox.closest('.sub-item').querySelector('.sub-box-text').textContent.trim();
+        rankDisplay.textContent = rank;
+    } else {
+        rankDisplay.textContent = 'Private';
+    }
+}
+
+window.addEventListener('resize', () => {
+    applyRankCSS();
+    updateRankDisplay();
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     emailjs.init("jwnrle_0zxuB29XxH"); 
@@ -2011,7 +2178,7 @@ document.addEventListener("DOMContentLoaded", function () {
         reshuffleButton.textContent = `Reshuffle (${reshuffleCount})`;
         
         solitaireTiles = createTiles(levelConfig.uniqueTiles, levelConfig.copies);
-        solitaireGameBoard.style.minHeight = "300px";
+        solitaireGameBoard.style.minHeight = "400px";
         solitaireGameBoard.style.position = "relative";
         
         renderTiles();
