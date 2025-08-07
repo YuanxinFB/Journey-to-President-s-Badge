@@ -730,10 +730,12 @@ section.main {
     }
 
     .red-cloths {
-        width: 18%; 
-        height: auto; 
-        margin-right: 0;
-        margin-bottom: 10px;
+        display: inline-block; 
+        background-color: red;
+        border-radius: 50%;
+        width: 70px;
+        height: 70px;
+        position: relative;
     }
 
     .president-container-box img {
@@ -1203,14 +1205,6 @@ section.main {
         margin-left: 45%; 
         display: block;
         padding: 20px 0px 0px 0px; 
-    }
-
-    .red-cloths {
-        display: inline-block;
-        margin-bottom: 10px; 
-        margin-right: 0; 
-        width: 18%; 
-        height: 10%; 
     }
 
     .main-h1 {
