@@ -17,6 +17,84 @@
 </head> 
 
 <body>
+        <header class="header">
+        <div class="logo-container">
+            <img src="image/Left/Presidents.png" alt="BB Logo" class="logo">
+            <span class="logo-text">Journey to President's Badge</span>
+        </div>
+        
+        <nav class="desktop-nav">
+            <ul class="nav-list">
+                <li class="nav-item active">
+                    <a href="#badge-section">
+                        <i class="fa-solid fa-bullseye"></i>
+                        <span>Badge Section</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#awards-section">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>Awards Section</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#J2PB-section">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span>Journey to President's Award</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#games-section">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Mini Games</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="mobile-menu-toggle">
+            <button id="mobile-menu-btn" aria-label="Toggle menu">
+                <i class="fa-solid fa-list"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
+
+        <nav class="mobile-nav" id="mobile-nav">
+            <div class="mobile-nav-header">
+                <button id="closeMobileNav" class="close-nav-btn" aria-label="Close menu">
+                    <i class="fas fa-times"> Close</i>
+                </button>
+            </div>
+
+            <ul class="mobile-nav-list">
+                <li class="mobile-nav-item active">
+                    <a href="#badge-section">
+                        <i class="fa-solid fa-bullseye"></i>
+                        <span>Badge Section</span>
+                    </a>
+                </li>
+                <li class="mobile-nav-item active">
+                    <a href="#awards-section">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>Awards Section</span>
+                    </a>
+                </li>
+                <li class="mobile-nav-item active">
+                    <a href="#J2PB-section">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span>Journey to President's Award</span>
+                    </a>
+                </li>
+                <li class="mobile-nav-item active">
+                    <a href="#games-section">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Mini Games</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
     <div id="customAlertOverlay" class="custom-alert-overlay"></div>
     <div id="customAlert" class="custom-alert">
@@ -29,11 +107,9 @@
     <div id="screenshot-container">
         <a id="toggleSidebar" class="bars"><i class="fas fa-bars" title="Menu"></i></a>
 
-        <i id="goToTopBtn" class="fa-solid fa-up-long" title="Go to Top"></i>
-
         <div id="side-bar" class="side-bar">
             <div class="menu">
-                <div class="side_barclose" onclick="toggleSidebar()"> <button>Close &times;</button> </div>
+                <div class="side_barclose" onclick="toggleSidebar()"> <button class="side-bar-left-close">Close &times;</button> </div>
                 <h1 class="side-bar-title">Awards Section</h1>                        
 
                 <div class="side-bar-row-container">
@@ -651,8 +727,8 @@
             </div>
         </div>
 
-        <section class="main">
-            <h1 class="main-h1-badge">BADGES ARRANGEMENT</h1>
+        <section class="main" class="animate-fade" id="badge-section">
+            <h1 class="main-h1-badge" >BADGES ARRANGEMENT</h1>
         
             <div class="main-box">
                 <div class="arm">Right Arm</div>
@@ -692,60 +768,62 @@
             
             </div>
         </section>
-        
-        <div class="progress-box" id="selectedCount">
 
-            <div class="progress-box-h1">Summary</div>
-
-            <div class="progress-column">
-                <div class="progress-row">
-                    <div class="progress-cell">Compulsory</div>
-                    <div class="progress-cell progress-number">: 0 / 4&nbsp;&nbsp;</div>
+        <section id="awards-section" class="animate-fade">
+            <div class="progress-box" id="selectedCount">
+                <div class="progress-box-h1">Summary</div>
+                <div class="progress-column">
+                    <div class="progress-row">
+                        <div class="progress-cell">Compulsory</div>
+                        <div class="progress-cell progress-number">: 0 / 4&nbsp;&nbsp;</div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-cell">Interest (Group A)</div>
+                        <div class="progress-cell progress-number">: 0 / 12</div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-cell">Adventure (Group B)</div>
+                        <div class="progress-cell progress-number">: 0 / 3&nbsp;&nbsp;</div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-cell">Community (Group C)</div>
+                        <div class="progress-cell progress-number">: 0 / 9&nbsp;&nbsp;</div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-cell">Physical (Group D)</div>
+                        <div class="progress-cell progress-number">: 0 / 6&nbsp;&nbsp;</div>
+                    </div>
                 </div>
-                <div class="progress-row">
-                    <div class="progress-cell">Interest (Group A)</div>
-                    <div class="progress-cell progress-number">: 0 / 12</div>
-                </div>
-                <div class="progress-row">
-                    <div class="progress-cell">Adventure (Group B)</div>
-                    <div class="progress-cell progress-number">: 0 / 3&nbsp;&nbsp;</div>
-                </div>
-                <div class="progress-row">
-                    <div class="progress-cell">Community (Group C)</div>
-                    <div class="progress-cell progress-number">: 0 / 9&nbsp;&nbsp;</div>
-                </div>
-                <div class="progress-row">
-                    <div class="progress-cell">Physical (Group D)</div>
-                    <div class="progress-cell progress-number">: 0 / 6&nbsp;&nbsp;</div>
+                <div class="progress-column">
+                    <div class="progress-row">
+                        <div class="progress-cell">Service Awards</div>
+                        <div class="progress-cell progress-number">: 0 / 5&nbsp;&nbsp;</div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-cell">Special Awards</div>
+                        <div class="progress-cell progress-number">: 0 / 8&nbsp;&nbsp;</div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-cell">Total Basic Proficiency Award</div>
+                        <div class="progress-cell progress-number">: 0 / 34</div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-cell">Total Advanced Proficiency Award</div>
+                        <div class="progress-cell progress-number">: 0 / 33</div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-cell">Rank</div>
+                        <div class="progress-cell progress-rank">Private</div>
+                    </div>
                 </div>
             </div>
-            <div class="progress-column">
-                <div class="progress-row">
-                    <div class="progress-cell">Service Awards</div>
-                    <div class="progress-cell progress-number">: 0 / 5&nbsp;&nbsp;</div>
-                </div>
-                <div class="progress-row">
-                    <div class="progress-cell">Special Awards</div>
-                    <div class="progress-cell progress-number">: 0 / 8&nbsp;&nbsp;</div>
-                </div>
-                <div class="progress-row">
-                    <div class="progress-cell">Total Basic Proficiency Award</div>
-                    <div class="progress-cell progress-number">: 0 / 34</div>
-                </div>
-                <div class="progress-row">
-                    <div class="progress-cell">Total Advanced Proficiency Award</div>
-                    <div class="progress-cell progress-number">: 0 / 33</div>
-                </div>
-                <div class="progress-row">
-                    <div class="progress-cell">Rank</div>
-                    <div class="progress-cell progress-rank">Private</div>
-                </div>
-            </div>
-        </div>
+        </section>
 
-        <section class="main1">
+
+
+        <section class="main1" id="J2PB-section" class="president-journey animate-fade">
             <div class="president-header">
-                <h1 class="main-h1">JOURNEY TO PRESIDENT'S AWARD</h1>
+                <h1 class="main-h1" >JOURNEY TO PRESIDENT'S AWARD</h1>
                 <i class="fa-solid fa-circle-info" id="presidentAwardIcon" title="President Award Syllabus"></i>
             </div>
 
@@ -913,37 +991,7 @@
         </footer>
     </div>
 
-    <button id="capture" class="capture"><i class="fa-solid fa-camera"></i> Screenshot</button>
-
-    <button class="feedback-button" onclick="toggleFeedbackForm()">💬</button>
-
-    <div class="feedback-form-container" id="feedbackForm" style="display: none;">
-      <h2>Send us your feedback</h2>
-      <textarea id="feedbackText" placeholder="Please share your thoughts with us..."></textarea>
-      <button onclick="sendFeedback()">Send Feedback</button>
-      <button class="close-button" onclick="toggleFeedbackForm()">Close</button>
-    </div>
-
-  <!-- Support Me Section -->
-  <div class="support-container">
-    <button id="support-button">
-      <i class="fas fa-coffee"></i> Support Me
-    </button>
-  </div>
-
-    <!-- Support Popup -->
-    <div id="support-popup" class="support-popup">
-        <div class="popup-content">
-            <span class="popup-close" onclick="hideSupportPopup()">&times;</span>
-            <h2>Support Me</h2>
-            <div class="qr-wrapper">
-            <img src="image/TNG-Code.jpg" alt="TNG QR Code" class="qr-image">
-            </div>
-            <p class="thank-you">Thank you for your kindness! Your support helps keep this project alive and growing. ❤️</p>
-        </div>
-    </div>
-
-    <section class="games-banner">
+    <section class="games-banner" id="games-section" class="animate-fade">
         <div class="banner-content">
             <h1 class="banner-title">Mini Games</h1>
         </div>
@@ -1029,6 +1077,84 @@
             </div>
             <div class="modal-footer">
                 <button>Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="utility-dock">
+        <div class="utility-btn utility-item" id="screenshotBtn" title="Take Screenshot">
+            <i class="fas fa-camera"></i>
+        </div>
+
+        <div class="utility-btn utility-item" id="openFeedbackBtn" title="Send Feedback">
+            <i class="fas fa-comment"></i>
+        </div>
+
+        <div class="utility-btn utility-item" id="scrollTopBtn" title="Scroll to Top">
+            <i class="fa-solid fa-up-long"></i>
+        </div>
+
+        <button id="supportBtn" class="support-dock-btn utility-item" title="Support Me">
+            <i class="fas fa-coffee"></i>
+        </button>
+
+        <div class="utility-btn grid-toggle" id="gridToggleBtn" title="Toggle Utilities">
+            <img src="image/grid.svg" alt="Grid" class="grid-icon">
+        </div>
+    </div>
+
+
+    <div class="feedback-modal-overlay" id="feedbackModal">
+        <div class="feedback-modal-content">
+            <div class="feedback-modal-header">
+                <h3 class="feedback-modal-title">Send Feedback</h3>
+                <button class="feedback-modal-close" id="closeFeedbackModal">&times;</button>
+            </div>
+            <div class="feedback-modal-body">
+                <textarea id="feedbackMessage" placeholder="Please share your thoughts with us..."></textarea>
+                <div class="feedback-modal-actions">
+                    <button class="btn btn-accent" id="submitFeedbackBtn">Send</button>
+                    <button class="btn btn-primary" id="cancelFeedbackBtn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="support-popup" class="support-popup">
+        <div class="popup-content">
+            <span class="popup-close" id="supportClose">&times;</span>
+            <h2>Support Me</h2>
+            <div class="qr-wrapper">
+                <img src="image/TNG-Code.jpg" alt="TNG QR Code" class="qr-image">
+            </div>
+            <p class="thank-you">
+                Thank you for your kindness! Your support helps keep this project alive and growing. ❤️
+            </p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="gameRulesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="gameRulesTitle">Game Rules</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="gameRulesContent">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="gameOverModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="gameOverTitle">Game Over</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="gameOverMessage"></p>
+                <div style="display: flex; justify-content: center; margin-top: 20px;">
+                    <button class="btn btn-primary" id="playAgainBtn">Play Again</button>
+                </div>
             </div>
         </div>
     </div>
