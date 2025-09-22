@@ -1,9 +1,57 @@
 document.addEventListener('DOMContentLoaded', function () {
     side_baropen();
 
+    const gridToggleBtn = document.getElementById("gridToggleBtn");
+    const utilityDock = document.querySelector(".utility-dock");
+
+    gridToggleBtn.addEventListener("click", () => {
+        utilityDock.classList.toggle("active");
+        gridToggleBtn.classList.toggle("active");
+    });
+
+    const hamburgerBtn = document.getElementById("mobile-menu-btn");
+    const mobileNav = document.getElementById("mobile-nav");
+    const closeMobileNav = document.getElementById("closeMobileNav");
+
+    hamburgerBtn.addEventListener("click", () => {
+    mobileNav.classList.add("active");
+    hamburgerBtn.style.display = "none";
+    document.body.classList.add("sidebar-open");
+    });
+
+    closeMobileNav.addEventListener("click", () => {
+    mobileNav.classList.remove("active");
+    hamburgerBtn.style.display = "block";
+    document.body.classList.remove("sidebar-open");
+    });
+    
+    const sections = document.querySelectorAll('section');
+    const navItems = document.querySelectorAll('.nav-item, .mobile-nav-item');
+    
+    window.addEventListener('scroll', function() {
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            
+            if (pageYOffset >= sectionTop - 100) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            const link = item.querySelector('a');
+            if (link.getAttribute('href') === `#${current}`) {
+                item.classList.add('active');
+            }
+        });
+    });
+    
     const upButton = document.querySelector('.fa-up-long');
     window.addEventListener('scroll', function () {
-        if (window.scrollY > 300) {
+        if (window.scrollY > 100) {
             upButton.classList.add('show');
         } else {
             upButton.classList.remove('show');
@@ -118,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    document.getElementById('goToTopBtn').addEventListener('click', function () {
+    document.getElementById('scrollTopBtn').addEventListener('click', function () {
         scrollToTop();
     });
         
@@ -247,65 +295,66 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.getElementById('capture').addEventListener('click', async function() {
-        const name = document.getElementById('nametag-name').innerText.toUpperCase();
-        const company = document.getElementById('nametag-company').innerText.toUpperCase();
+document.getElementById('screenshotBtn').addEventListener('click', async function() {
+    const name = document.getElementById('nametag-name').innerText.toUpperCase();
+    const company = document.getElementById('nametag-company').innerText.toUpperCase();
 
-        document.getElementById('nametag-name').innerText = name || 'NAME';
-        document.getElementById('nametag-company').innerText = company || 'COMPANY';
+    document.getElementById('nametag-name').innerText = name || 'NAME';
+    document.getElementById('nametag-company').innerText = company || 'COMPANY';
 
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const originalDisplay = toggleSidebar.style.display;
-        toggleSidebar.style.display = 'none';
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const originalDisplay = toggleSidebar ? toggleSidebar.style.display : null;
+    if (toggleSidebar) toggleSidebar.style.display = 'none';
 
-        try {
-            const canvas = await html2canvas(document.getElementById('screenshot-container'), {
-                scrollY: -window.scrollY,
-                scale: window.devicePixelRatio,
-                useCORS: true 
-            });
+    try {
+        const canvas = await html2canvas(document.getElementById('screenshot-container'), {
+            scrollY: -window.scrollY,
+            scale: window.devicePixelRatio,
+            useCORS: true
+        });
 
-            if ('showSaveFilePicker' in window) {
-                canvas.toBlob(async function(blob) {
-                    try {
-                        const handle = await window.showSaveFilePicker({
-                            suggestedName: 'screenshot.png',
-                            types: [{
-                                description: 'PNG Image',
-                                accept: {'image/png': ['.png']},
-                            }],
-                        });
+        if ('showSaveFilePicker' in window) {
+            canvas.toBlob(async function(blob) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: 'screenshot.png',
+                        types: [{
+                            description: 'PNG Image',
+                            accept: { 'image/png': ['.png'] },
+                        }],
+                    });
 
-                        const writable = await handle.createWritable();
-                        await writable.write(blob);
-                        await writable.close();
+                    const writable = await handle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
 
-                        console.log('Screenshot saved successfully.');
-                    } catch (err) {
-                        console.error('Error saving file:', err);
-                    } finally {
-                        toggleSidebar.style.display = originalDisplay;
-                    }
-                }, 'image/png');
-            } else {
-                const img = document.createElement('img');
-                img.src = canvas.toDataURL('image/png');
+                    console.log('Screenshot saved successfully.');
+                } catch (err) {
+                    console.error('Error saving file:', err);
+                } finally {
+                    if (toggleSidebar) toggleSidebar.style.display = originalDisplay;
+                }
+            }, 'image/png');
+        } else {
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL('image/png');
 
-                const link = document.createElement('a');
-                link.href = img.src;
-                link.download = 'screenshot.png';
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = 'screenshot.png';
 
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-                toggleSidebar.style.display = originalDisplay;
-            }
-        } catch (error) {
-            console.error('Error capturing screenshot:', error);
-            toggleSidebar.style.display = originalDisplay;
+            if (toggleSidebar) toggleSidebar.style.display = originalDisplay;
         }
-    });
+    } catch (error) {
+        console.error('Error capturing screenshot:', error);
+        if (toggleSidebar) toggleSidebar.style.display = originalDisplay;
+    }
+});
+
 
     const nameField = document.getElementById('nametag-name');
     nameField.addEventListener('input', function () {
@@ -1792,57 +1841,78 @@ window.addEventListener('resize', () => {
     updateRankDisplay();
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    // Init EmailJS
     emailjs.init("jwnrle_0zxuB29XxH"); 
-});
 
-function toggleFeedbackForm() {
-    const form = document.getElementById('feedbackForm');
-    form.style.display = form.style.display === 'block' ? 'none' : 'block';
-}
+    const feedbackModal = document.getElementById('feedbackModal');
+    const openBtn = document.getElementById('openFeedbackBtn');
+    const closeBtn = document.getElementById('closeFeedbackModal');
+    const cancelBtn = document.getElementById('cancelFeedbackBtn');
+    const submitBtn = document.getElementById('submitFeedbackBtn');
+    const feedbackInput = document.getElementById('feedbackMessage');
 
-function sendFeedback() {
-    const feedbackText = document.getElementById('feedbackText').value;
-    console.log("Feedback to send:", feedbackText);
+    // Open modal
+    openBtn.addEventListener('click', () => {
+        feedbackModal.classList.add('active');
+        document.body.classList.add('no-scroll'); // freeze background
+    });
 
-    if (!feedbackText.trim()) {
-        showCustomAlert('Please write some feedback before sending.');
-        return;
+    // Close modal
+    function closeFeedbackModalFunc() {
+        feedbackModal.classList.remove('active');
+        document.body.classList.remove('no-scroll'); // unfreeze background
     }
 
-    emailjs.send("service_9tjtma8", "template_k2kcz19", {
-        message: feedbackText,
-        to_email: "joshuang.ng2004@gmail.com",
-    }).then(
-        function(response) {
-            console.log("Feedback sent successfully:", response);
-            showCustomAlert("Feedback sent successfully!");
-            toggleFeedbackForm();
-            document.getElementById('feedbackText').value = "";
-        },
-        function(error) {
-            console.error("Failed to send feedback:", error);
-            showCustomAlert("Failed to send feedback. Please try again later.");
+    closeBtn.addEventListener('click', closeFeedbackModalFunc);
+    cancelBtn.addEventListener('click', closeFeedbackModalFunc);
+
+    // Send feedback
+    submitBtn.addEventListener('click', function () {
+        const feedbackText = feedbackInput.value.trim();
+        if (!feedbackText) {
+            alert("Please write some feedback before sending.");
+            return;
         }
-    );
-}
+
+        emailjs.send("service_9tjtma8", "template_k2kcz19", {
+            message: feedbackText,
+            to_email: "joshuang.ng2004@gmail.com",
+        }).then(
+            function (response) {
+                console.log("Feedback sent:", response);
+                alert("✅ Feedback sent successfully!");
+                feedbackInput.value = "";
+                closeFeedbackModalFunc(); // close + unfreeze
+            },
+            function (error) {
+                console.error("Feedback failed:", error);
+                alert("❌ Failed to send feedback. Please try again later.");
+            }
+        );
+    });
+
+});
 
 document.addEventListener("DOMContentLoaded", function () {
-    let supportButton = document.getElementById("support-button");
+    let supportButton = document.getElementById("supportBtn");
     let supportPopup = document.getElementById("support-popup");
-    let closeButton = document.querySelector(".popup-close");
+    let closeButton = document.getElementById("supportClose");
 
     supportButton.addEventListener("click", function () {
-        supportPopup.style.display = "flex";
+        supportPopup.classList.add("active");
+        document.body.classList.add("no-scroll"); 
     });
 
     closeButton.addEventListener("click", function () {
-        supportPopup.style.display = "none";
+        supportPopup.classList.remove("active");
+        document.body.classList.remove("no-scroll");
     });
 
     window.addEventListener("click", function (event) {
         if (event.target === supportPopup) {
-            supportPopup.style.display = "none";
+            supportPopup.classList.remove("active");
+            document.body.classList.remove("no-scroll");
         }
     });
 
