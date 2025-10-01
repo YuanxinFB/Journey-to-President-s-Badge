@@ -9,10 +9,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="icon" href="image/Left/Presidents.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="Badge Profile.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    
+    <script src="js/Badge Profile.js"></script>
+    <script src="js/games/config.js"></script>
+    <script src="js/games/gameManager.js"></script>
+    <script src="js/games/index.js"></script>
+    <script src="js/games/matching.js"></script>
+    <script src="js/games/modals.js"></script>
+    <script src="js/games/triplix.js"></script>
+
 
 </head> 
 
@@ -991,7 +999,7 @@
         </footer>
     </div>
 
-    <section class="games-banner" id="games-section" class="animate-fade">
+    <section id="games-section" class="games-banner animate-fade">
         <div class="banner-content">
             <h1 class="banner-title">Mini Games</h1>
         </div>
@@ -1018,6 +1026,8 @@
                 <button class="start-game-button" id="startMatchingGame">Start Game</button>
                 <button class="restart-game-button" id="restartMatchingGame" disabled>Restart Game</button>
             </div>
+            <div class="game-leaderboard" id="matching-leaderboard"></div>
+
         </div>
 
         <!-- Triplix Match Game Box -->
@@ -1046,6 +1056,8 @@
                 <button class="action-button" id="reshuffleButton" disabled>Reshuffle (3)</button>
                 <button class="action-button" id="undoButton" disabled>Undo (3)</button>
             </div>
+            <div class="game-leaderboard" id="triplix-leaderboard"></div>
+
         </div>
     </div>
 
@@ -1076,7 +1088,7 @@
                 <p id="game-over-text"></p>
             </div>
             <div class="modal-footer">
-                <button>Play Again</button>
+                <button>Back</button>
             </div>
         </div>
     </div>
@@ -1153,11 +1165,14 @@
             <div class="modal-body">
                 <p id="gameOverMessage"></p>
                 <div style="display: flex; justify-content: center; margin-top: 20px;">
-                    <button class="btn btn-primary" id="playAgainBtn">Play Again</button>
+                    <button class="btn btn-primary" id="playAgainBtn">Back</button>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Load the games bundle as an ES module -->
+    <script type="module" src="js/games/index.js"></script>
 
 </body>
 
