@@ -2897,7 +2897,8 @@ const DRIFT_CFG = {
 
 let driftState = {
   lvl: 1, round: 1, score: 0, phase: 'idle', grid: [],
-  original: [], changedIdx: [], guessed: new Set(), timer: null, active: false
+  original: [], changedIdx: [], guessed: new Set(), timer: null, active: false, guessSecs: 0,
+  totalCorrect: 0, totalWrong: 0
 };
 
 function driftBuildGrid(arr, lvl, interactive) {
@@ -2931,21 +2932,26 @@ function driftGuess(idx) {
   if (isChanged) {
     cell.classList.add('guessed-right');
     driftState.score += 10;
+    driftState.totalCorrect++;
   } else {
     cell.classList.add('guessed-wrong');
     driftState.score = Math.max(0, driftState.score - 5);
+    driftState.totalWrong++;
   }
   document.getElementById('drift-score').textContent = driftState.score;
 
+  const found = Array.from(driftState.guessed).filter(i => driftState.changedIdx.includes(i)).length;
   const left = cfg.changes - driftState.guessed.size;
-  document.getElementById('drift-phase-label').innerHTML = `Find what changed! | Changed: ${cfg.changes} | Clicks Left: ${left} | Time: <span style="color:#e74c3c">${Math.ceil(guessSecs)}s</span>`;
+  document.getElementById('drift-bottom-status').innerHTML = `Found: ${found}/${cfg.changes} | Clicks Left: ${left} | Time: <span style="color:#e74c3c">${Math.ceil(driftState.guessSecs)}s</span>`;
 
   if (driftState.guessed.size === cfg.changes || driftState.changedIdx.every(i => driftState.guessed.has(i))) {
     if (driftState.timer) clearInterval(driftState.timer);
 
     // Briefly show final state then auto-reveal
     setTimeout(() => {
-      document.getElementById('drift-phase-label').textContent = 'Revealing all changes...';
+      document.getElementById('drift-bottom-status').innerHTML = 
+        `Round Over! <span style="color:#27ae60">Total Correct: ${driftState.totalCorrect}</span> | <span style="color:#e74c3c">Total Wrong: ${driftState.totalWrong}</span>`;
+
       driftState.changedIdx.forEach(cid => {
         const c = document.querySelector(`#drift-grid [data-idx="${cid}"]`);
         if (c && !c.classList.contains('guessed-right')) {
@@ -2953,8 +2959,8 @@ function driftGuess(idx) {
           c.style.animation = 'chainGlow 0.5s infinite';
         }
       });
-      setTimeout(() => driftNextRound(), 2000);
-    }, 600);
+      setTimeout(() => driftNextRound(), 1200); // Slightly longer to read the result
+    }, 400); 
   }
 }
 
@@ -2963,10 +2969,10 @@ function driftNextRound() {
   driftState.round++;
   if (driftState.round > 5) {
     document.getElementById('drift-phase-label').textContent = 'Session complete!';
-    saveGameRecord('Memory Drift', driftState.lvl, driftState.score >= 30, `Score: ${driftState.score} pts`);
+    saveGameRecord('Memory Drift', driftState.lvl, driftState.score >= 30, `Score: ${driftState.score} pts (C:${driftState.totalCorrect} W:${driftState.totalWrong})`);
     activeGameId = null;
     showGameResult(document.getElementById('drift-result'), driftState.score >= 30,
-      'Session Done!', `Final Score: ${driftState.score} pts`,
+      'Session Done!', `Final Score: ${driftState.score} pts<br>Total Correct: ${driftState.totalCorrect} | Total Wrong: ${driftState.totalWrong}`,
       () => driftInit(driftState.lvl),
       driftState.lvl,
       () => driftInit(driftState.lvl + 1));
@@ -3044,18 +3050,21 @@ function driftStartRound() {
       driftState.phase = 'guess';
 
       // Start 10-second Guess Phase
-      let guessSecs = 10;
+      driftState.guessSecs = 10;
       const initialLeft = cfg.changes;
-      document.getElementById('drift-phase-label').innerHTML = `Find what changed! | Changed: ${cfg.changes} | Clicks Left: ${initialLeft} | Time: <span style="color:#e74c3c">${guessSecs}s</span>`;
+      document.getElementById('drift-phase-label').textContent = 'Find what changed!';
+      document.getElementById('drift-bottom-status').innerHTML = `Found: 0/${cfg.changes} | Clicks Left: ${initialLeft} | Time: <span style="color:#e74c3c">${driftState.guessSecs}s</span>`;
       driftBuildGrid(newGrid, driftState.lvl, true);
 
       driftState.timer = setInterval(() => {
         if (isPaused) return;
-        guessSecs--;
-        if (guessSecs <= 0) {
+        driftState.guessSecs--;
+        if (driftState.guessSecs <= 0) {
           clearInterval(driftState.timer);
           // Reveal correctly and move to next
-          document.getElementById('drift-phase-label').textContent = 'Time Up! Showing changes...';
+          document.getElementById('drift-bottom-status').innerHTML = 
+            `Time Up! <span style="color:#27ae60">Total Correct: ${driftState.totalCorrect}</span> | <span style="color:#e74c3c">Total Wrong: ${driftState.totalWrong}</span>`;
+
           driftState.changedIdx.forEach(idx => {
             const cell = document.querySelector(`#drift-grid [data-idx="${idx}"]`);
             if (cell && !cell.classList.contains('guessed-right')) {
@@ -3063,9 +3072,11 @@ function driftStartRound() {
               cell.style.animation = 'chainGlow 0.5s infinite';
             }
           });
-          setTimeout(() => driftNextRound(), 2500);
+          setTimeout(() => driftNextRound(), 2500); 
         } else {
-          document.getElementById('drift-phase-label').innerHTML = `Find what changed! <span style="color:#e74c3c">Time: ${guessSecs}s</span>`;
+          const found = Array.from(driftState.guessed).filter(i => driftState.changedIdx.includes(i)).length;
+          const left = cfg.changes - driftState.guessed.size;
+          document.getElementById('drift-bottom-status').innerHTML = `Found: ${found}/${cfg.changes} | Clicks Left: ${left} | Time: <span style="color:#e74c3c">${driftState.guessSecs}s</span>`;
         }
       }, 1000);
     } else {
@@ -3076,7 +3087,7 @@ function driftStartRound() {
 
 function driftInit(lvl) {
   if (driftState.timer) clearInterval(driftState.timer);
-  driftState = { lvl, round: 1, score: 0, phase: 'idle', grid: [], original: [], changedIdx: [], guessed: new Set(), timer: null, active: false };
+  driftState = { lvl, round: 1, score: 0, phase: 'idle', grid: [], original: [], changedIdx: [], guessed: new Set(), timer: null, active: false, guessSecs: 0, totalCorrect: 0, totalWrong: 0 };
 
   activeGameId = 'gv-drift';
   document.getElementById('gv-drift').classList.remove('paused');
@@ -3086,6 +3097,7 @@ function driftInit(lvl) {
   document.getElementById('drift-round').textContent = '1/5';
   document.getElementById('drift-score').textContent = '0';
   document.getElementById('drift-phase-label').textContent = 'Ready?';
+  document.getElementById('drift-bottom-status').textContent = '';
 
   const gridEl = document.getElementById('drift-grid');
   if (gridEl) gridEl.innerHTML = '';
