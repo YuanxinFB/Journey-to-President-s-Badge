@@ -801,12 +801,18 @@ body[data-active-tab="games"] #fab {
   align-self: stretch; /* Right arm matches left arm if it has fewer badges */
 }
 
-#arm-left-content,
-#arm-right-content {
+#arm-left-content {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  flex: 1; /* Ensures they fill the card and center vertically */
+  flex: 1;
+}
+
+#arm-right-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Start at top */
+  flex: 1;
 }
 
 /* Arm label OUTSIDE the card */
@@ -1008,7 +1014,7 @@ body[data-active-tab="games"] #fab {
   height: 64px;
   border-radius: 50%;
   overflow: hidden;
-  flex-shrink: 0;
+  flex-shrink: 1; /* Changed from 0 to allow responsive shrinking */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1052,7 +1058,7 @@ body[data-active-tab="games"] #fab {
   border-radius: 50%;
   width: 68px;
   height: 68px;
-  flex-shrink: 0;
+  flex-shrink: 1; /* Changed from 0 to allow responsive shrinking */
   transition: transform 0.15s;
 }
 
@@ -1076,6 +1082,29 @@ body[data-active-tab="games"] #fab {
   width: 100%;
   max-width: 380px; /* Fits 5 badges perfectly @ 64px + gaps */
   margin: 0 auto;
+}
+
+/* Row-specific alignment for right arm */
+.right-arm-row {
+  display: flex !important;
+  flex-wrap: nowrap !important; /* Force 5 badges per row */
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 380px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.right-arm-row > * {
+  flex-shrink: 1; /* Allow badges to shrink if container is too narrow */
+  min-width: 0;
+}
+
+.right-arm-row.first-row {
+  justify-content: flex-start; /* First row starts at top/left, not centered */
+  margin-bottom: 20px; /* More space after first row */
 }
 
 /* Left arm rows */
@@ -4731,13 +4760,14 @@ body[data-active-tab="games"] #fab {
     /* ensure right arm gaps are smaller to fit 5-per-row */
   }
 
-  /* Target the right arm grid — naturally fits 5 per row but centers fewer */
-  .arms-outer #arm-right-content > div {
+  /* Target the right arm grid — forced 5 per row */
+  .arms-outer #arm-right-content .right-arm-row {
     display: flex !important;
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
     justify-content: center !important;
-    gap: 3px !important;
-    margin-bottom: 3px !important;
+    gap: 2% !important;
+    margin-bottom: 8px !important;
+    width: 100% !important;
   }
 
   /* Target the left arm rows */
@@ -4752,18 +4782,24 @@ body[data-active-tab="games"] #fab {
   }
 
   .arms-outer .badge-img-wrap {
-    width: 25px;
-    height: 25px;
+    width: 18% !important; /* Forces 5 items per row (18% * 5 = 90%) */
+    height: auto !important;
+    aspect-ratio: 1/1 !important;
+    max-width: 64px;
+    min-width: 25px;
   }
 
   .arms-outer .red-cloths {
-    width: 29px;
-    height: 29px;
+    width: 19% !important;
+    height: auto !important;
+    aspect-ratio: 1/1 !important;
+    max-width: 68px;
+    min-width: 29px;
   }
 
   .arms-outer .red-cloths .badge-img {
-    width: 21px;
-    height: 21px;
+    width: 75%;
+    height: 75%;
   }
 
   .arms-outer .badge-img-sm {
@@ -4863,13 +4899,17 @@ body[data-active-tab="games"] #fab {
   }
 
   .badge-img-wrap {
-    width: 52px;
-    height: 52px;
+    width: 18% !important;
+    height: auto !important;
+    aspect-ratio: 1/1 !important;
+    max-width: 52px;
   }
 
   .red-cloths {
-    width: 56px;
-    height: 56px;
+    width: 19% !important;
+    height: auto !important;
+    aspect-ratio: 1/1 !important;
+    max-width: 56px;
   }
 
   .footer-inner {

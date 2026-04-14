@@ -1458,13 +1458,17 @@ function renderArrangement(s) {
   if (rightBadges.length === 0) {
     rightHTML = '<div class="arm-empty">No proficiency badges selected yet.</div>';
   } else {
-    /* Always centred flex — naturally 5 per row on arm card width */
-    rightHTML = '<div class="badge-grid-centered">';
-    rightBadges.forEach(b => {
-      const isAdv = !!s.badges[b.id].advanced;
-      rightHTML += imgChip(RIGHT_IMAGES[b.id] || '', b.name + (isAdv ? ' (Advanced)' : ''), isAdv);
-    });
-    rightHTML += '</div>';
+    /* Split into rows of 5 */
+    for (let i = 0; i < rightBadges.length; i += 5) {
+      const rowBadges = rightBadges.slice(i, i + 5);
+      const isFirst = (i === 0);
+      rightHTML += `<div class="right-arm-row ${isFirst ? 'first-row' : ''}">`;
+      rowBadges.forEach(b => {
+        const isAdv = !!s.badges[b.id].advanced;
+        rightHTML += imgChip(RIGHT_IMAGES[b.id] || '', b.name + (isAdv ? ' (Advanced)' : ''), isAdv);
+      });
+      rightHTML += '</div>';
+    }
   }
 
   /* Handle arm card class and chevrons */
