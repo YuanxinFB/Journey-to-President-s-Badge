@@ -2108,29 +2108,65 @@ document.getElementById('reset-btn').addEventListener('click', () => BadgeState.
 (function sheetDrag() {
   const sh = document.getElementById('sheet');
   const handle = document.getElementById('sheet-handle');
+  const topbar = sh.querySelector('.sheet-topbar');
+  const body = document.getElementById('sheet-body');
+  
   let startY = 0, currentY = 0, dragging = false;
 
   function onTouchStart(e) {
+    // Don't drag if we are clicking the actual close button
+    if (e.target.closest('#close-btn')) return;
+    
+    // If touching the body, only allow drag-to-close if at the very top
+    if (e.target.closest('#sheet-body') && body.scrollTop > 0) return;
+
     startY = e.touches[0].clientY;
     currentY = startY;
     dragging = true;
     sh.style.transition = 'none';
   }
+
   function onTouchMove(e) {
     if (!dragging) return;
     currentY = e.touches[0].clientY;
     const dy = Math.max(0, currentY - startY);
-    sh.style.transform = `translateY(${dy}px)`;
+    
+    // If dragging from the body and trying to scroll UP, cancel drag to allow normal scrolling
+    if (currentY < startY) {
+      dragging = false;
+      sh.style.transition = '';
+      sh.style.transform = '';
+      return;
+    }
+
+    // If we are at top of list and dragging DOWN, pull the sheet
+    if (dy > 0) {
+      // If we are on the body, prevent default scrolling to drag the sheet instead
+      if (e.target.closest('#sheet-body')) {
+        // We can't actually preventDefault because listener is passive, 
+        // but since dy > 0 and we are at top, the browser won't scroll anyway.
+      }
+      sh.style.transform = `translateY(${dy}px)`;
+    }
   }
+
   function onTouchEnd() {
     if (!dragging) return;
     dragging = false;
     sh.style.transition = '';
     sh.style.transform = '';
-    if (currentY - startY > 120) closeSheet();
+    
+    // Threshold to close is 120px
+    if (currentY - startY > 120) {
+      closeSheet();
+    }
   }
 
+  // Allow dragging from handle, topbar, and the body (if at top)
   handle.addEventListener('touchstart', onTouchStart, { passive: true });
+  topbar.addEventListener('touchstart', onTouchStart, { passive: true });
+  body.addEventListener('touchstart', onTouchStart, { passive: true });
+  
   document.addEventListener('touchmove', onTouchMove, { passive: true });
   document.addEventListener('touchend', onTouchEnd);
 })();
@@ -3260,7 +3296,7 @@ document.getElementById('sash-start-btn').addEventListener('click', sashStart);
    GAME 8: SEQUENCE MEMORY
 ══════════════════════════════════════════════════════════ */
 const SEQ_CFG = {
-  1: { len: 4, memSecs: 4.0, ansSecs: 12, palette: 5 },
+  1: { len: 3, memSecs: 5.0, ansSecs: 12, palette: 5 },
   2: { len: 6, memSecs: 6.0, ansSecs: 10, palette: 7 },
   3: { len: 8, memSecs: 7.0, ansSecs: 8, palette: 9 },
 };
