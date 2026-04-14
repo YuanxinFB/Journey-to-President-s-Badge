@@ -801,6 +801,14 @@ body[data-active-tab="games"] #fab {
   align-self: stretch; /* Right arm matches left arm if it has fewer badges */
 }
 
+#arm-left-content,
+#arm-right-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1; /* Ensures they fill the card and center vertically */
+}
+
 /* Arm label OUTSIDE the card */
 .arm-label {
   font-family: 'Cinzel', serif;
@@ -1058,11 +1066,11 @@ body[data-active-tab="games"] #fab {
   object-fit: contain;
 }
 
-/* Right arm — enforced 5 per row grid */
+/* Right arm — enforced 5 per row naturally but centred if fewer */
 .badge-grid-centered {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  justify-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: 12px;
   width: 100%;
@@ -4426,7 +4434,7 @@ body[data-active-tab="games"] #fab {
   height: 88vh;
   background: var(--navy);
   border-radius: 20px 20px 0 0;
-  z-index: 2000;
+  z-index: 3000; /* Higher than bottom-nav */
   transform: translateY(100%);
   transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
   display: flex;
@@ -4486,7 +4494,7 @@ body[data-active-tab="games"] #fab {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 40px;
+  padding-bottom: 120px; /* Increased to ensure special awards aren't blocked by bottom-nav if any overlap remains */
   scrollbar-width: thin;
   scrollbar-color: rgba(200, 168, 75, 0.3) transparent;
 }
@@ -4723,9 +4731,11 @@ body[data-active-tab="games"] #fab {
     /* ensure right arm gaps are smaller to fit 5-per-row */
   }
 
-  /* Target the right arm grid — strictly enforce 5 cols even on small screens */
-  .arms-outer #arm-right-content>div {
-    grid-template-columns: repeat(5, 1fr) !important;
+  /* Target the right arm grid — naturally fits 5 per row but centers fewer */
+  .arms-outer #arm-right-content > div {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
     gap: 3px !important;
     margin-bottom: 3px !important;
   }

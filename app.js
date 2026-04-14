@@ -1495,7 +1495,6 @@ function renderArrangement(s) {
   }
 
   document.getElementById('arm-right-content').innerHTML = rightHTML;
-  document.getElementById('arm-right-content').style.flex = '1'; // Pushes chevrons but keeps grid tidy
 
   const armsOuter = document.getElementById('arms-outer');
   // Layout logic is now handled in CSS via #arm-col-left align-self: start
