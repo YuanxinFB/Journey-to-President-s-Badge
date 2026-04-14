@@ -1,0 +1,9 @@
+# Update
+git add .
+git commit -m "."
+git push origin main
+
+
+or 
+
+git commit -am "." && git push origin main
