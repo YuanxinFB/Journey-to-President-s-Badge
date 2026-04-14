@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Journey to President's Badge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="image/J2PB_LOGO.png">
+  <link rel="apple-touch-icon" href="image/J2PB_LOGO.png">
+  <!-- SEO & Social Media -->
+  <meta property="og:image" content="image/J2PB_LOGO.png">
+  <meta property="og:title" content="Journey to President's Badge">
+  <meta name="twitter:image" content="image/J2PB_LOGO.png">
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       COMPONENT 1 — BADGE SELECTOR SIDEBAR
+  ═══════════════════════════════════════════ -->
+  <aside id="sidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-logo">
+        <img src="image/J2PB_LOGO.png" alt="Logo" style="width: 38px; height: 38px; object-fit: contain;">
+        Awards Section
+      </div>
+      <div class="sidebar-pill">
+        <span class="js-total-count">0</span> badges selected
+      </div>
+      <button class="sidebar-close-btn" id="sidebar-close" title="Hide sidebar">✖</button>
+    </div>
+    <div class="sidebar-scroll" id="sidebar-body"></div>
+    <div class="sidebar-foot">
+      <button class="reset-btn" id="reset-btn">✕ Reset All Selections</button>
+    </div>
+  </aside>
+
+  <!-- Sidebar reopen button -->
+  <button id="sidebar-open" style="display:none" aria-label="Open Badge Selector"></button>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN CONTENT AREA
+  ═══════════════════════════════════════════ -->
+  <main id="main">
+
+    <!-- ── MOBILE & TABLET: Top Header ── -->
+    <header class="mobile-header">
+      <div class="header-content">
+        <img src="image/J2PB_LOGO.png" alt="Logo" class="header-logo" id="mobile-header-logo" style="cursor: pointer;">
+        <span class="header-title">Journey to President's Badge</span>
+      </div>
+    </header>
+
+    <!-- ── DESKTOP: Traditional Top Nav (Hidden on Mobile) ── -->
+    <nav class="tab-nav desktop-nav" id="tab-nav">
+      <div class="tab-nav-logo">
+        <img src="image/J2PB_LOGO.png" alt="BB Logo" class="tab-logo-img">
+        <span class="tab-logo-text">Journey to President's Badge</span>
+      </div>
+      <div class="tab-nav-scroll">
+        <button class="tab-btn active" data-tab="arrangement">Badge Arrangement</button>
+        <button class="tab-btn" data-tab="summary">Summary</button>
+        <button class="tab-btn" data-tab="journey">Journey to President's Award</button>
+        <button class="tab-btn" data-tab="requirements">Requirements</button>
+        <button class="tab-btn" data-tab="resources">Resources</button>
+        <button class="tab-btn" data-tab="games">Mini Games</button>
+      </div>
+    </nav>
+
+    <!-- ── COMPONENT 2: Badge Arrangement ── -->
+    <div id="tab-arrangement" class="tab-panel active">
+
+      <!-- Arms toolbar: mobile seg control + ? info -->
+      <div class="arm-toolbar"> Badge Arrangement
+        <div class="arm-seg-ctrl" id="arm-seg-ctrl">
+          <button class="seg-btn active" data-arm="right">Right Arm</button>
+          <button class="seg-btn" data-arm="left">Left Arm</button>
+          <button class="seg-btn" data-arm="both">Both</button>
+        </div>
+        <button class="arm-info-btn" id="arm-info-btn" title="Badge Arrangement Rules">?</button>
+      </div>
+
+      <!-- Info modal -->
+      <div class="arm-info-modal" id="arm-info-modal">
+        <div class="arm-info-box">
+          <button class="arm-info-close" id="arm-info-close">✖</button>
+          <div class="arm-info-title">⚓ Badge Arrangement Rules</div>
+          <div class="arm-info-section">
+            <div class="arm-info-hd">🫱 Right Arm — Proficiency Badges</div>
+            <ul>
+              <li>Badges arranged alphabetically (Target Badge always first)</li>
+              <li>5 badges per row, always centred</li>
+              <li><span class="arm-info-red"></span> = Advanced badge (red cloth on uniform)</li>
+              <li>Badges do <strong>not</strong> overlap the chevrons below</li>
+              <li>Select B for Basic, A for Advanced (A auto-selects B)</li>
+            </ul>
+          </div>
+          <div class="arm-info-section">
+            <div class="arm-info-hd">🫲 Left Arm — Service & Special Awards</div>
+            <ul>
+              <li><strong>Top row:</strong> Founder's Award (centred alone)</li>
+              <li><strong>Row 2:</strong> President's Award · Gold Award · DofE</li>
+              <li><strong>Row 3:</strong> Gold · Silver · Bronze Scholastic Awards</li>
+              <li><strong>Row 4:</strong> Long Year · NCO Proficiency · Three Year Service</li>
+              <li><strong>Row 5:</strong> Junior Section + One Year Service badges</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="arms-outer" id="arms-outer">
+        <!-- Right arm label outside box -->
+        <div class="arm-col" id="arm-col-right">
+          <div class="arm-label">Right Arm</div>
+          <div class="arm-card" id="arm-right">
+            <div id="arm-right-content"></div>
+          </div>
+        </div>
+        <!-- Left arm label outside box -->
+        <div class="arm-col" id="arm-col-left">
+          <div class="arm-label">Left Arm</div>
+          <div class="arm-card" id="arm-left">
+            <div id="arm-left-content"></div>
+          </div>
+          <!-- Link badge below the arm card -->
+          <div class="arm-link-slot" id="arm-left-link"></div>
+          <!-- Nametag below link badge -->
+          <div class="nametag-wrap">
+            <div class="nametag-box" id="nametag" title="Click to toggle: White (Boy) / Blue (Girl)">
+              <div id="nametag-name" class="nametag-editable" contenteditable="true" data-placeholder="NAME"></div>
+              <div id="nametag-company" class="nametag-editable nametag-company-field" contenteditable="true"
+                data-placeholder="COMPANY"></div>
+            </div>
+            <div id="autocomplete-list" class="autocomplete-suggestions"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COMPONENT 3: Badge Summary ── -->
+    <div id="tab-summary" class="tab-panel">
+      <div class="stat-row" id="stat-row"></div>
+      <div class="rank-progression" id="rank-progression"></div>
+      <div id="summary-cats"></div>
+    </div>
+
+    <!-- ── COMPONENT 4: Journey to President ── -->
+    <div id="tab-journey" class="tab-panel">
+      <div class="journey-hero">
+        <div class="journey-title-row">
+          <div class="journey-title">Journey to President's Award</div>
+          <button class="journey-info-btn" id="journey-info-btn" title="President's Award Syllabus">?</button>
+        </div>
+
+        <div id="card-wrap">
+          <div id="card-frame"></div>
+          <div id="card-inner">
+            <svg id="art-svg" viewBox="0 0 260 340" xmlns="http://www.w3.org/2000/svg">
+              <rect width="260" height="340" fill="#0d052a" />
+              <image href="image/President/Presidents.png" x="20" y="60" width="220" height="220"
+                preserveAspectRatio="xMidYMid meet" />
+            </svg>
+
+            <svg id="shard-svg" viewBox="0 0 260 340" xmlns="http://www.w3.org/2000/svg"></svg>
+            <div id="shimmer"></div>
+            <div class="diagonal-strip"></div>
+          </div>
+        </div>
+        <div class="journey-subtitle" id="journey-subtitle">0 of 13 criteria met</div>
+
+
+        <div class="journey-progress-wrap" style="margin-top: 24px;">
+          <div class="journey-progress-bar">
+            <div class="journey-progress-fill" id="journey-fill" style="width:0%"></div>
+          </div>
+          <div class="journey-progress-pct" id="journey-pct">0%</div>
+        </div>
+      </div>
+
+      <!-- Syllabus modal -->
+      <div class="journey-syllabus-modal" id="journey-syllabus-modal">
+        <div class="journey-syllabus-box">
+          <button class="arm-info-close" id="journey-syllabus-close">✖</button>
+          <div class="arm-info-title">
+            <img src="image/President/Presidents.png" alt="President's Award" class="title-icon">
+            President's Award Syllabus
+          </div>
+          <p class="syllabus-age">The applicant must be <strong>15 years and above</strong> and be recommended by
+            his/her Company Captain and Chaplain.</p>
+          <ul class="syllabus-list">
+            <li>Must be an <strong>NCO in the Company</strong></li>
+            <li>NCO's Proficiency Star <strong>(Advanced Level)</strong></li>
+            <li>Christian Education <strong>(Advanced Level)</strong></li>
+            <li>Drill <strong>(Advanced Level)</strong></li>
+            <li>Recruitment <strong>(Basic Level)</strong></li>
+            <li>At least <strong>three years of service</strong> in the Senior Section</li>
+            <li>At least <strong>six (6) awards</strong> from groups A, B, C & D with at least one from each group —
+              minimum <strong>2 Basic + 4 Advanced</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="celebrate" id="celebrate">
+        <div class="celebrate-title">🏆 All 13 Criteria Met!</div>
+      </div>
+      <div class="criteria-grid" id="criteria-grid"></div>
+    </div>
+
+    <!-- ── COMPONENT 5: Badge Requirements ── -->
+    <div id="tab-requirements" class="tab-panel">
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input type="text" id="bdg-search" placeholder="Search badges…">
+        </div>
+        <select class="filter-sel" id="cat-filter">
+          <option value="">All Categories</option>
+          <option value="Compulsory">Compulsory</option>
+          <option value="Group A">Group A – Interest</option>
+          <option value="Group B">Group B – Adventure</option>
+          <option value="Group C">Group C – Community</option>
+          <option value="Group D">Group D – Physical</option>
+        </select>
+        <select class="filter-sel" id="lv-filter">
+          <option value="">All Levels</option>
+          <option value="basic">Basic Only</option>
+          <option value="advanced">Has Advanced</option>
+        </select>
+      </div>
+      <div class="badge-req-grid" id="badge-req-grid"></div>
+      <div class="no-results" id="no-results">No badges match your search.</div>
+    </div>
+
+    <!-- ── COMPONENT 6: BB Resources ── -->
+    <div id="tab-resources" class="tab-panel">
+      <section class="res-section">
+        <div class="res-hd">Songs &amp; Vespers</div>
+
+        <div class="song-grid" id="song-grid">
+          <!-- Dynamically populated from app.js -->
+        </div>
+      </section>
+      <section class="res-section">
+        <div class="res-hd">Bugle Calls</div>
+        <div class="bugle-grid" id="bugle-grid"></div>
+        <!-- href="https://www.bb2sj.org/resources/bugle-calls-basics/types-of-bugle-calls/" -->
+      </section>
+      <section class="res-section">
+        <div class="res-hd">Additional Resources</div>
+        <div class="dl-grid" id="dl-grid"></div>
+      </section>
+    </div>
+
+    <!-- ── COMPONENT 7: Mini Games ── -->
+    <div id="tab-games" class="tab-panel">
+
+      <!-- ══ LOBBY ══ -->
+      <div class="game-view active" id="gv-select">
+        <div class="game-hub-header">
+          <div class="game-hub-title">MINI GAME HUB</div>
+          <div class="game-hub-sub">Choose a game to play</div>
+          <button class="game-btn ghost" id="show-history-btn" style="margin:10px;font-size:12px;">🕒 View
+            History</button>
+        </div>
+        <div class="game-sel-grid">
+
+          <div class="game-option" id="pick-sheep" data-game="sheep">
+            <img src="image/Game/Target_Trio.png" alt="Target Trio" class="game-icon-img">
+            <div class="game-option-name">TARGET TRIO</div>
+            <div class="game-option-desc">Collect 3 matching badges to clear the layered board.</div>
+            <div class="game-option-play">PLAY →</div>
+          </div>
+
+          <div class="game-option" id="pick-badgematch" data-game="badgematch">
+            <img src="image/Game/BADGE_MATCH.png" alt="Badge Match" class="game-icon-img">
+            <div class="game-option-name">BADGE MATCH</div>
+            <div class="game-option-desc">Flip cards and match BB-themed pairs from memory.</div>
+            <div class="game-option-play">PLAY →</div>
+          </div>
+
+          <div class="game-option" id="pick-drift" data-game="drift">
+            <img src="image/Game/Inspection Check.png" alt="Inspection Check" class="game-icon-img">
+            <div class="game-option-name">INSPECTION CHECK</div>
+            <div class="game-option-desc">Memorize the grid, then spot what changed.</div>
+            <div class="game-option-play">PLAY →</div>
+          </div>
+
+          <div class="game-option" id="pick-sash" data-game="sash">
+            <img src="image/Game/Link The Badge.png" alt="Link The Badge" class="game-icon-img">
+            <div class="game-option-name">LINK THE BADGE</div>
+            <div class="game-option-desc">Drag to chain identical tiles — longer chains score big.</div>
+            <div class="game-option-play">PLAY →</div>
+          </div>
+
+          <div class="game-option" id="pick-seqmem" data-game="seqmem">
+            <img src="image/Game/Sequence Memory.png" alt="Sequence Memory" class="game-icon-img">
+            <div class="game-option-name">SEQUENCE MEMORY</div>
+            <div class="game-option-desc">Watch the sequence flash, then recreate it perfectly.</div>
+            <div class="game-option-play">PLAY →</div>
+          </div>
+
+          <div class="game-option" id="pick-puzzle" data-game="puzzle">
+            <img src="image/Game/Badge_Puzzle_Remove.png" alt="Badge Puzzle" class="game-icon-img">
+            <div class="game-option-name">BADGE PUZZLE</div>
+            <div class="game-option-desc">Slide tiles into the correct order in the fewest moves.</div>
+            <div class="game-option-play">PLAY →</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══ 1. TARGET TRIO ══ -->
+      <div class="game-view" id="gv-sheep">
+        <div class="sheep-wrap">
+          <div class="game-topbar">
+            <button class="game-btn ghost game-back-btn" data-back="gv-sheep">← Back</button>
+            <img src="image/Game/Target_Trio.png" alt="Target Trio" class="game-icon-img">
+            <div class="game-option-name">TARGET TRIO</div>
+            <div class="game-lvl-pills" id="sheep-lvl-pills">
+              <button class="lvl-pill active" data-lvl="1">Easy</button>
+              <button class="lvl-pill" data-lvl="2">Medium</button>
+              <button class="lvl-pill" data-lvl="3">Hard</button>
+            </div>
+          </div>
+          <div class="game-stats-bar">
+            <div class="stat-chip"><span class="stat-label">Timer</span><strong id="sheep-time">0:00</strong></div>
+            <div class="stat-chip"><span class="stat-label">Left</span><strong id="sheep-left">—</strong></div>
+            <div class="stat-chip"><span class="stat-label">Slots</span><strong id="sheep-slots-free">—</strong></div>
+            <div class="stat-chip"><button class="game-btn" id="sheep-start-btn"
+                style="font-size:11px;padding:4px 10px;">▶ Start</button></div>
+          </div>
+          <div class="game-action-bar" style="padding-top:0;">
+            <button class="game-btn ghost" id="sheep-undo-btn" style="font-size:11px;padding:5px 12px;">↩ Undo (<span
+                id="sheep-undo-rem">-</span>)</button>
+            <button class="game-btn ghost" id="sheep-shuffle-btn" style="font-size:11px;padding:5px 12px;">🔀 Shuffle
+              (<span id="sheep-shuff-rem">-</span>)</button>
+            <button class="game-btn ghost" id="sheep-new-btn" style="font-size:11px;padding:5px 12px;">🔄 New</button>
+          </div>
+          <div class="sheep-progress-bar">
+            <div id="sheep-prog-fill"></div>
+          </div>
+          <div class="sheep-board-wrap">
+            <div class="sheep-board" id="sheep-board"></div>
+          </div>
+          <div class="sheep-slot-label" id="sheep-slot-label">Slot Bar (Collect 3 of a kind)</div>
+          <div class="sheep-slot-bar-container">
+            <div class="sheep-slot-bar" id="sheep-slot-bar"></div>
+          </div>
+          <div class="sheep-legend" id="sheep-legend"></div>
+          <div class="game-result" id="sheep-result" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- ══ 2. BADGE MATCH ══ -->
+      <div class="game-view" id="gv-badgematch">
+        <div class="mem-wrap">
+          <div class="game-topbar">
+            <button class="game-btn ghost game-back-btn" data-back="gv-badgematch">← Back</button>
+            <img src="image/Game/BADGE_MATCH.png" alt="Badge Match" class="game-icon-img">
+            <div class="game-option-name">BADGE MATCH</div>
+            <div class="game-lvl-pills" id="badgematch-lvl-pills">
+              <button class="lvl-pill active" data-lvl="1">Easy</button>
+              <button class="lvl-pill" data-lvl="2">Medium</button>
+              <button class="lvl-pill" data-lvl="3">Hard</button>
+            </div>
+          </div>
+          <div class="game-stats-bar">
+            <div class="stat-chip"><span class="stat-label">Pairs</span><strong id="bm-pairs">0/0</strong></div>
+            <div class="stat-chip"><span class="stat-label">Score</span><strong id="bm-score">0</strong></div>
+            <div class="stat-chip"><span class="stat-label">Flips</span><strong id="bm-flips">0</strong></div>
+            <div class="stat-chip"><span class="stat-label">Time</span><strong id="bm-time">—</strong></div>
+          </div>
+          <div class="game-action-bar">
+            <button class="game-btn" id="bm-start-btn">▶ Start</button>
+            <button class="game-btn ghost" id="bm-hint-btn">💡 Hint (−50pts)</button>
+          </div>
+          <div class="bm-game-area" id="bm-game-area">
+            <div class="pause-overlay-square">PAUSED</div>
+            <div class="mem-grid" id="bm-grid" style="margin:0 auto;display:grid;justify-content:center"></div>
+          </div>
+          <div class="game-result" id="bm-result" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- ══ 3. INSPECTION CHECK ══ -->
+      <div class="game-view" id="gv-drift">
+        <div class="drift-wrap">
+          <div class="game-topbar">
+            <button class="game-btn ghost game-back-btn" data-back="gv-drift">← Back</button>
+            <img src="image/Game/Inspection Check.png" alt="Inspection Check" class="game-icon-img">
+            <div class="game-option-name">INSPECTION CHECK</div>
+            <div class="game-lvl-pills" id="drift-lvl-pills">
+              <button class="lvl-pill active" data-lvl="1">Easy</button>
+              <button class="lvl-pill" data-lvl="2">Medium</button>
+              <button class="lvl-pill" data-lvl="3">Hard</button>
+            </div>
+          </div>
+          <div class="game-stats-bar">
+            <div class="stat-chip"><span class="stat-label">Round</span><strong id="drift-round">1/5</strong></div>
+            <div class="stat-chip"><span class="stat-label">Score</span><strong id="drift-score">0</strong></div>
+            <div class="stat-chip drift-timer-chip"><span class="stat-label">Time</span><strong
+                id="drift-timer">—</strong></div>
+          </div>
+          <div class="drift-phase-label" id="drift-phase-label">Press Start to begin</div>
+          <div class="drift-grid" id="drift-grid"></div>
+          <div class="drift-actions">
+            <button class="game-btn" id="drift-start-btn">▶ Start Round</button>
+          </div>
+          <div class="game-result" id="drift-result" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- ══ 5. LINK THE BADGE ══ -->
+      <div class="game-view" id="gv-sash">
+        <div class="sash-wrap">
+          <div class="game-topbar">
+            <button class="game-btn ghost game-back-btn" data-back="gv-sash">← Back</button>
+            <img src="image/Game/Link The Badge.png" alt="Link The Badge" class="game-icon-img">
+            <div class="game-option-name">LINK THE BADGE</div>
+            <div class="game-lvl-pills" id="sash-lvl-pills">
+              <button class="lvl-pill active" data-lvl="1">Easy</button>
+              <button class="lvl-pill" data-lvl="2">Medium</button>
+              <button class="lvl-pill" data-lvl="3">Hard</button>
+            </div>
+          </div>
+          <div class="game-stats-bar">
+            <div class="stat-chip"><span class="stat-label">Score</span><strong id="sash-score">0</strong></div>
+            <div class="stat-chip"><span class="stat-label">Target</span><strong id="sash-target">1000</strong></div>
+            <div class="stat-chip"><span class="stat-label">Time</span><strong id="sash-time">60s</strong></div>
+            <div class="stat-chip"><button class="game-btn" id="sash-start-btn"
+                style="font-size:11px;padding:4px 10px;">▶ Start</button></div>
+          </div>
+          <div class="sash-hint" style="min-height:20px;"></div>
+          <div class="sash-board" id="sash-board"></div>
+          <div class="game-result" id="sash-result" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- ══ 8. SEQUENCE MEMORY ══ -->
+      <div class="game-view" id="gv-seqmem">
+        <div class="seqmem-wrap">
+          <div class="game-topbar">
+            <button class="game-btn ghost game-back-btn" data-back="gv-seqmem">← Back</button>
+            <img src="image/Game/Sequence Memory.png" alt="Sequence Memory" class="game-icon-img">
+            <div class="game-option-name">SEQUENCE MEMORY</div>
+            <div class="game-lvl-pills" id="seqmem-lvl-pills">
+              <button class="lvl-pill active" data-lvl="1">Easy</button>
+              <button class="lvl-pill" data-lvl="2">Medium</button>
+              <button class="lvl-pill" data-lvl="3">Hard</button>
+            </div>
+          </div>
+          <div class="game-stats-bar">
+            <div class="stat-chip"><span class="stat-label">Round</span><strong id="seq-round">1/5</strong></div>
+            <div class="stat-chip"><span class="stat-label">Score</span><strong id="seq-score">0</strong></div>
+            <div class="stat-chip"><button class="game-btn" id="seq-hint-btn"
+                style="font-size:11px;padding:4px 10px;">💡 Fill (3 left)</button></div>
+            <div class="stat-chip"><button class="game-btn" id="seqmem-start-btn"
+                style="font-size:11px;padding:4px 10px;">▶ Start</button></div>
+          </div>
+          <div class="seqmem-game-area" id="seq-game-area">
+            <div class="pause-overlay-square">PAUSED</div>
+            <div class="seqmem-phase-label" id="seq-phase">Watch the sequence...</div>
+            <div class="seqmem-sequence" id="seq-display"></div>
+            <div class="seqmem-answer" id="seq-answer"></div>
+            <div class="seqmem-palette" id="seq-palette"></div>
+          </div>
+          <div class="game-result" id="seq-result" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- ══ 9. BADGE PUZZLE ══ -->
+      <div class="game-view" id="gv-puzzle">
+        <div class="puzzle-wrap">
+          <div class="game-topbar">
+            <button class="game-btn ghost game-back-btn" data-back="gv-puzzle">← Back</button>
+            <img src="image/Game/Badge_Puzzle_Remove.png" alt="Badge Puzzle" class="game-icon-img">
+            <div class="game-option-name">BADGE PUZZLE</div>
+            <div class="game-lvl-pills" id="puzzle-lvl-pills">
+              <button class="lvl-pill active" data-lvl="3">3×3</button>
+              <button class="lvl-pill" data-lvl="4">4×4</button>
+              <button class="lvl-pill" data-lvl="5">5×5</button>
+            </div>
+          </div>
+          <div class="game-stats-bar">
+            <div class="stat-chip"><span class="stat-label">Moves</span><strong id="pz-moves">0</strong></div>
+            <div class="stat-chip"><span class="stat-label">Time</span><strong id="pz-time">0:00</strong></div>
+            <div class="stat-chip"><button class="game-btn" id="puzzle-start-btn"
+                style="font-size:11px;padding:4px 10px;">▶ Start</button></div>
+            <div class="stat-chip"><button class="game-btn ghost" id="pz-new"
+                style="font-size:11px;padding:4px 10px;">🔄 New</button></div>
+          </div>
+          <div class="puzzle-hint">Arrange tiles to recreate the badge image. Use the reference on the right!</div>
+          <div class="puzzle-area">
+            <div class="puzzle-grid" id="puzzle-grid"></div>
+            <div class="pz-reference-wrap">
+              <div class="pz-ref-label">Reference Image</div>
+              <div class="pz-reference" id="pz-reference"></div>
+            </div>
+          </div>
+          <div class="pz-win" id="pz-win">
+            <div class="pz-win-title">🎉 Puzzle Solved!</div>
+            <div class="pz-win-sub" id="pz-win-sub"></div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         FOOTER
+    ═══════════════════════════════════════════ -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-logo">
+          <img src="image/J2PB_LOGO.png" alt="Logo" class="footer-logo-img" id="footer-logo" style="cursor: pointer;"
+            title="View HD Logo">
+          <span class="footer-logo-text">Journey to President's Badge</span>
+        </div>
+        <div class="footer-credit">
+          Journey to President's Badge &copy; 2024 &mdash; Created by <strong>Sergeant Ng Yuan Xin</strong>,
+          1st Kuala Lumpur Company, as a project for the Founder's Badge Qualification.
+        </div>
+        <div class="footer-actions">
+          <a class="footer-btn" href="mailto:[joshuang.ng2004@gmail.com]" title="Send Email"><i
+              class="fa-solid fa-envelope"></i> Email</a>
+          <a class="footer-btn" href="#" id="supportBtn" title="Support Me"><i class="fa-solid fa-mug-saucer"></i> Buy a
+            Coffee</a>
+          <a class="footer-btn" href="https://www.instagram.com/joshuang04/" target="_blank" title="Instagram"><i
+              class="fa-brands fa-square-instagram"></i> Instagram</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ═══════════════════════════════════════════
+       MOBILE: FAB + BOTTOM SHEET
+  ═══════════════════════════════════════════ -->
+  <button id="fab" aria-label="Open Badge Selector">
+    <span class="fab-count js-total-count">0</span>
+  </button>
+
+  <div id="overlay"></div>
+
+  <div id="sheet" role="dialog" aria-modal="true" aria-label="Badge Selector">
+    <div class="sheet-handle" id="sheet-handle"></div>
+    <div class="sheet-topbar">
+      <span class="sheet-title">AWARDS SECTION</span>
+      <button class="sheet-close" id="close-btn">Close</button>
+    </div>
+    <div class="sheet-scroll" id="sheet-body"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       REQUIREMENTS MODAL
+  ═══════════════════════════════════════════ -->
+  <div id="req-modal" class="req-modal">
+    <div class="req-modal-box">
+      <button class="req-modal-close" id="req-modal-close">✖</button>
+      <button class="req-nav-btn left" id="req-prev">❮</button>
+      <button class="req-nav-btn right" id="req-next">❯</button>
+
+      <div class="req-modal-content" id="req-modal-content">
+        <!-- Replaced via JS -->
+      </div>
+    </div>
+  </div>
+  <!-- SONG MODAL -->
+  <div id="song-modal" class="req-modal">
+    <div class="req-modal-box">
+      <button class="req-modal-close" id="song-modal-close">✖</button>
+      <div class="req-modal-content" id="song-modal-content">
+        <!-- Replaced via JS -->
+      </div>
+    </div>
+  </div>
+
+  <div id="support-popup" class="support-popup">
+    <div class="popup-content">
+      <span class="popup-close" id="supportClose">&times;</span>
+      <h2>Support Me</h2>
+      <div class="qr-wrapper">
+        <img src="image/TNG-Code.jpg" alt="TNG QR Code" class="qr-image">
+      </div>
+      <p class="thank-you">
+        Thank you for your kindness! Your support helps keep this project alive and growing. ❤️
+      </p>
+    </div>
+  </div>
+
+  <!-- HD LOGO POPUP -->
+  <div id="hd-logo-popup" class="support-popup" style="cursor: pointer;">
+    <div class="popup-content hd-logo-content" style="background: transparent; box-shadow: none; padding: 0;">
+      <img src="image/J2PB_LOGO_HD.jpg" alt="HD Logo"
+        style="max-width: 600px; max-height: 80vh; width: auto; height: auto; display: block; margin: 0 auto;">
+    </div>
+  </div>
+
+
+  <!-- ══ GAME HISTORY MODAL ══ -->
+  <div class="modal" id="history-modal">
+    <div class="modal-content history-content">
+      <div class="modal-header">
+        <div class="modal-title">GAME HISTORY</div>
+        <button class="close-modal" id="history-close">&times;</button>
+      </div>
+      <div class="history-list" id="history-list">
+        <!-- Records injected here -->
+      </div>
+      <div class="history-footer">
+        <button class="game-btn ghost" id="clear-history-btn">Clear Records</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ UNIVERSAL CONFIRMATION MODAL ══ -->
+  <div id="confirm-modal" class="confirm-modal">
+    <div class="confirm-modal-box">
+      <div class="confirm-modal-icon">⚠️</div>
+      <div class="confirm-modal-msg" id="confirm-modal-msg"></div>
+      <div class="confirm-modal-btns">
+        <button class="game-btn" id="confirm-yes">Yes, Proceed</button>
+        <button class="game-btn ghost" id="confirm-no">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MOBILE: Bottom Navigation Bar ── -->
+  <nav class="bottom-nav">
+    <button class="bottom-nav-item active" data-tab="arrangement">
+      <i class="fa-solid fa-shirt"></i>
+      <span>Arrangement</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="summary">
+      <i class="fa-solid fa-chart-simple"></i>
+      <span>Summary</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="journey">
+      <i class="fa-solid fa-award"></i>
+      <span>Journey</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="requirements">
+      <i class="fa-solid fa-list-check"></i>
+      <span>Reqs</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="resources">
+      <i class="fa-solid fa-book-open"></i>
+      <span>Resources</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="games">
+      <i class="fa-solid fa-gamepad"></i>
+      <span>Games</span>
+    </button>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
