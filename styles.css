@@ -571,8 +571,7 @@ a {
 }
 
 .tab-btn[data-tab="journey"] {
-  color: #7b2fff;
-  /* Initial special color */
+  color: #D4AF37; /* Premium Gold */
 }
 
 .tab-btn[data-tab="journey"].active {
@@ -5550,11 +5549,37 @@ body[data-active-tab="games"] #fab {
 
 /* ── SPECIAL JOURNEY TAB ── */
 .bottom-nav-item[data-tab="journey"] {
-  color: #7b2fff; /* Match laptop special color */
+  color: #D4AF37; /* Premium Gold */
 }
 
 .bottom-nav-item[data-tab="journey"] i {
-  color: #7b2fff;
+  color: #D4AF37;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+/* Shining Shimmer Effect */
+.bottom-nav-item[data-tab="journey"] i::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: navShine 3s infinite;
+}
+
+@keyframes navShine {
+  0% { left: -150%; }
+  30% { left: 150%; }
+  100% { left: 150%; }
 }
 
 .bottom-nav-item[data-tab="journey"].active {
@@ -5562,14 +5587,27 @@ body[data-active-tab="games"] #fab {
 }
 
 .bottom-nav-item[data-tab="journey"].active i {
-  background: linear-gradient(135deg, #fbbe12, #ffcc33) !important;
+  background: linear-gradient(135deg, #fbbe12, #ffcc33, #d4af37) !important;
   color: var(--navy) !important;
-  box-shadow: 0 4px 12px rgba(251, 190, 18, 0.4) !important;
+  box-shadow: 0 0 15px rgba(251, 190, 18, 0.8) !important;
+  border-color: #fbbe12 !important;
+  animation: navAuraPulse 2s infinite ease-in-out !important;
+}
+
+@keyframes navAuraPulse {
+  0% { transform: scale(1.1); box-shadow: 0 0 8px rgba(251, 190, 18, 0.6); }
+  50% { transform: scale(1.15); box-shadow: 0 0 20px rgba(251, 190, 18, 0.9); }
+  100% { transform: scale(1.1); box-shadow: 0 0 8px rgba(251, 190, 18, 0.6); }
 }
 
 .bottom-nav-item[data-tab="journey"] span {
-  font-weight: 800;
-  letter-spacing: 0.5px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  color: #D4AF37;
+}
+
+.bottom-nav-item[data-tab="journey"].active span {
+  color: var(--navy);
 }
 
 @media (max-width: 1250px) {
