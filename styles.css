@@ -2775,9 +2775,38 @@ body[data-active-tab="games"] #fab {
   position: relative;
 }
 
+@media (max-width: 480px) {
+  .game-view {
+    width: 100%;
+    margin: 5px 0;
+  }
+}
+
 .game-view.active {
   display: block;
   animation: gameFadeIn 0.4s ease-out;
+}
+
+#gv-select {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.game-view-inner {
+  background: #fff;
+  border-radius: var(--radius-xl);
+  padding: 32px 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(12, 29, 56, 0.08);
+  display: flow-root; /* Better containment */
+}
+
+@media (max-width: 768px) {
+  .game-view-inner {
+    padding: 20px 12px;
+  }
 }
 
 @keyframes gameFadeIn {
@@ -3104,10 +3133,19 @@ body[data-active-tab="games"] #fab {
 @media (max-width: 480px) {
   .game-sel-grid {
     grid-template-columns: repeat(2, 1fr);
-    /* Force 2 columns even on small phones */
+    /* Force 2 columns on most phones */
     gap: 10px;
   }
 }
+
+@media (max-width: 360px) {
+  .game-sel-grid {
+    grid-template-columns: 1fr;
+    /* Switch to 1 column on very narrow phones like iPhone SE or narrow Androids */
+    gap: 12px;
+  }
+}
+
 
 .game-option {
   background: #fff;
@@ -3181,6 +3219,30 @@ body[data-active-tab="games"] #fab {
 .game-option:hover .game-option-play {
   opacity: 1;
   gap: 10px;
+}
+
+@media (max-width: 400px) {
+  .game-option {
+    padding: 10px 8px;
+    gap: 6px;
+    min-width: 0; /* Important for grid item containment */
+  }
+  .game-icon-img {
+    width: 70px;
+    height: 70px;
+  }
+  .game-option-name {
+    font-size: 12px;
+    word-wrap: break-word;
+  }
+  .game-option-desc {
+    font-size: 9.5px;
+    line-height: 1.2;
+    text-align: center; /* Remove justify on small screens */
+  }
+  .game-option-play {
+    font-size: 10px;
+  }
 }
 
 /* --- TOPBAR IMAGE FIX --- */

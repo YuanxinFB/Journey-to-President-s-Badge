@@ -264,56 +264,58 @@
 
       <!-- ══ LOBBY ══ -->
       <div class="game-view active" id="gv-select">
-        <div class="game-hub-header">
-          <div class="game-hub-title">MINI GAME HUB</div>
-          <div class="game-hub-sub">Choose a game to play</div>
-          <button class="game-btn ghost" id="show-history-btn" style="margin:10px;font-size:12px;">🕒 View
-            History</button>
-        </div>
-        <div class="game-sel-grid">
-
-          <div class="game-option" id="pick-sheep" data-game="sheep">
-            <img src="image/Game/TARGET_TRIO.png" alt="Target Trio" class="game-icon-img">
-            <div class="game-option-name">TARGET TRIO</div>
-            <div class="game-option-desc">Collect 3 matching badges to clear the layered board.</div>
-            <div class="game-option-play">PLAY →</div>
+        <div class="game-view-inner">
+          <div class="game-hub-header">
+            <div class="game-hub-title">MINI GAME HUB</div>
+            <div class="game-hub-sub">Choose a game to play</div>
+            <button class="game-btn ghost" id="show-history-btn" style="margin:10px;font-size:12px;">🕒 View
+              History</button>
           </div>
+          <div class="game-sel-grid">
 
-          <div class="game-option" id="pick-badgematch" data-game="badgematch">
-            <img src="image/Game/BADGE_MATCH.png" alt="Badge Match" class="game-icon-img">
-            <div class="game-option-name">BADGE MATCH</div>
-            <div class="game-option-desc">Flip cards and match BB-themed pairs from memory.</div>
-            <div class="game-option-play">PLAY →</div>
+            <div class="game-option" id="pick-sheep" data-game="sheep">
+              <img src="image/Game/TARGET_TRIO.png" alt="Target Trio" class="game-icon-img">
+              <div class="game-option-name">TARGET TRIO</div>
+              <div class="game-option-desc">Collect 3 matching badges to clear the layered board.</div>
+              <div class="game-option-play">PLAY →</div>
+            </div>
+
+            <div class="game-option" id="pick-badgematch" data-game="badgematch">
+              <img src="image/Game/BADGE_MATCH.png" alt="Badge Match" class="game-icon-img">
+              <div class="game-option-name">BADGE MATCH</div>
+              <div class="game-option-desc">Flip cards and match BB-themed pairs from memory.</div>
+              <div class="game-option-play">PLAY →</div>
+            </div>
+
+            <div class="game-option" id="pick-drift" data-game="drift">
+              <img src="image/Game/INSPECTION_CHECK.png" alt="Inspection Check" class="game-icon-img">
+              <div class="game-option-name">INSPECTION CHECK</div>
+              <div class="game-option-desc">Memorize the grid, then spot what changed.</div>
+              <div class="game-option-play">PLAY →</div>
+            </div>
+
+            <div class="game-option" id="pick-sash" data-game="sash">
+              <img src="image/Game/LINK_THE_BADGE.png" alt="Link The Badge" class="game-icon-img">
+              <div class="game-option-name">LINK THE BADGE</div>
+              <div class="game-option-desc">Drag to chain identical tiles — longer chains score big.</div>
+              <div class="game-option-play">PLAY →</div>
+            </div>
+
+            <div class="game-option" id="pick-seqmem" data-game="seqmem">
+              <img src="image/Game/SEQUENCE_MEMORY.png" alt="Sequence Memory" class="game-icon-img">
+              <div class="game-option-name">SEQUENCE MEMORY</div>
+              <div class="game-option-desc">Watch the sequence flash, then recreate it perfectly.</div>
+              <div class="game-option-play">PLAY →</div>
+            </div>
+
+            <div class="game-option" id="pick-puzzle" data-game="puzzle">
+              <img src="image/Game/BADGE_PUZZLE.png" alt="Badge Puzzle" class="game-icon-img">
+              <div class="game-option-name">BADGE PUZZLE</div>
+              <div class="game-option-desc">Slide tiles into the correct order in the fewest moves.</div>
+              <div class="game-option-play">PLAY →</div>
+            </div>
+
           </div>
-
-          <div class="game-option" id="pick-drift" data-game="drift">
-            <img src="image/Game/INSPECTION_CHECK.png" alt="Inspection Check" class="game-icon-img">
-            <div class="game-option-name">INSPECTION CHECK</div>
-            <div class="game-option-desc">Memorize the grid, then spot what changed.</div>
-            <div class="game-option-play">PLAY →</div>
-          </div>
-
-          <div class="game-option" id="pick-sash" data-game="sash">
-            <img src="image/Game/LINK_THE_BADGE.png" alt="Link The Badge" class="game-icon-img">
-            <div class="game-option-name">LINK THE BADGE</div>
-            <div class="game-option-desc">Drag to chain identical tiles — longer chains score big.</div>
-            <div class="game-option-play">PLAY →</div>
-          </div>
-
-          <div class="game-option" id="pick-seqmem" data-game="seqmem">
-            <img src="image/Game/SEQUENCE_MEMORY.png" alt="Sequence Memory" class="game-icon-img">
-            <div class="game-option-name">SEQUENCE MEMORY</div>
-            <div class="game-option-desc">Watch the sequence flash, then recreate it perfectly.</div>
-            <div class="game-option-play">PLAY →</div>
-          </div>
-
-          <div class="game-option" id="pick-puzzle" data-game="puzzle">
-            <img src="image/Game/BADGE_PUZZLE.png" alt="Badge Puzzle" class="game-icon-img">
-            <div class="game-option-name">BADGE PUZZLE</div>
-            <div class="game-option-desc">Slide tiles into the correct order in the fewest moves.</div>
-            <div class="game-option-play">PLAY →</div>
-          </div>
-
         </div>
       </div>
 
@@ -322,7 +324,7 @@
         <div class="sheep-wrap">
           <div class="game-topbar">
             <button class="game-btn ghost game-back-btn" data-back="gv-sheep">← Back</button>
-            <img src="image/Game/Target_Trio.png" alt="Target Trio" class="game-icon-img">
+            <img src="image/Game/TARGET_TRIO.png" alt="Target Trio" class="game-icon-img">
             <div class="game-option-name">TARGET TRIO</div>
             <div class="game-lvl-pills" id="sheep-lvl-pills">
               <button class="lvl-pill active" data-lvl="1">Easy</button>
