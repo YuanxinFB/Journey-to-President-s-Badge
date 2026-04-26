@@ -787,11 +787,13 @@ const BADGE_REQS = [
     "imgKey": "presidents_award",
     "isLeft": true,
     "basic": [
-      "Minimum age: 15 years old, Maximum: 19 years old",
-      "Must be an NCO in the Company",
-      "Minimum awards required: NCO Proficiency Star (Advanced), Christian Education (Advanced), Drill (Advanced), Recruitment (Basic)",
-      "At least three years of service in Senior Section",
-      "At least six awards from Group A, B, C, and D (At least one award from each group, minimum two Basic and four Advanced Level)"
+      "The applicant must be at least 15 years and an NCO in the Company. The maximum age to apply for this award is by 19 years old, based on calendar age (refer to page 109).",
+      "NCO’s Proficiency Star (Advanced Level).",
+      "Christian Education (Advanced Level).",
+      "Drill (Advanced Level).",
+      "Recruitment (Basic Level) — NOTE: Recruitment (Advanced) does not count towards the four (4) Advanced Proficiency Awards.",
+      "At least three years of service in the Senior Section.",
+      "You need to earn at least 6 awards in total, spread across Groups A, B, C, and D (with at least one award from each group). Among those 6 awards, at least 2 must be Basic Level and at least 4 must be Advanced Level. (NOTE: Compulsory awards like Target, Christian Ed, Drill, and Recruitment do not count towards this requirement.)"
     ],
     "advanced": null
   },
@@ -1721,8 +1723,9 @@ function computeCriteria(s) {
   const ceVal = b.christian_ed && b.christian_ed.advanced ? 2 : (b.christian_ed && b.christian_ed.basic ? 1 : 0);
   const drillVal = b.drill && b.drill.advanced ? 2 : (b.drill && b.drill.basic ? 1 : 0);
 
-  const basicTotal = ALL_PROF.filter(x => b[x.id] && b[x.id].basic).length;
-  const advTotal = ALL_PROF.filter(x => b[x.id] && b[x.id].advanced).length;
+  const PROF_BADGES = [...GROUP_A, ...GROUP_B, ...GROUP_C, ...GROUP_D];
+  const basicTotal = PROF_BADGES.filter(x => b[x.id] && b[x.id].basic).length;
+  const advTotal = PROF_BADGES.filter(x => b[x.id] && b[x.id].advanced).length;
 
   const crits = [
     {
@@ -2188,16 +2191,7 @@ sidebarOpen.addEventListener('click', () => {
   document.getElementById('main').classList.remove('sidebar-hidden');
 });
 
-// Mobile Header Logo click to HD
-const mobLogo = document.getElementById('mobile-header-logo');
-if (mobLogo) {
-  mobLogo.addEventListener('click', () => {
-    document.getElementById('hd-logo-popup').classList.add('show');
-  });
-}
-document.getElementById('hd-logo-popup')?.addEventListener('click', () => {
-  document.getElementById('hd-logo-popup').classList.remove('show');
-});
+
 
 /* Mobile arm segment toggle (Right / Left / Both) */
 document.querySelectorAll('.seg-btn').forEach(btn => {
@@ -3830,11 +3824,15 @@ document.getElementById('puzzle-start-btn').addEventListener('click', pzStart);
       e.preventDefault();
       popup.style.display = 'flex';
       requestAnimationFrame(() => popup.classList.add('show'));
+      document.body.style.overflow = 'hidden';
     });
 
     const closePopup = () => {
       popup.classList.remove('show');
-      setTimeout(() => { popup.style.display = 'none'; }, 300);
+      setTimeout(() => { 
+        popup.style.display = 'none'; 
+        document.body.style.overflow = '';
+      }, 300);
     };
 
     close.addEventListener('click', closePopup);
@@ -3846,7 +3844,7 @@ document.getElementById('puzzle-start-btn').addEventListener('click', pzStart);
 
 /* HD Logo Popup Toggle */
 (function hdLogoPopup() {
-  const btns = document.querySelectorAll('#main-logo, #footer-logo');
+  const btns = document.querySelectorAll('#main-logo, #footer-logo, #mobile-header-logo');
   const popup = document.getElementById('hd-logo-popup');
 
   if (btns.length && popup) {
@@ -3856,12 +3854,16 @@ document.getElementById('puzzle-start-btn').addEventListener('click', pzStart);
         e.stopPropagation();
         popup.style.display = 'flex';
         requestAnimationFrame(() => popup.classList.add('show'));
+        document.body.style.overflow = 'hidden';
       });
     });
 
     const closePopup = () => {
       popup.classList.remove('show');
-      setTimeout(() => { popup.style.display = 'none'; }, 300);
+      setTimeout(() => { 
+        popup.style.display = 'none'; 
+        document.body.style.overflow = '';
+      }, 300);
     };
 
     popup.addEventListener('click', closePopup); // Clicking anywhere on it closes it

@@ -60,7 +60,7 @@
     <!-- ── DESKTOP: Traditional Top Nav (Hidden on Mobile) ── -->
     <nav class="tab-nav desktop-nav" id="tab-nav">
       <div class="tab-nav-logo">
-        <img src="image/J2PB_LOGO.png" alt="BB Logo" class="tab-logo-img">
+        <img src="image/J2PB_LOGO.png" alt="BB Logo" class="tab-logo-img" id="main-logo" style="cursor: pointer;">
         <span class="tab-logo-text">Journey to President's Badge</span>
       </div>
       <div class="tab-nav-scroll">
@@ -191,17 +191,19 @@
             <img src="image/President/Presidents.png" alt="President's Award" class="title-icon">
             President's Award Syllabus
           </div>
-          <p class="syllabus-age">The applicant must be <strong>15 years and above</strong> and be recommended by
-            his/her Company Captain and Chaplain.</p>
+          <p class="syllabus-age">The applicant must be at least 15 years and an NCO in the Company. The maximum age to
+            apply for this award is by 19 years old, based on calendar age.</p>
           <ul class="syllabus-list">
-            <li>Must be an <strong>NCO in the Company</strong></li>
             <li>NCO's Proficiency Star <strong>(Advanced Level)</strong></li>
             <li>Christian Education <strong>(Advanced Level)</strong></li>
             <li>Drill <strong>(Advanced Level)</strong></li>
-            <li>Recruitment <strong>(Basic Level)</strong></li>
+            <li>Recruitment <strong>(Basic Level)</strong> — <small>Advanced Level does not count towards the "4 of
+                Advanced Proficiency Award" as Recruitment is a Compulsory Award.</small></li>
             <li>At least <strong>three years of service</strong> in the Senior Section</li>
-            <li>At least <strong>six (6) awards</strong> from groups A, B, C & D with at least one from each group —
-              minimum <strong>2 Basic + 4 Advanced</strong></li>
+            <li>You need to earn at least <strong>6 awards</strong> in total, spread across Groups A, B, C, and D (with
+              at least one award from each group). Among those 6 awards, at least <strong>2 must be Basic Level</strong>
+              and at least <strong>4 must be Advanced Level</strong>. — <small>Compulsory Awards do not count towards
+                this requirement.</small></li>
           </ul>
         </div>
       </div>
@@ -271,7 +273,7 @@
         <div class="game-sel-grid">
 
           <div class="game-option" id="pick-sheep" data-game="sheep">
-            <img src="image/Game/Target_Trio.png" alt="Target Trio" class="game-icon-img">
+            <img src="image/Game/TARGET_TRIO.png" alt="Target Trio" class="game-icon-img">
             <div class="game-option-name">TARGET TRIO</div>
             <div class="game-option-desc">Collect 3 matching badges to clear the layered board.</div>
             <div class="game-option-play">PLAY →</div>
@@ -285,28 +287,28 @@
           </div>
 
           <div class="game-option" id="pick-drift" data-game="drift">
-            <img src="image/Game/Inspection Check.png" alt="Inspection Check" class="game-icon-img">
+            <img src="image/Game/INSPECTION_CHECK.png" alt="Inspection Check" class="game-icon-img">
             <div class="game-option-name">INSPECTION CHECK</div>
             <div class="game-option-desc">Memorize the grid, then spot what changed.</div>
             <div class="game-option-play">PLAY →</div>
           </div>
 
           <div class="game-option" id="pick-sash" data-game="sash">
-            <img src="image/Game/Link The Badge.png" alt="Link The Badge" class="game-icon-img">
+            <img src="image/Game/LINK_THE_BADGE.png" alt="Link The Badge" class="game-icon-img">
             <div class="game-option-name">LINK THE BADGE</div>
             <div class="game-option-desc">Drag to chain identical tiles — longer chains score big.</div>
             <div class="game-option-play">PLAY →</div>
           </div>
 
           <div class="game-option" id="pick-seqmem" data-game="seqmem">
-            <img src="image/Game/Sequence Memory.png" alt="Sequence Memory" class="game-icon-img">
+            <img src="image/Game/SEQUENCE_MEMORY.png" alt="Sequence Memory" class="game-icon-img">
             <div class="game-option-name">SEQUENCE MEMORY</div>
             <div class="game-option-desc">Watch the sequence flash, then recreate it perfectly.</div>
             <div class="game-option-play">PLAY →</div>
           </div>
 
           <div class="game-option" id="pick-puzzle" data-game="puzzle">
-            <img src="image/Game/Badge_Puzzle_Remove.png" alt="Badge Puzzle" class="game-icon-img">
+            <img src="image/Game/BADGE_PUZZLE.png" alt="Badge Puzzle" class="game-icon-img">
             <div class="game-option-name">BADGE PUZZLE</div>
             <div class="game-option-desc">Slide tiles into the correct order in the fewest moves.</div>
             <div class="game-option-play">PLAY →</div>
@@ -393,7 +395,7 @@
         <div class="drift-wrap">
           <div class="game-topbar">
             <button class="game-btn ghost game-back-btn" data-back="gv-drift">← Back</button>
-            <img src="image/Game/Inspection Check.png" alt="Inspection Check" class="game-icon-img">
+            <img src="image/Game/INSPECTION_CHECK.png" alt="Inspection Check" class="game-icon-img">
             <div class="game-option-name">INSPECTION CHECK</div>
             <div class="game-lvl-pills" id="drift-lvl-pills">
               <button class="lvl-pill active" data-lvl="1">Easy</button>
@@ -422,7 +424,7 @@
         <div class="sash-wrap">
           <div class="game-topbar">
             <button class="game-btn ghost game-back-btn" data-back="gv-sash">← Back</button>
-            <img src="image/Game/Link The Badge.png" alt="Link The Badge" class="game-icon-img">
+            <img src="image/Game/LINK_THE_BADGE.png" alt="Link The Badge" class="game-icon-img">
             <div class="game-option-name">LINK THE BADGE</div>
             <div class="game-lvl-pills" id="sash-lvl-pills">
               <button class="lvl-pill active" data-lvl="1">Easy</button>
@@ -448,7 +450,7 @@
         <div class="seqmem-wrap">
           <div class="game-topbar">
             <button class="game-btn ghost game-back-btn" data-back="gv-seqmem">← Back</button>
-            <img src="image/Game/Sequence Memory.png" alt="Sequence Memory" class="game-icon-img">
+            <img src="image/Game/SEQUENCE_MEMORY.png" alt="Sequence Memory" class="game-icon-img">
             <div class="game-option-name">SEQUENCE MEMORY</div>
             <div class="game-lvl-pills" id="seqmem-lvl-pills">
               <button class="lvl-pill active" data-lvl="1">Easy</button>
@@ -480,7 +482,7 @@
         <div class="puzzle-wrap">
           <div class="game-topbar">
             <button class="game-btn ghost game-back-btn" data-back="gv-puzzle">← Back</button>
-            <img src="image/Game/Badge_Puzzle_Remove.png" alt="Badge Puzzle" class="game-icon-img">
+            <img src="image/Game/BADGE_PUZZLE.png" alt="Badge Puzzle" class="game-icon-img">
             <div class="game-option-name">BADGE PUZZLE</div>
             <div class="game-lvl-pills" id="puzzle-lvl-pills">
               <button class="lvl-pill active" data-lvl="3">3×3</button>
@@ -598,7 +600,7 @@
   <!-- HD LOGO POPUP -->
   <div id="hd-logo-popup" class="support-popup" style="cursor: pointer;">
     <div class="popup-content hd-logo-content" style="background: transparent; box-shadow: none; padding: 0;">
-      <img src="image/J2PB_LOGO_HD.jpg" alt="HD Logo"
+      <img src="image/J2PB_LOGO.png" alt="HD Logo"
         style="max-width: 600px; max-height: 80vh; width: auto; height: auto; display: block; margin: 0 auto;">
     </div>
   </div>

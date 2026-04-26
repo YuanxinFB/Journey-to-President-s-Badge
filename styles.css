@@ -1019,7 +1019,6 @@ body[data-active-tab="games"] #fab {
 .badge-img-wrap {
   width: 64px;
   height: 64px;
-  border-radius: 50%;
   overflow: hidden;
   flex-shrink: 1;
   /* Changed from 0 to allow responsive shrinking */
@@ -1309,9 +1308,7 @@ body[data-active-tab="games"] #fab {
   width: 26px;
   height: 26px;
   object-fit: contain;
-  border-radius: 50%;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.06);
 }
 
 
@@ -3148,8 +3145,8 @@ body[data-active-tab="games"] #fab {
 }
 
 .game-icon-img {
-  width: 56px;
-  height: 56px;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
   margin: 0 auto;
 }
@@ -5278,6 +5275,8 @@ body[data-active-tab="games"] #fab {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 2000;
   align-items: center;
   justify-content: center;
