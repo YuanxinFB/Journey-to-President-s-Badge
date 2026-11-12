@@ -26,10 +26,12 @@
 }
 
 .site-intro video {
-  width: min(82vw, 1200px);
+  width: min(65vw, 900px);
   height: auto;
   max-height: 75vh;
   object-fit: contain;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
 }
 
 .site-intro-skip {
