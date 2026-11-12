@@ -10,7 +10,7 @@
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=uniform-sash-avatar">
   <link rel="icon" type="image/png" href="image/J2PB_LOGO.png">
   <link rel="apple-touch-icon" href="image/J2PB_LOGO.png">
   <!-- SEO & Social Media -->
@@ -20,6 +20,46 @@
 </head>
 
 <body>
+
+  <script>
+    (() => {
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let alreadyPlayed = false;
+      try { alreadyPlayed = sessionStorage.getItem('j2pb-intro-played') === 'yes'; } catch (_) {}
+      if (reducedMotion || alreadyPlayed) return;
+
+      const overlay = document.createElement('div');
+      overlay.className = 'site-intro';
+      overlay.setAttribute('aria-label', 'Logo introduction');
+      const video = document.createElement('video');
+      video.src = 'image/J2PB_Logo_Video.mp4';
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = 'auto';
+      const skip = document.createElement('button');
+      skip.type = 'button';
+      skip.className = 'site-intro-skip';
+      skip.textContent = 'Skip intro';
+      overlay.append(video, skip);
+      document.body.prepend(overlay);
+
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timeout);
+        video.pause();
+        overlay.remove();
+        try { sessionStorage.setItem('j2pb-intro-played', 'yes'); } catch (_) {}
+      };
+      const timeout = setTimeout(finish, 12000);
+      skip.addEventListener('click', finish);
+      video.addEventListener('ended', finish);
+      video.addEventListener('error', finish);
+      const playback = video.play();
+      if (playback) playback.catch(finish);
+    })();
+  </script>
 
   <!-- ═══════════════════════════════════════════
        COMPONENT 1 — BADGE SELECTOR SIDEBAR
@@ -84,6 +124,9 @@
           <button class="seg-btn" data-arm="both">Both</button>
         </div>
         <button class="arm-info-btn" id="arm-info-btn" title="Badge Arrangement Rules">?</button>
+        <button class="arm-3d-btn" id="arm-3d-btn" title="Boys' Brigade Malaysia 3D Uniform &amp; Badge Viewer">
+          <i class="fa-solid fa-cube"></i> 3D Uniform
+        </button>
       </div>
 
       <!-- Info modal -->
@@ -114,17 +157,178 @@
         </div>
       </div>
 
+      <!-- ═══════════════════════════════════════════
+           BBM 3D UNIFORM & BADGE VIEWER MODAL
+      ═══════════════════════════════════════════ -->
+      <div id="uniform-3d-modal" class="uniform-3d-modal">
+        <div class="uniform-3d-window" role="dialog" aria-modal="true" aria-labelledby="u3d-title">
+          <!-- Header -->
+          <div class="uniform-3d-header">
+            <div class="uniform-3d-title-group">
+              <div class="uniform-3d-title" id="u3d-title">
+                <i class="fa-solid fa-cube" style="color: var(--gold);"></i>
+                3D Uniform &amp; Armlets
+              </div>
+              <div class="uniform-3d-subtitle">Boys' Brigade Malaysia · Senior Section</div>
+            </div>
+            <div class="uniform-3d-head-actions">
+              <button class="u3d-icon-btn" id="u3d-sync-btn" title="Sync badges with current Planner selections">
+                <i class="fa-solid fa-arrows-rotate"></i> <span>Sync Badges</span>
+              </button>
+              <button class="u3d-icon-btn" id="u3d-fullscreen-btn" title="Toggle Fullscreen" aria-label="Toggle fullscreen">
+                <i class="fa-solid fa-expand"></i>
+              </button>
+              <button class="uniform-3d-close" id="uniform-3d-close" title="Close 3D Viewer" aria-label="Close 3D viewer">&times;</button>
+            </div>
+          </div>
+
+          <!-- Viewer Body: Viewport + Controls Panel -->
+          <div class="uniform-3d-body">
+            <!-- 3D Canvas Viewport Wrap -->
+            <div class="uniform-3d-viewport-wrap" id="u3d-viewport-wrap">
+              <div id="u3d-canvas-container" class="u3d-canvas-container"></div>
+
+              <div class="u3d-view-presets" role="group" aria-label="Camera view">
+                <button class="u3d-preset-btn active" type="button" data-view="front" aria-pressed="true">Front</button>
+                <button class="u3d-preset-btn" type="button" data-view="back" aria-pressed="false">Back</button>
+                <button class="u3d-preset-btn" type="button" data-view="rightArm" aria-pressed="false">Right armlet</button>
+                <button class="u3d-preset-btn" type="button" data-view="leftArm" aria-pressed="false">Left armlet</button>
+              </div>
+
+              <div class="u3d-view-controls">
+                <div class="u3d-zoom-controls" role="group" aria-label="Zoom controls">
+                  <button class="u3d-control-btn" type="button" id="u3d-zoom-out" aria-label="Zoom out" title="Zoom out" disabled>−</button>
+                  <input type="range" id="u3d-zoom" min="25" max="100" step="5" value="25" aria-label="Zoom" aria-valuetext="25%" title="Scroll or pinch to change zoom">
+                  <button class="u3d-control-btn" type="button" id="u3d-zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
+                  <output id="u3d-zoom-value" for="u3d-zoom">25%</output>
+                  <button class="u3d-control-btn" type="button" id="u3d-fit" title="Center and fit this view">Fit</button>
+                </div>
+              </div>
+
+              <!-- Loading Indicator -->
+              <div class="u3d-loading-overlay" id="u3d-loading">
+                <div class="u3d-spinner"></div>
+                <div class="u3d-loading-text">Preparing 3D Mannequin &amp; Uniform...</div>
+              </div>
+            </div>
+
+            <!-- Controls Side Panel -->
+            <div class="uniform-3d-panel">
+              <div class="u3d-panel-scroll">
+
+                <!-- Rank -->
+                <div class="u3d-section">
+                  <div class="u3d-section-hd">
+                    <i class="fa-solid fa-angles-down" style="color: var(--gold);"></i>
+                    <span>Rank</span>
+                  </div>
+                  <div class="u3d-rank-selector">
+                    <button class="u3d-rank-pill active" data-rank="none">Private</button>
+                    <button class="u3d-rank-pill" data-rank="Lance Corporal">Lance Corporal</button>
+                    <button class="u3d-rank-pill" data-rank="Corporal">Corporal</button>
+                    <button class="u3d-rank-pill" data-rank="Sergeant">Sergeant</button>
+                    <button class="u3d-rank-pill" data-rank="Staff Sergeant">Staff Sergeant</button>
+                  </div>
+                </div>
+
+                <!-- Accessories Toggles -->
+                <div class="u3d-section">
+                  <div class="u3d-section-hd">
+                    <i class="fa-solid fa-shirt" style="color: var(--gold);"></i>
+                    <span>Uniform Accessories</span>
+                  </div>
+                  <div class="u3d-toggle-list">
+                    <label class="u3d-toggle-item">
+                      <input type="checkbox" id="u3d-tog-cap" checked>
+                      <span class="u3d-toggle-slider"></span>
+                      <span class="u3d-toggle-title">Field Service Cap</span>
+                    </label>
+                    <label class="u3d-toggle-item">
+                      <input type="checkbox" id="u3d-tog-haversack" checked>
+                      <span class="u3d-toggle-slider"></span>
+                      <span class="u3d-toggle-title">White Haversack</span>
+                    </label>
+                    <label class="u3d-toggle-item">
+                      <input type="checkbox" id="u3d-tog-tie">
+                      <span class="u3d-toggle-slider"></span>
+                      <span class="u3d-toggle-title">Sky Blue Necktie (Ceremonial Dress)</span>
+                    </label>
+                    <label class="u3d-toggle-item">
+                      <input type="checkbox" id="u3d-tog-belt" checked>
+                      <span class="u3d-toggle-slider"></span>
+                      <span class="u3d-toggle-title">Leather Belt &amp; Brass BBM Buckle</span>
+                    </label>
+                    <label class="u3d-toggle-item">
+                      <input type="checkbox" id="u3d-tog-lanyard" checked>
+                      <span class="u3d-toggle-slider"></span>
+                      <span class="u3d-toggle-title">Braided White Lanyard</span>
+                    </label>
+                    <label class="u3d-toggle-item">
+                      <input type="checkbox" id="u3d-tog-nametag" checked>
+                      <span class="u3d-toggle-slider"></span>
+                      <span class="u3d-toggle-title">Name Tag &amp; Link Badge</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Example of a President's Badge Achiever -->
+                <div class="u3d-section u3d-loadout-section">
+                  <div class="u3d-section-hd">
+                    <i class="fa-solid fa-crown" style="color: var(--gold);"></i>
+                    <span>Example of a President's Badge Achiever</span>
+                  </div>
+                  <div class="u3d-loadout-cards">
+                    <button class="u3d-loadout-card" id="u3d-loadout-example" type="button">
+                      <div class="u3d-loadout-card-hd">
+                        <i class="fa-solid fa-star" style="color: var(--gold);"></i>
+                        <span class="u3d-loadout-title">President's Badge Achiever</span>
+                        <span class="u3d-loadout-badge">One-Click</span>
+                      </div>
+                      <div class="u3d-loadout-desc">
+                        Lance Corporal · President's Award · 10 proficiency badges (Target first) · NCO Star · 3-Year &amp; 1-Year Service
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Reference uniform details -->
+                <div class="u3d-section u3d-spec-box">
+                  <div class="u3d-spec-title">
+                    <i class="fa-solid fa-circle-check" style="color: #4ade80;"></i>
+                    Uniform details
+                  </div>
+                  <ul class="u3d-spec-list">
+                    <li><strong>Cap:</strong> Field service cap, tilted slightly to the right, BB cap badge.</li>
+                    <li><strong>Shirt:</strong> Dark navy with rolled sleeves for Day Dress. Selecting the sky-blue necktie adds long sleeves and buttoned cuffs for Ceremonial Dress.</li>
+                    <li><strong>Shoulder flash:</strong> "BRIGED PUTERA MALAYSIA" sits above each armlet.</li>
+                    <li><strong>Armlets:</strong> Proficiency badges and rank on the right. Awards and service badges on the left.</li>
+                    <li><strong>Haversack:</strong> White ribbed webbing with brass adjusters, over the right shoulder and under the belt to the flat left-hip pouch.</li>
+                    <li><strong>Belt:</strong> Glossy black leather with a round brass BB buckle and rectangular side fittings.</li>
+                    <li><strong>Trousers:</strong> Navy blue, straight cut, no pleats.</li>
+                    <li><strong>Shoes:</strong> Plain black shoes or boots, navy socks.</li>
+                    <li><strong>Name tag:</strong> Leave 0.5 cm above the left chest pocket and 1 cm between the name tag and the Link badge above it.</li>
+                    <li><strong>NCO lanyard:</strong> White braid under the left epaulette with one cord following the pocket edge to the inner pocket slit (NCOs only).</li>
+                    <li><strong>Sash:</strong> Sergeant red or Staff Sergeant royal blue, from the left shoulder to the right hip, crossing the white haversack. Under the front belt and over the rear belt.</li>
+                  </ul>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="arms-outer" id="arms-outer">
         <!-- Right arm label outside box -->
         <div class="arm-col" id="arm-col-right">
-          <div class="arm-label">Right Arm</div>
+          <div class="arm-label">Right Armlet</div>
           <div class="arm-card" id="arm-right">
             <div id="arm-right-content"></div>
           </div>
         </div>
         <!-- Left arm label outside box -->
         <div class="arm-col" id="arm-col-left">
-          <div class="arm-label">Left Arm</div>
+          <div class="arm-label">Left Armlet</div>
           <div class="arm-card" id="arm-left">
             <div id="arm-left-content"></div>
           </div>
@@ -664,7 +868,9 @@
     </button>
   </nav>
 
-  <script src="app.js"></script>
+  <script src="lib/three.min.js"></script>
+  <script src="app.js?v=uniform-sash-avatar"></script>
+  <script src="uniform3d.js?v=uniform-sash-avatar"></script>
 </body>
 
 </html>

@@ -117,6 +117,17 @@ const LEFT_IMAGES = {
   link: 'image/Left/Link Badge.png',
 };
 
+// Size compares the longest visible edge. artScale compensates for transparent PNG padding.
+const PRESIDENT_AWARD_SIZE = 1.10;
+const LEFT_AWARD_STYLE = {
+  founders_award: { size: PRESIDENT_AWARD_SIZE * 1.20, artScale: 623 / 555, extraPixels: 40 },
+  presidents_award: { size: PRESIDENT_AWARD_SIZE, artScale: 623 / 539 },
+  gold_award: { size: 1, artScale: 623 / 509 },
+  dofe_bronze: { size: 1, artScale: 384 / 377 },
+  dofe_silver: { size: 1, artScale: 384 / 378 },
+  dofe_gold: { size: 1, artScale: 384 / 377 }
+};
+
 /* Badge requirements for Component 5 */
 const BADGE_REQS = [
   {
@@ -1429,8 +1440,10 @@ function imgChip(src, title, isAdv) {
   </div>`;
 }
 
-function leftImgChip(src, title, small = false, extraClass = '') {
-  return `<div class="badge-img-wrap${small ? ' badge-img-sm' : ''}${extraClass ? ' ' + extraClass : ''}" title="${title}">
+function leftImgChip(src, title, small = false, awardId) {
+  const award = LEFT_AWARD_STYLE[awardId];
+  const awardStyle = award ? ` style="--award-size: ${award.size}; --award-art-scale: ${award.artScale}; --award-extra: ${award.extraPixels ?? 0}px"` : '';
+  return `<div class="badge-img-wrap${small ? ' badge-img-sm' : ''}${award ? ' left-award' : ''}"${awardStyle} title="${title}">
     <img class="badge-img" src="${src}" alt="${title}">
   </div>`;
 }
@@ -1509,23 +1522,23 @@ function renderArrangement(s) {
   const sv = s.service;
   const sp = s.special;
 
-  function leftRow(items, small = false, isFounderRow = false, isPresidentRow = false) {
+  function leftRow(items, small = false) {
     if (!items.length) return '';
-    return `<div class="left-arm-row">${items.map(([src, t]) => {
-      let extraClass = '';
-      if (isFounderRow && t.includes("Founder")) extraClass = 'badge-img-xl';
-      if (isPresidentRow && t.includes("President")) extraClass = 'badge-img-lg';
-      return leftImgChip(src, t, small, extraClass);
-    }).join('')}</div>`;
+    return `<div class="left-arm-row">${items.map(([src, title, awardId]) =>
+      leftImgChip(src, title, small, awardId)
+    ).join('')}</div>`;
   }
 
   const r1 = [];
-  if (sp.founders_award) r1.push([LEFT_IMAGES.founders_award, "Founder's Award"]);
+  if (sp.founders_award) r1.push([LEFT_IMAGES.founders_award, "Founder's Award", "founders_award"]);
 
   const r2 = [];
-  if (sp.presidents_award) r2.push([LEFT_IMAGES.presidents_award, "President's Award"]);
-  if (sp.gold_award) r2.push([LEFT_IMAGES.gold_award, 'Gold Award']);
-  if (sp.dofe) r2.push([LEFT_IMAGES['dofe_' + sp.dofe] || '', 'Duke of Edinburgh – ' + sp.dofe]);
+  if (sp.presidents_award) r2.push([LEFT_IMAGES.presidents_award, "President's Award", "presidents_award"]);
+  if (sp.gold_award) r2.push([LEFT_IMAGES.gold_award, 'Gold Award', 'gold_award']);
+  if (sp.dofe) {
+    const awardId = 'dofe_' + sp.dofe;
+    r2.push([LEFT_IMAGES[awardId] || '', 'Duke of Edinburgh – ' + sp.dofe, awardId]);
+  }
 
   const r3 = [];
   if (sp.gold_scholastic) r3.push([LEFT_IMAGES.gold_scholastic, 'Gold Scholastic Award']);
@@ -1545,8 +1558,8 @@ function renderArrangement(s) {
   }
 
   const rows = [
-    leftRow(r1, false, true),
-    leftRow(r2, false, false, true),
+    leftRow(r1),
+    leftRow(r2),
     leftRow(r3),
     leftRow(r4),
     leftRow(r5, true)
