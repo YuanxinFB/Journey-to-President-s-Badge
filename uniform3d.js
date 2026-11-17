@@ -2485,10 +2485,10 @@
     // ── Pouch: thick white canvas body, shaped flap with stitched border, brass stud, belt loops ──
     const pouch = new THREE.Group();
     pouch.name = 'haversackPouch';
-    pouch.position.set(SL * 0.222, 0.925, -0.045);
-    pouch.rotation.y = Math.PI / 2 + 0.30;   // rests on the left hip, turned slightly toward the back
-    pouch.rotation.z = 0.02;
-    pouch.scale.setScalar(0.84);              // small pouch (~13 x 10 cm)
+    pouch.position.set(SL * 0.217, 0.953, 0.019);
+    pouch.rotation.y = Math.PI / 2 - 0.13;
+    pouch.rotation.z = 0.12;
+    pouch.scale.set(0.98, 0.66, 0.78);
     const pouchShape = roundedRectangle(0.156, 0.122, 0.004);
     const body = new THREE.Mesh(new THREE.ExtrudeGeometry(pouchShape, {
       depth: 0.012, bevelEnabled: true, bevelSize: 0.0014, bevelThickness: 0.0012, bevelSegments: 3
@@ -2501,9 +2501,10 @@
     const flap = new THREE.Shape();
     flap.moveTo(-0.080, 0.062);
     flap.lineTo(0.080, 0.062);
-    flap.lineTo(0.080, 0.028);
-    flap.quadraticCurveTo(0.058, 0.000, 0, -0.014);
-    flap.quadraticCurveTo(-0.058, 0.000, -0.080, 0.028);
+    flap.lineTo(0.080, 0.016);
+    flap.quadraticCurveTo(0.080, 0.010, 0.073, 0.010);
+    flap.lineTo(-0.073, 0.010);
+    flap.quadraticCurveTo(-0.080, 0.010, -0.080, 0.016);
     flap.closePath();
     const foldedFlap = new THREE.Mesh(new THREE.ExtrudeGeometry(flap, {
       depth: 0.0018, bevelEnabled: true, bevelSize: 0.0006, bevelThickness: 0.0005, bevelSegments: 2
@@ -2519,18 +2520,18 @@
     // Brass stud with a raised rim and domed head.
     const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.0092, 0.0092, 0.0014, 28), brassMat);
     rim.rotation.x = Math.PI / 2;
-    rim.position.set(0, 0.004, 0.0100);
+    rim.position.set(-0.055, 0.024, 0.0100);
     pouch.add(rim);
     const pouchButton = new THREE.Mesh(new THREE.SphereGeometry(0.0068, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), brassMat);
     pouchButton.name = 'pouchBrassButton';
     pouchButton.rotation.x = Math.PI / 2;
-    pouchButton.position.set(0, 0.004, 0.0106);
+    pouchButton.position.set(-0.055, 0.024, 0.0106);
     pouch.add(pouchButton);
     // Two belt loops on the back of the pouch (toward the wearer).
     for (const lx of [-0.042, 0.042]) {
-      const loop = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.056, 0.0035), whiteMat);
+      const loop = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.050, 0.0035), whiteMat);
       loop.name = 'pouchBeltLoop';
-      loop.position.set(lx, 0.078, -0.0105);
+      loop.position.set(lx, 0.067, -0.0105);
       loop.castShadow = true;
       pouch.add(loop);
     }
@@ -2544,7 +2545,7 @@
     const tail = new THREE.Mesh(tailGeo, whiteMat);
     tail.name = 'haversackTail';
     tail.rotation.y = Math.PI / 2;
-    tail.position.set(0.222, 0.986, -0.005);
+    tail.position.set(0.217, 0.997, 0.031);
     tail.castShadow = true;
     haversackGroup.add(tail);
     haversackGroup.visible = window.BBMUniform3D.state.haversackVisible;
@@ -2594,7 +2595,10 @@
 
     // Subdivide across the cloth as well as along it so belt edges do not cut
     // through a large diagonal triangle whose corner vertices are clear.
-    const widths = points.map(() => 0.066);
+    const widths = points.map((_, i) => {
+      const rowsFromKnot = Math.min(i, points.length - 1 - i);
+      return 0.030 + 0.036 * smooth(0, 9, rowsFromKnot);
+    });
     const smoothPoints = points.map((point, i) => {
       if (i < 4 || i >= points.length - 4) return point;
       return point.map((value, axis) => (
@@ -2701,69 +2705,40 @@
     const knot = new THREE.Group();
     knot.name = 'rightHipSashKnot';
     knot.position.set(...knotPoint);
-    knot.rotation.y = -0.4;
+    knot.rotation.y = -0.70;
     const knotGeometry = new THREE.SphereGeometry(1, 24, 16);
-    knotGeometry.scale(0.034, 0.024, 0.014);
+    knotGeometry.scale(0.027, 0.020, 0.012);
     const knotMesh = new THREE.Mesh(knotGeometry, sashMat);
     knotMesh.rotation.z = -0.25;
     knot.add(knotMesh);
-    const keeper = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.045, 0.008), sashMat);
-    keeper.position.z = 0.012;
-    keeper.rotation.z = -0.25;
-    knot.add(keeper);
     sashGroup.add(knot);
 
-    // Two broad hanging ends finish in short strands, rather than a solid comb.
-    const makeTail = (offsetX, endY, width, frontOffset, lean) => {
-      const positions = [],
-        uvs = [],
-        indices = [];
-      const rows = 32,
-        columns = 6;
-      for (let row = 0; row <= rows; row++) {
-        const t = row / rows;
-        const centerX = knotPoint[0] + offsetX + lean * t;
-        const y = 0.943 + (endY - 0.943) * t;
-        const z = knotPoint[2] + frontOffset + 0.008 * Math.sin(t * Math.PI);
-        for (let column = 0; column <= columns; column++) {
-          const u = column / columns;
-          positions.push(
-            centerX + (u - 0.5) * width,
-            y + 0.006 * (u - 0.5) * t,
-            z
-          );
-          uvs.push(u, t);
-        }
-      }
-      for (let row = 0; row < rows; row++)
-        for (let column = 0; column < columns; column++) {
-          const a = row * (columns + 1) + column,
-            b = a + columns + 1;
-          indices.push(a, b, a + 1, b, b + 1, a + 1);
-        }
-      const tailGeometry = new THREE.BufferGeometry();
-      setAttr(tailGeometry, 'position', positions, 3);
-      setAttr(tailGeometry, 'uv', uvs, 2);
-      tailGeometry.setIndex(indices);
-      tailGeometry.computeVertexNormals();
-      const tail = new THREE.Mesh(tailGeometry, sashMat);
-      tail.name = 'hangingSashEnd';
-      tail.castShadow = true;
-      sashGroup.add(tail);
+    // The two sash runs gather at the hip and finish in a bundle of hanging threads.
+    const tassel = new THREE.Group();
+    tassel.name = 'rightHipSashTassel';
+    tassel.position.copy(knot.position);
+    tassel.rotation.y = knot.rotation.y;
+    const binding = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.014, 0.025, 18), sashMat);
+    binding.scale.z = 0.75;
+    binding.position.y = -0.015;
+    tassel.add(binding);
+
+    // Pack the threads in three layers so the bundle reads from the front and side.
+    for (let layer = -1; layer <= 1; layer++) {
       for (let strand = 0; strand < 16; strand++) {
-        const u = strand / 15;
-        const x = knotPoint[0] + offsetX + lean + (u - 0.5) * width;
-        const y = endY + 0.006 * (u - 0.5);
-        const length = 0.034 + 0.004 * Math.cos(strand * 1.7);
-        const fringe = new THREE.Mesh(new THREE.CylinderGeometry(0.00105, 0.0008, length, 5), sashMat);
-        fringe.position.set(x, y - length / 2, knotPoint[2] + frontOffset);
-        fringe.rotation.z = 0.045 * Math.sin(strand * 1.3);
-        fringe.name = 'sashFringe';
-        sashGroup.add(fringe);
+        const across = strand / 15 * 2 - 1;
+        const variation = Math.sin(strand * 2.31 + layer * 1.17);
+        const depth = layer * 0.004;
+        const endY = -0.135 - 0.007 * variation;
+        const thread = new THREE.CatmullRomCurve3([
+          new THREE.Vector3(across * 0.010, -0.019, depth),
+          new THREE.Vector3(across * 0.016 - 0.004, -0.062, depth + 0.003),
+          new THREE.Vector3(across * 0.022 - 0.007, endY, depth * 1.5 + 0.008)
+        ], false, 'centripetal');
+        tassel.add(new THREE.Mesh(new THREE.TubeGeometry(thread, 10, 0.0015, 6, false), sashMat));
       }
-    };
-    makeTail(-0.008, 0.69, 0.06, -0.007, -0.006);
-    makeTail(0.012, 0.653, 0.064, 0.007, -0.004);
+    }
+    sashGroup.add(tassel);
 
     uniformGroup.add(sashGroup);
     updateSashForRank(window.BBMUniform3D.state.rank);
