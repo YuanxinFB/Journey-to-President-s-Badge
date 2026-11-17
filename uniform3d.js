@@ -970,6 +970,7 @@
     buildTie();
     buildFieldServiceCap(shirtNavyMat);
     buildHaversack(brassMat);
+    buildNCOLanyard();
     buildNametagAndLinkBadge();
     updateDressConfiguration();
   }
@@ -1439,7 +1440,6 @@
     }
 
     uniformGroup.add(shirtGroup);
-    buildNCOLanyard();
   }
 
   /* Smooth shoulder loop and a lighter return cord to the pocket eyelet. */
@@ -1478,21 +1478,36 @@
     const eyelet = uniformGroup.getObjectByName('lanyardEyelet');
     const anchor = eyelet.getWorldPosition(new THREE.Vector3());
     anchor.z += 0.001;
-    const curve = new THREE.CatmullRomCurve3(
+    const route = new THREE.CatmullRomCurve3(
       [
         junction,
-        front(0.207, 1.151, 0.023),
-        front(0.148, 1.140, 0.026),
-        front(0.094, 1.153, 0.025),
-        front(0.061, 1.190, 0.021),
-        new THREE.Vector3(0.061, 1.245, garmentFrontZ(0.061, 1.245) + 0.008),
+        front(0.207, 1.151, 0.008),
+        new THREE.Vector3(0.148, 1.140, garmentFrontZ(0.148, 1.172) + 0.004),
+        new THREE.Vector3(0.094, 1.153, garmentFrontZ(0.094, 1.173) + 0.004),
+        new THREE.Vector3(0.061, 1.190, garmentFrontZ(0.061, 1.190) + 0.004),
+        new THREE.Vector3(0.061, 1.245, garmentFrontZ(0.061, 1.245) + 0.004),
         anchor
       ],
       false,
       'centripetal'
     );
+    // Fit the cord in the gap between the pocket and the underside of the webbing.
+    const webbing = haversackGroup.getObjectByName('haversackWebbingUnderside');
+    webbing.updateWorldMatrix(true, false);
+    const ray = new THREE.Raycaster();
+    const fromTorso = new THREE.Vector3(0, 0, 1);
+    const cordRadius = 0.0016;
+    const points = route.getPoints(100);
+    for (const point of points.slice(1, -1)) {
+      const pocket = garmentFrontZ(point.x, point.y) + cordRadius + 0.001;
+      ray.set(new THREE.Vector3(point.x, point.y, 0), fromTorso);
+      const underside = ray.intersectObject(webbing, false)[0];
+      const limit = underside ? underside.point.z - cordRadius - 0.001 : Infinity;
+      point.z = Math.max(pocket, Math.min(point.z, limit));
+    }
+    const curve = new THREE.CatmullRomCurve3(points, false, 'centripetal');
     const cord = new THREE.Mesh(
-      new THREE.TubeGeometry(curve, 100, 0.0016, 10, false),
+      new THREE.TubeGeometry(curve, 100, cordRadius, 10, false),
       ropeMat
     );
     cord.name = 'singleLanyardCord';
@@ -2556,19 +2571,11 @@
       return t * t * (3 - 2 * t);
     };
     const beltZ = (x) => 0.145 * Math.pow(Math.max(0, 1 - Math.pow(Math.abs(x) / 0.224, TORSO_P)), 1 / TORSO_P);
-    const frontLift = (y) => 0.003 + 0.027 * smooth(1.05, 1.19, y) - 0.023 * smooth(1.33, 1.455, y);
-    const rearLift = (y) => 0.017 - 0.010 * smooth(1.33, 1.455, y);
+    const frontLift = (y) => 0.006 + 0.020 * smooth(1.045, 1.17, y) - 0.019 * smooth(1.29, 1.455, y);
+    const rearLift = (y) => 0.007 + 0.009 * (1 - smooth(1.29, 1.455, y));
     // The sash uses the opposite diagonal to the independently modelled white strap.
-    const points = crossStrapPoints(frontLift, rearLift, 0.17, 0.203, 0.0025).map(([x, y, z]) => {
-      const mirroredX = -x;
-      if (z <= 0 || y >= 1.455) return [mirroredX, y, z];
-      // Ease the front sash toward the sternum below the left shoulder so its
-      // outer edge clears the name tag, then return to the original hip route.
-      const frontRun = Math.max(0, Math.min(1, (y - 1.0) / 0.455));
-      const shoulderEase = 1 - smooth(1.345, 1.455, y);
-      const routedX = mirroredX - 0.062 * frontRun * shoulderEase;
-      return [routedX, y, torsoFrontZ(routedX, y) + frontLift(y)];
-    });
+    const points = crossStrapPoints(frontLift, rearLift, 0.158, 0.203, 0.0025)
+      .map(([x, y, z]) => [-x, y, z]);
     const knotPoint = [-0.236, 0.952, 0.074];
     points.unshift(knotPoint.slice(), [-0.218, 0.977, 0.084]);
     // Continue the rear band around the right hip into the same front knot.
@@ -2587,10 +2594,7 @@
 
     // Subdivide across the cloth as well as along it so belt edges do not cut
     // through a large diagonal triangle whose corner vertices are clear.
-    const widths = points.map(([, y, z]) => {
-      const chestTaper = z > 0 ? smooth(1.235, 1.275, y) * (1 - smooth(1.335, 1.405, y)) : 0;
-      return 0.078 - 0.014 * chestTaper;
-    });
+    const widths = points.map(() => 0.066);
     const smoothPoints = points.map((point, i) => {
       if (i < 4 || i >= points.length - 4) return point;
       return point.map((value, axis) => (
@@ -2635,7 +2639,7 @@
         const x = vertices.getX(i), y = vertices.getY(i), z = vertices.getZ(i);
         if (y >= 1.40) {
           const fit = smooth(1.40, 1.455, y);
-          const shoulder = torsoSurfaceY(x, z) + 0.003;
+          const shoulder = torsoSurfaceY(x, z) + 0.005;
           vertices.setY(i, y + (shoulder - y) * fit);
         }
         if (points[row][2] <= 0 || y <= 1.05 || y >= 1.407) continue;
@@ -2672,16 +2676,20 @@
         }
       }
     }
-    // Relax the closely spaced rows where the sash turns from the chest over the shoulder.
-    const fitted = vertices.array.slice();
+    // Relax the profile along the band to blend the shoulder, hardware and belt transitions.
     const stride = (across + 1) * 3;
-    for (let i = 3 * stride; i < fitted.length - 3 * stride; i += 3) {
-      const blend = smooth(1.35, 1.445, fitted[i + 1]);
-      for (let axis = 0; axis < 3; axis++) {
-        const j = i + axis;
-        const average = (fitted[j - 3 * stride] + 2 * fitted[j - stride] +
-          3 * fitted[j] + 2 * fitted[j + stride] + fitted[j + 3 * stride]) / 9;
-        vertices.array[j] = fitted[j] + blend * (average - fitted[j]);
+    for (let pass = 0; pass < 3; pass++) {
+      const fitted = vertices.array.slice();
+      for (let i = 4 * stride; i < fitted.length - 4 * stride; i += 3) {
+        const y = fitted[i + 1];
+        if (y < 1.075) continue;
+        const blend = smooth(1.075, 1.12, y);
+        for (let axis = 0; axis < 3; axis++) {
+          const j = i + axis;
+          const average = (fitted[j - 4 * stride] + 2 * fitted[j - 2 * stride] +
+            3 * fitted[j] + 2 * fitted[j + 2 * stride] + fitted[j + 4 * stride]) / 9;
+          vertices.array[j] = fitted[j] + blend * (average - fitted[j]);
+        }
       }
     }
     geometry.computeVertexNormals();
