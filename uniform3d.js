@@ -2244,8 +2244,7 @@
     uniformGroup.add(capGroup);
   }
 
-  // Soft cloth strap: a multi-column ribbon with a gentle edge curl and diagonal fabric folds that
-  // gather where the strap bends over the shoulder and relax along the taut chest and back runs.
+  // Woven strap with a gently crowned cross-section and a smooth shoulder turn.
   function makeClothStrapGeo(points, width, columns = 11) {
     const n = points.length;
     // Light smoothing so the strap flows over the shoulder instead of kinking.
@@ -2258,9 +2257,6 @@
       }
       for (let i = 0; i < n; i++) points[i] = sm[i].slice();
     }
-    // The shoulder arch is where the path passes over the top; folds gather there.
-    let top = 0;
-    for (let i = 0; i < n; i++) if (points[i][1] > points[top][1] - 1e-9 && points[i][1] >= points[top][1]) top = i;
     const pos = [], uv = [], idx = [];
     let dist = 0;
     for (let i = 0; i < n; i++) {
@@ -2272,14 +2268,10 @@
       const nr = torsoNormal(p[0], p[1], p[2]);
       let wx = ty * nr[2] - tz * nr[1], wy = tz * nr[0] - tx * nr[2], wz = tx * nr[1] - ty * nr[0];
       const wl = Math.hypot(wx, wy, wz) || 1; wx /= wl; wy /= wl; wz /= wl;
-      const arch = Math.exp(-Math.pow((i - top) / 14, 2));
-      const amp = 0.00012 + 0.00018 * arch;
       for (let k = 0; k < columns; k++) {
         const f = k / (columns - 1) - 0.5;            // -0.5 .. 0.5 across the width
         const edge = Math.pow(Math.abs(2 * f), 2);
-        const fold = amp * Math.sin(dist * 95 + f * 7.5 + 1.3 * arch)
-          + 0.45 * amp * Math.sin(dist * 41 - f * 4.0 + 2.1);
-        const lift = 0.0004 * (1 - edge) - 0.0002 * edge + fold * (1 - 0.6 * edge);   // flat woven strap, slightly crowned
+        const lift = 0.0004 * (1 - edge);
         pos.push(
           p[0] + wx * f * width + nr[0] * lift,
           p[1] + wy * f * width + nr[1] * lift,
@@ -2479,6 +2471,7 @@
       const tuck = beltFrontZ(x) - 0.0048;
       if (z > tuck) clothVertices.setZ(i, z + (tuck - z) * w);
     }
+    fitShoulderClearance(clothVertices, 0.0035, columns);
     geometry.computeVertexNormals();
     const strap = new THREE.Mesh(geometry, webbingMat);
     strap.name = 'haversackWebbing';
@@ -2748,22 +2741,7 @@
         }
       }
     }
-    // Restore clearance lost to smoothing, using the rendered shirt rather than the guide curve.
-    const shirt = uniformGroup.getObjectByName('shirtTorso');
-    shirt.updateWorldMatrix(true, false);
-    const fitRay = new THREE.Raycaster();
-    const down = new THREE.Vector3(0, -1, 0);
-    const origin = new THREE.Vector3();
-    for (let i = 0; i < vertices.count; i++) {
-      const y = vertices.getY(i);
-      if (y < 1.405) continue;
-      origin.set(vertices.getX(i), 1.57, vertices.getZ(i));
-      fitRay.set(origin, down);
-      const hit = fitRay.intersectObject(shirt, false)[0];
-      if (!hit) continue;
-      const lift = Math.max(0, hit.point.y + 0.004 - y);
-      vertices.setY(i, y + lift * smooth(1.405, 1.43, y));
-    }
+    fitShoulderClearance(vertices, 0.004);
     geometry.computeVertexNormals();
     const sash = new THREE.Mesh(geometry, sashMat);
     sash.name = 'oppositeDiagonalRankSash';
@@ -2810,6 +2788,41 @@
 
     uniformGroup.add(sashGroup);
     updateSashForRank(window.BBMUniform3D.state.rank);
+  }
+
+  // Fit both bands to the rendered shoulder after shaping and smoothing.
+  function fitShoulderClearance(vertices, clearance, columns = 1) {
+    const shirt = uniformGroup.getObjectByName('shirtTorso');
+    shirt.updateWorldMatrix(true, false);
+    const fitRay = new THREE.Raycaster();
+    const down = new THREE.Vector3(0, -1, 0);
+    const origin = new THREE.Vector3();
+    const rowLift = new Float32Array(vertices.count / columns);
+    for (let i = 0; i < vertices.count; i++) {
+      const y = vertices.getY(i);
+      if (y < 1.405) continue;
+      origin.set(vertices.getX(i), 1.57, vertices.getZ(i));
+      fitRay.set(origin, down);
+      const hit = fitRay.intersectObject(shirt, false)[0];
+      if (!hit) continue;
+      const lift = Math.max(0, hit.point.y + clearance - y);
+      const row = Math.floor(i / columns);
+      rowLift[row] = Math.max(rowLift[row], lift * smoothStep01(1.405, 1.43, y));
+    }
+    for (let row = 0; row < rowLift.length; row++) {
+      let lift = rowLift[row];
+      if (columns > 1) {
+        for (let offset = -6; offset <= 6; offset++) {
+          const nearby = rowLift[row + offset] || 0;
+          lift = Math.max(lift, nearby * (1 - smoothStep01(0, 7, Math.abs(offset))));
+        }
+      }
+      if (!lift) continue;
+      for (let column = 0; column < columns; column++) {
+        const i = row * columns + column;
+        vertices.setY(i, vertices.getY(i) + lift);
+      }
+    }
   }
 
   // Sergeant = red sash, Staff Sergeant = blue sash, other ranks = no sash
@@ -3055,9 +3068,9 @@
     paintArmletCloth(ctx);
 
     const margin = 48, gap = 12, columns = 5;
-    const stripeDepth = 24, stripeThickness = 10, stripeSpacing = 21;
-    const chevronHeight = stripes ? stripeDepth + stripeThickness + (stripes - 1) * stripeSpacing : 0;
-    const chevronTop = ARMLET_HEIGHT - margin - chevronHeight;
+    const stripeThickness = 18, stripeSpacing = 28, lowerInset = 37;
+    const chevronHeight = stripeThickness + (stripes - 1) * stripeSpacing;
+    const chevronTop = ARMLET_HEIGHT - lowerInset - chevronHeight;
     const badgeBottom = stripes ? chevronTop - gap * 2 : ARMLET_HEIGHT - margin;
     const rows = Math.ceil(badges.length / columns);
     const size = Math.min(90, (badgeBottom - margin - gap * (rows - 1)) / Math.max(rows, 1));
@@ -3073,16 +3086,10 @@
         size, state.badges[id].advanced);
     });
 
-    ctx.strokeStyle = '#f2efe4';
-    ctx.lineWidth = stripeThickness;
-    const center = ARMLET_WIDTH / 2;
+    // The mesh UVs already follow the pointed hem, so level texture bands follow its contour.
+    ctx.fillStyle = '#f2efe4';
     for (let i = 0; i < stripes; i++) {
-      const y = chevronTop + stripeThickness / 2 + i * stripeSpacing;
-      ctx.beginPath();
-      ctx.moveTo(center - 164, y);
-      ctx.lineTo(center, y + stripeDepth);
-      ctx.lineTo(center + 164, y);
-      ctx.stroke();
+      ctx.fillRect(29, chevronTop + i * stripeSpacing, ARMLET_WIDTH - 58, stripeThickness);
     }
     texture.needsUpdate = true;
   }
@@ -3213,7 +3220,9 @@
     const summary = document.getElementById('u3d-badge-summary');
     if (summary) {
       const rankText = state.rank ? state.rank : 'Private';
-      summary.innerHTML = `Rank: <strong>${rankText}</strong> · Displaying <strong>${count}</strong> selected badges on the uniform.`;
+      summary.textContent = count
+        ? `${rankText} · ${count} selected ${count === 1 ? 'badge' : 'badges'}`
+        : 'Select badges in the planner or load the example below.';
     }
   }
 
