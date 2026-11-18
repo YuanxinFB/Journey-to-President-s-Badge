@@ -2858,8 +2858,10 @@
     const tagY = tagBottom + tagHeight / 2;
     nametagMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.075, tagHeight), nametagMat);
     nametagMesh.name = 'nametag';
-    nametagMesh.position.set(x, tagY, torsoFrontZ(x, tagY) + 0.006);
     nametagMesh.rotation.y = torsoFrontAngle(x, tagY);
+    // Keep the plaque slightly proud of the shirt, along its local outward normal.
+    nametagMesh.position.set(x, tagY, torsoFrontZ(x, tagY));
+    nametagMesh.translateZ(0.009);
     uniformGroup.add(nametagMesh);
 
     const image = imageCache[LEFT_IMAGES.link];
