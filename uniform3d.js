@@ -565,14 +565,14 @@
   }
 
   // All sleeve layers use the same arm centerline. Texture center faces outward.
-  function makeArmSurface(side, halfAngle, top, bottom, radiusAt, rows = 18, cols = 32, tip = 0) {
+  function makeArmSurface(side, halfAngle, top, bottom, radiusAt, rows = 18, cols = 32, tip = 0, angleOffset = 0) {
     const positions = [], uvs = [], indices = [];
     for (let i = 0; i <= rows; i++) {
       const v = i / rows;
       for (let j = 0; j <= cols; j++) {
         const u = j / cols;
         const across = 2 * u - 1;
-        const angle = across * halfAngle;
+        const angle = across * halfAngle + angleOffset;
         const y = top + (bottom - top - tip * (1 - Math.abs(across))) * v;
         const radius = radiusAt(y);
         positions.push(side * (ARM_CENTER_X + radius * Math.cos(angle)), y, -side * radius * Math.sin(angle));
@@ -1263,14 +1263,15 @@
     dayCollarGroup.add(band);
 
     const chestMat = makeMannequinMaterial(SKIN_COLOR, THREE.DoubleSide);
-    // Cut the opening as a smooth V in the shirt surface.
+    // Keep a shallow, rounded opening above the top of the shirt placket.
     const opening = new THREE.PlaneGeometry(1, 1, 12, 32);
     const openingVertices = opening.attributes.position;
     for (let i = 0; i < openingVertices.count; i++) {
       const t = openingVertices.getY(i) + 0.5;
-      const y = 1.422 + 0.104 * t;
-      const x = openingVertices.getX(i) * (0.002 + 0.103 * t);
-      openingVertices.setXYZ(i, x, y, torsoFrontZ(x, y) + 0.003);
+      const across = openingVertices.getX(i) * 2;
+      const y = 1.489 + 0.011 * across ** 2 * (1 - t) + 0.037 * t;
+      const x = across * (0.022 + 0.026 * t);
+      openingVertices.setXYZ(i, x, y, torsoFrontZ(x, y) + 0.004);
     }
     opening.computeVertexNormals();
     dayCollarGroup.add(new THREE.Mesh(opening, chestMat));
@@ -1279,9 +1280,9 @@
     collarMat.color.setHex(0x19263b).convertSRGBToLinear();
     const addCollarLeaves = (group, buttoned) => {
       for (const side of [SR, SL]) {
-        const inner = new THREE.Vector2(buttoned ? 0.008 : 0.040, buttoned ? 1.507 : 1.524);
+        const inner = new THREE.Vector2(buttoned ? 0.008 : 0.026, buttoned ? 1.507 : 1.520);
         const outer = new THREE.Vector2(buttoned ? 0.069 : 0.086, 1.507);
-        const tip = new THREE.Vector2(buttoned ? 0.050 : 0.077, buttoned ? 1.454 : 1.445);
+        const tip = new THREE.Vector2(buttoned ? 0.050 : 0.058, buttoned ? 1.454 : 1.461);
         const geo = new THREE.BufferGeometry();
         const positions = [], indices = [];
         const rows = 16, columns = 10;
@@ -1321,9 +1322,8 @@
     // Tapered epaulettes: 2" at the shoulder seam to 1 1/2" at the collar, navy button (Section 4.2.1d)
     [SR, SL].forEach((sx) => {
       const epGeo = new THREE.PlaneGeometry(0.11, 0.05, 24, 8);
-      const tabClearance = x => sx === SL
-        ? 0.002 + 0.012 * smoothStep01(0.120, 0.136, x) * (1 - smoothStep01(0.208, 0.227, x))
-        : 0.002;
+      const tabClearance = x =>
+        0.002 + 0.017 * smoothStep01(0.129, 0.143, x) * (1 - smoothStep01(0.210, 0.227, x));
       const vertices = epGeo.attributes.position;
       for (let i = 0; i < vertices.count; i++) {
         const u = (vertices.getX(i) + 0.055) / 0.11;
@@ -1338,7 +1338,7 @@
       shirtGroup.add(ep);
 
       const epb = new THREE.Mesh(new THREE.CylinderGeometry(0.0075, 0.0075, 0.004, 14), navyBtnMat);
-      const buttonX = sx * (sx === SL ? 0.127 : 0.135);
+      const buttonX = sx * 0.121;
       epb.position.set(buttonX, torsoSurfaceY(buttonX, 0) + tabClearance(Math.abs(buttonX)) + 0.002, 0);
       epb.rotation.z = Math.atan2(torsoSurfaceY(buttonX + 0.004, 0) -
         torsoSurfaceY(buttonX - 0.004, 0), 0.008);
@@ -1642,7 +1642,7 @@
     const surfaceWidth = 2 * halfAngle * radiusAt((top + bottom) / 2);
     const artworkScaleX = (top - bottom) * ARMLET_WIDTH / (surfaceWidth * ARMLET_HEIGHT);
     const mesh = new THREE.Mesh(
-      makeArmSurface(side, halfAngle, top, bottom, radiusAt, 16, 40, side === SR ? 0.011 : 0),
+      makeArmSurface(side, halfAngle, top, bottom, radiusAt, 16, 40, side === SR ? 0.011 : 0, -side * 0.48),
       new THREE.MeshStandardMaterial({ map: texture, roughness: 0.96 })
     );
     mesh.name = side === SR ? 'rightArmlet' : 'leftArmlet';
@@ -2408,7 +2408,7 @@
     };
     // Reference photos: the strap crosses the shoulder about halfway between neck and shoulder seam (under the
     // epaulette) and runs at ~35 deg from vertical to the belt on the left side.
-    const STRAP_SHOULDER_X = 0.150, STRAP_HIP_X = 0.195;
+    const STRAP_SHOULDER_X = 0.170, STRAP_HIP_X = 0.195;
     const STRAP_START_Y = 1.024;   // inside the belt band (1.000-1.042) so the bottom end is hidden behind the belt
     const points = crossStrapPoints(frontLift, y => y < 1.040 ? -0.008 : 0.006, STRAP_SHOULDER_X, STRAP_HIP_X, 0.0015, STRAP_START_Y);   // arch passes under the epaulette
     const width = 0.056;
@@ -2606,7 +2606,7 @@
     const frontLift = (y) => 0.006 + 0.020 * smooth(1.045, 1.17, y) - 0.019 * smooth(1.29, 1.455, y);
     const rearLift = (y) => 0.007 + 0.009 * (1 - smooth(1.29, 1.455, y));
     // The sash uses the opposite diagonal to the independently modelled white strap.
-    const points = crossStrapPoints(frontLift, rearLift, 0.151, 0.203, 0.0025)
+    const points = crossStrapPoints(frontLift, rearLift, 0.170, 0.203, 0.0025)
       .map(([x, y, z]) => [-x, y, z]);
     const knotPoint = [-0.199, 0.936, 0.072];
     points.unshift(knotPoint.slice(), [-0.205, 0.975, 0.082]);
@@ -3259,7 +3259,6 @@
 
     // 7. Update textures and UI
     syncFromPlanner();
-    setCameraView('rightArm');
   }
 
   function clearAllBadges() {
