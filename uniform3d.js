@@ -1234,6 +1234,7 @@
 
     // Smooth tailored torso, tucked in, smooth back with NO pleats
     const torso = new THREE.Mesh(makeLoft(shirtAB, 1.0, 1.525, 48, 64), shirtMat);
+    torso.name = 'shirtTorso';
     torso.castShadow = true;
     shirtGroup.add(torso);
 
@@ -1261,36 +1262,51 @@
     shirtGroup.add(dayCollarGroup);
 
     // Open collar over a small section of the neck and upper chest.
-    const bandGeo = new THREE.CylinderGeometry(0.07, 0.081, 0.036, 32, 1, true, 0.92, 2 * Math.PI - 1.84);
+    const bandGeo = new THREE.CylinderGeometry(0.067, 0.087, 0.029, 48, 4, true, 0.64, 2 * Math.PI - 1.28);
     const band = new THREE.Mesh(bandGeo, shirtMat);
-    band.position.set(0, 1.514, -0.005);
+    band.position.set(0, 1.513, -0.003);
     dayCollarGroup.add(band);
 
     const chestMat = makeMannequinMaterial(SKIN_COLOR, THREE.DoubleSide);
-    const chestPoints = [],
-      chestWidths = [];
-    for (let i = 0; i <= 24; i++) {
-      const t = i / 24;
-      const y = 1.418 + 0.109 * t;
-      chestPoints.push([0, y, torsoFrontZ(0, y) + 0.006]);
-      chestWidths.push(0.003 + 0.086 * t);
+    // Cut the opening as a smooth V in the shirt surface.
+    const opening = new THREE.PlaneGeometry(1, 1, 12, 32);
+    const openingVertices = opening.attributes.position;
+    for (let i = 0; i < openingVertices.count; i++) {
+      const t = openingVertices.getY(i) + 0.5;
+      const y = 1.422 + 0.104 * t;
+      const x = openingVertices.getX(i) * (0.002 + 0.103 * t);
+      openingVertices.setXYZ(i, x, y, torsoFrontZ(x, y) + 0.003);
     }
-    dayCollarGroup.add(new THREE.Mesh(makeRibbonGeo(chestPoints, chestWidths), chestMat));
+    opening.computeVertexNormals();
+    dayCollarGroup.add(new THREE.Mesh(opening, chestMat));
 
     const collarMat = shirtMat.clone();
     collarMat.color.setHex(0x19263b).convertSRGBToLinear();
     for (const side of [SR, SL]) {
-      const points = [
-        [0.039, 1.528],
-        [0.081, 1.5],
-        [0.105, 1.455],
-        [0.044, 1.475],
-        [0.008, 1.425]
-      ];
-      const vertices = points.flatMap(([x, y]) => [side * x, y, torsoFrontZ(x, y) + 0.009]);
+      const inner = new THREE.Vector2(0.040, 1.524);
+      const outer = new THREE.Vector2(0.086, 1.507);
+      const tip = new THREE.Vector2(0.077, 1.445);
       const geo = new THREE.BufferGeometry();
-      setAttr(geo, 'position', vertices, 3);
-      geo.setIndex(side === SR ? [0, 1, 3, 1, 2, 3, 0, 3, 4] : [0, 3, 1, 1, 3, 2, 0, 4, 3]);
+      const positions = [], indices = [];
+      const rows = 16, columns = 10;
+      for (let row = 0; row <= rows; row++) {
+        const t = row / rows;
+        for (let column = 0; column <= columns; column++) {
+          const u = column / columns;
+          const point = inner.clone().lerp(outer, u).lerp(tip, t * 0.999);
+          const roll = 0.004 * Math.sin(Math.PI * (0.2 + 0.8 * u)) * (1 - t);
+          positions.push(side * point.x, point.y, torsoFrontZ(point.x, point.y) + 0.004 + roll);
+        }
+      }
+      for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+          const a = row * (columns + 1) + column;
+          const b = a + columns + 1;
+          indices.push(...(side === SR ? [a, a + 1, b, b, a + 1, b + 1] : [a, b, a + 1, b, b + 1, a + 1]));
+        }
+      }
+      setAttr(geo, 'position', positions, 3);
+      geo.setIndex(indices);
       geo.computeVertexNormals();
       dayCollarGroup.add(new THREE.Mesh(geo, collarMat));
     }
@@ -2611,17 +2627,17 @@
     const frontLift = (y) => 0.006 + 0.020 * smooth(1.045, 1.17, y) - 0.019 * smooth(1.29, 1.455, y);
     const rearLift = (y) => 0.007 + 0.009 * (1 - smooth(1.29, 1.455, y));
     // The sash uses the opposite diagonal to the independently modelled white strap.
-    const points = crossStrapPoints(frontLift, rearLift, 0.158, 0.203, 0.0025)
+    const points = crossStrapPoints(frontLift, rearLift, 0.151, 0.203, 0.0025)
       .map(([x, y, z]) => [-x, y, z]);
-    const knotPoint = [-0.236, 0.952, 0.074];
-    points.unshift(knotPoint.slice(), [-0.218, 0.977, 0.084]);
+    const knotPoint = [-0.199, 0.936, 0.072];
+    points.unshift(knotPoint.slice(), [-0.205, 0.975, 0.082]);
     // Continue the rear band around the right hip into the same front knot.
     const backHip = points[points.length - 1];
     const hipCurve = new THREE.CatmullRomCurve3(
       [
         new THREE.Vector3(...backHip),
-        new THREE.Vector3(-0.233, 0.977, -0.07),
-        new THREE.Vector3(-0.246, 0.957, 0),
+        new THREE.Vector3(-0.215, 0.977, -0.064),
+        new THREE.Vector3(-0.220, 0.945, 0),
         new THREE.Vector3(...knotPoint)
       ],
       false,
@@ -2732,6 +2748,22 @@
         }
       }
     }
+    // Restore clearance lost to smoothing, using the rendered shirt rather than the guide curve.
+    const shirt = uniformGroup.getObjectByName('shirtTorso');
+    shirt.updateWorldMatrix(true, false);
+    const fitRay = new THREE.Raycaster();
+    const down = new THREE.Vector3(0, -1, 0);
+    const origin = new THREE.Vector3();
+    for (let i = 0; i < vertices.count; i++) {
+      const y = vertices.getY(i);
+      if (y < 1.405) continue;
+      origin.set(vertices.getX(i), 1.57, vertices.getZ(i));
+      fitRay.set(origin, down);
+      const hit = fitRay.intersectObject(shirt, false)[0];
+      if (!hit) continue;
+      const lift = Math.max(0, hit.point.y + 0.004 - y);
+      vertices.setY(i, y + lift * smooth(1.405, 1.43, y));
+    }
     geometry.computeVertexNormals();
     const sash = new THREE.Mesh(geometry, sashMat);
     sash.name = 'oppositeDiagonalRankSash';
@@ -2743,7 +2775,7 @@
     knot.position.set(...knotPoint);
     knot.rotation.y = -0.70;
     const knotGeometry = new THREE.SphereGeometry(1, 24, 16);
-    knotGeometry.scale(0.027, 0.020, 0.012);
+    knotGeometry.scale(0.021, 0.018, 0.010);
     const knotMesh = new THREE.Mesh(knotGeometry, sashMat);
     knotMesh.rotation.z = -0.25;
     knot.add(knotMesh);
@@ -2765,11 +2797,11 @@
         const across = strand / 15 * 2 - 1;
         const variation = Math.sin(strand * 2.31 + layer * 1.17);
         const depth = layer * 0.004;
-        const endY = -0.135 - 0.007 * variation;
+        const endY = -0.115 - 0.007 * variation;
         const thread = new THREE.CatmullRomCurve3([
           new THREE.Vector3(across * 0.010, -0.019, depth),
-          new THREE.Vector3(across * 0.016 - 0.004, -0.062, depth + 0.003),
-          new THREE.Vector3(across * 0.022 - 0.007, endY, depth * 1.5 + 0.008)
+          new THREE.Vector3(across * 0.014 + 0.004, -0.060, depth + 0.006),
+          new THREE.Vector3(across * 0.018 + 0.009, endY, depth * 1.5 + 0.011)
         ], false, 'centripetal');
         tassel.add(new THREE.Mesh(new THREE.TubeGeometry(thread, 10, 0.0015, 6, false), sashMat));
       }
