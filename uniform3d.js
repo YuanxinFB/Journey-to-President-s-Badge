@@ -1638,11 +1638,13 @@
     canvas.height = ARMLET_HEIGHT;
     const texture = makeColorTexture(canvas);
     const halfAngle = 1.04, top = 1.343, bottom = 1.178;
+    // Keep the armlets on the outer sleeves while turning the badge rows toward the front.
+    const forwardAngle = -side * 0.93;
     const radiusAt = y => sleeveRadius(y) + 0.0035;
     const surfaceWidth = 2 * halfAngle * radiusAt((top + bottom) / 2);
     const artworkScaleX = (top - bottom) * ARMLET_WIDTH / (surfaceWidth * ARMLET_HEIGHT);
     const mesh = new THREE.Mesh(
-      makeArmSurface(side, halfAngle, top, bottom, radiusAt, 16, 40, side === SR ? 0.011 : 0, -side * 0.48),
+      makeArmSurface(side, halfAngle, top, bottom, radiusAt, 16, 40, side === SR ? 0.011 : 0, forwardAngle),
       new THREE.MeshStandardMaterial({ map: texture, roughness: 0.96 })
     );
     mesh.name = side === SR ? 'rightArmlet' : 'leftArmlet';
@@ -2607,7 +2609,13 @@
     const rearLift = (y) => 0.007 + 0.009 * (1 - smooth(1.29, 1.455, y));
     // The sash uses the opposite diagonal to the independently modelled white strap.
     const points = crossStrapPoints(frontLift, rearLift, 0.170, 0.203, 0.0025)
-      .map(([x, y, z]) => [-x, y, z]);
+      .map(([x, y, z], row) => {
+        if (row >= 96) return [-x, y, z];
+        // Move the chest run inward, blending back into the existing shoulder and hip route.
+        const nameTagClearance = smooth(1.16, 1.29, y) * (1 - smooth(1.33, 1.448, y));
+        const routedX = -x - 0.064 * nameTagClearance;
+        return [routedX, y, torsoFrontZ(routedX, y) + frontLift(y)];
+      });
     const knotPoint = [-0.199, 0.936, 0.072];
     points.unshift(knotPoint.slice(), [-0.205, 0.975, 0.082]);
     // Continue the rear band around the right hip into the same front knot.
