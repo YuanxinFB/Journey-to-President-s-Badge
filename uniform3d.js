@@ -980,10 +980,10 @@
     const legsGroup = new THREE.Group();
     const shoesMat = new THREE.MeshStandardMaterial({
       color: new THREE.Color(0x15161a).convertSRGBToLinear(),
-      roughness: 0.22,
-      metalness: 0.06,
+      roughness: 0.34,
+      metalness: 0.02,
       envMap: makeDaylightReflections(),
-      envMapIntensity: 0.82
+      envMapIntensity: 0.62
     });
     const soleMat = new THREE.MeshStandardMaterial({
       color: new THREE.Color(0x111214).convertSRGBToLinear(),
@@ -992,6 +992,11 @@
     const laceMat = new THREE.MeshStandardMaterial({
       color: new THREE.Color(0x24252a).convertSRGBToLinear(),
       roughness: 0.75
+    });
+    const eyeletMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(0x303137).convertSRGBToLinear(),
+      roughness: 0.48,
+      metalness: 0.42
     });
     const trouserGeometry=new THREE.BufferGeometry();
     setAttr(trouserGeometry,'position',window.BBMTrousers.positions,3);
@@ -1021,8 +1026,10 @@
       soleIndices = [];
     const soleRings = [
       [0, 0.95],
-      [0.003, 1],
-      [0.015, 1],
+      [0.004, 1],
+      [0.013, 1],
+      [0.015, 0.978],
+      [0.017, 1.008],
       [0.019, 0.96]
     ];
     for (const [y, scale] of soleRings) {
@@ -1039,7 +1046,7 @@
     const triangles = THREE.ShapeUtils.triangulateShape(footprint, []);
     for (const triangle of triangles) {
       soleIndices.push(triangle[2], triangle[1], triangle[0]);
-      soleIndices.push(...triangle.map((index) => index + 3 * count));
+      soleIndices.push(...triangle.map((index) => index + (soleRings.length - 1) * count));
     }
     for (let i = 0; i < soleIndices.length; i += 3) {
       [soleIndices[i + 1], soleIndices[i + 2]] = [soleIndices[i + 2], soleIndices[i + 1]];
@@ -1062,10 +1069,12 @@
       [-0.014, 0.043, 0.126],
       [0.02, 0.044, 0.096],
       [0.06, 0.048, 0.071],
-      [0.106, 0.05, 0.06],
-      [0.146, 0.039, 0.054],
-      [0.173, 0.018, 0.037],
-      [0.177, 0.001, 0.022]
+      [0.106, 0.048, 0.060],
+      [0.128, 0.048, 0.058],
+      [0.146, 0.044, 0.054],
+      [0.162, 0.033, 0.047],
+      [0.173, 0.018, 0.036],
+      [0.177, 0.001, 0.020]
     ];
     const upperPositions = [],
       upperIndices = [];
@@ -1091,15 +1100,28 @@
     setAttr(upperGeo, 'position', upperPositions, 3);
     upperGeo.setIndex(upperIndices);
     upperGeo.computeVertexNormals();
-    const upperHeight = (z) => {
+    const sampleBootSection = (z) => {
       for (let i = 1; i < bootSections.length; i++) {
         if (z <= bootSections[i][0]) {
-          const a = bootSections[i - 1],
-            b = bootSections[i];
-          return a[2] + ((b[2] - a[2]) * (z - a[0])) / (b[0] - a[0]);
+          const [startZ, startWidth, startHeight] = bootSections[i - 1];
+          const [endZ, endWidth, endHeight] = bootSections[i];
+          const t = (z - startZ) / (endZ - startZ);
+          return {
+            width: THREE.MathUtils.lerp(startWidth, endWidth, t),
+            height: THREE.MathUtils.lerp(startHeight, endHeight, t)
+          };
         }
       }
-      return bootSections[bootSections.length - 1][2];
+      const [, width, height] = bootSections[bootSections.length - 1];
+      return { width, height };
+    };
+    const laceRows = [0.006, 0.023, 0.040, 0.057, 0.074, 0.091];
+    const laceX = z => 0.013 + 0.007 * (z / laceRows[laceRows.length - 1]);
+    const lacePoint = (side, z, lift = 0) => {
+      const x = side * laceX(z);
+      const { width, height } = sampleBootSection(z);
+      const crown = Math.pow(1 - (x / width) ** 2, 0.37);
+      return new THREE.Vector3(x, 0.017 + (height - 0.017) * crown + lift, z);
     };
 
     // Put every lace segment into one mesh per boot.
@@ -1126,13 +1148,14 @@
         laceIndices.push(a, b, a + 6, b, b + 6, a + 6);
       }
     };
-    for (let row = 0; row < 4; row++) {
-      const z = -0.005 + row * 0.019;
+    for (let row = 0; row < laceRows.length - 1; row++) {
+      const z = laceRows[row];
+      const front = laceRows[row + 1];
       for (const direction of [-1, 1]) {
-        const front = z + 0.012;
-        const start = new THREE.Vector3(-direction * 0.014, upperHeight(z) - 0.0035, z);
-        const end = new THREE.Vector3(direction * 0.014, upperHeight(front) - 0.0035, front);
-        const middle = new THREE.Vector3(0, upperHeight((z + front) / 2) + 0.001, (z + front) / 2);
+        const start = lacePoint(-direction, z, 0.0015);
+        const end = lacePoint(direction, front, 0.0015);
+        const middleZ = (z + front) / 2;
+        const middle = lacePoint(0, middleZ, direction > 0 ? 0.0028 : 0.001);
         appendLace(start, middle);
         appendLace(middle, end);
       }
@@ -1141,6 +1164,8 @@
     setAttr(lacesGeo, 'position', lacePositions, 3);
     lacesGeo.setIndex(laceIndices);
     lacesGeo.computeVertexNormals();
+    const eyeletGeo = new THREE.TorusGeometry(0.0024, 0.00065, 6, 12);
+    const welt = footprint.map(point => [point.x * 0.985, 0.017, 0.045 + (point.y - 0.045) * 0.985]);
 
     for (const side of [SR, SL]) {
       const shoe = new THREE.Group();
@@ -1162,13 +1187,24 @@
       const laces = new THREE.Mesh(lacesGeo, laceMat);
       laces.name = 'bootLaces';
       shoe.add(laces);
+      shoe.add(makeSeam(welt, shoesMat, 0.001, true));
+      for (const z of laceRows) {
+        for (const edge of [-1, 1]) {
+          const eyelet = new THREE.Mesh(eyeletGeo, eyeletMat);
+          eyelet.position.copy(lacePoint(edge, z, 0.0008));
+          eyelet.rotation.set(-1.08, 0, -edge * 0.24);
+          shoe.add(eyelet);
+        }
+      }
       const toeSeam = [];
+      const toeCapZ = 0.116;
+      const toeCap = sampleBootSection(toeCapZ);
       for (let j = 0; j <= 14; j++) {
         const angle = -1.35 + (2.7 * j) / 14;
         toeSeam.push([
-          0.0504 * Math.sin(angle),
-          0.017 + (0.06 - 0.017) * Math.pow(Math.cos(angle), 0.74) + 0.0004,
-          0.106
+          toeCap.width * Math.sin(angle),
+          0.017 + (toeCap.height - 0.017) * Math.pow(Math.cos(angle), 0.74) + 0.0006,
+          toeCapZ
         ]);
       }
       shoe.add(makeSeam(toeSeam, laceMat, 0.00055));
@@ -2087,10 +2123,10 @@
     sweatBand.name = 'capSweatband';
     capGroup.add(sweatBand);
 
-    const silverMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(0xb9c3c9).convertSRGBToLinear(),
-      roughness: 0.36,
-      metalness: 0.84,
+    const badgeMetal = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(0xc39b57).convertSRGBToLinear(),
+      roughness: 0.4,
+      metalness: 0.64,
       envMap: makeDaylightReflections(),
       envMapIntensity: 0.8
     });
@@ -2098,7 +2134,8 @@
       outline = [];
     for (let i = 0; i < 32; i++) {
       const angle = Math.PI / 2 + (i / 32) * Math.PI * 2;
-      const radius = [0.015, 0.0127, 0.011, 0.0127][i % 4];
+      const radius = i % 4 === 0 ? (i % 8 === 0 ? 0.016 : 0.0145) :
+        [0, 0.0128, 0.0114, 0.0128][i % 4];
       const x = Math.cos(angle) * radius,
         y = Math.sin(angle) * radius;
       outline.push([x, y]);
@@ -2107,7 +2144,7 @@
     }
     starShape.closePath();
     const badge = new THREE.Group();
-    badge.name = 'silverCapBadge';
+    badge.name = 'fieldServiceCapBadge';
     const badgeAngle = 1.05,
       badgeHeight = 0.62;
     const normal = surfaceNormal(badgeAngle, badgeHeight);
@@ -2122,11 +2159,11 @@
         bevelSegments: 1,
         steps: 1
       }),
-      silverMat
+      badgeMetal
     );
     badge.add(star);
 
-    // Radial engraving and the reference's BB monogram sit on the physical silver pin.
+    // Engraved brass rays around the blue enamel BB medallion.
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = 256;
     const g = canvas.getContext('2d');
@@ -2140,11 +2177,11 @@
     g.closePath();
     g.save();
     g.clip();
-    g.fillStyle = '#a8b7bf';
+    g.fillStyle = '#c7a46a';
     g.fillRect(0, 0, 256, 256);
     for (let i = 0; i < 176; i++) {
       const angle = (i / 176) * Math.PI * 2;
-      g.strokeStyle = i % 2 ? '#d9e0e3' : '#50616b';
+      g.strokeStyle = i % 2 ? '#f4d99e' : '#8a6335';
       g.lineWidth = i % 2 ? 1.0 : 1.3;
       g.beginPath();
       g.moveTo(128 + Math.cos(angle) * 63, 128 + Math.sin(angle) * 63);
@@ -2152,28 +2189,28 @@
       g.stroke();
     }
     g.restore();
-    g.fillStyle = '#d3dde1';
+    g.fillStyle = '#eed6a2';
     g.beginPath();
-    g.arc(128, 128, 66, 0, Math.PI * 2);
+    g.arc(128, 128, 62, 0, Math.PI * 2);
     g.fill();
-    g.fillStyle = '#485e6c';
-    g.beginPath();
-    g.arc(128, 128, 61, 0, Math.PI * 2);
-    g.fill();
-    g.fillStyle = '#182a39';
+    g.fillStyle = '#987442';
     g.beginPath();
     g.arc(128, 128, 55, 0, Math.PI * 2);
     g.fill();
-    g.strokeStyle = '#8195a0';
-    g.lineWidth = 1.5;
+    g.fillStyle = '#151e68';
     g.beginPath();
     g.arc(128, 128, 51, 0, Math.PI * 2);
+    g.fill();
+    g.strokeStyle = '#837db9';
+    g.lineWidth = 1.5;
+    g.beginPath();
+    g.arc(128, 128, 48, 0, Math.PI * 2);
     g.stroke();
-    g.fillStyle = '#a4b7c3';
-    g.font = 'italic bold 76px Georgia, serif';
+    g.fillStyle = '#f3d69a';
+    g.font = 'bold 68px Georgia, serif';
     g.textAlign = 'center';
     g.textBaseline = 'middle';
-    g.fillText('BB', 125, 131);
+    g.fillText('BB', 128, 131, 80);
     const engraving = new THREE.Mesh(
       new THREE.PlaneGeometry(0.032, 0.032),
       new THREE.MeshStandardMaterial({
@@ -2181,7 +2218,7 @@
         transparent: true,
         alphaTest: 0.2,
         roughness: 0.48,
-        metalness: 0.5
+        metalness: 0.18
       })
     );
     engraving.name = 'engravedBBMonogram';
@@ -2482,72 +2519,71 @@
       haversackGroup.add(adjuster);
     }
 
-    // ── Pouch: thick white canvas body, shaped flap with stitched border, brass stud, belt loops ──
+    // Flat canvas pouch with the strap ends sewn into the back of its top edge.
     const pouch = new THREE.Group();
     pouch.name = 'haversackPouch';
-    pouch.position.set(SL * 0.217, 0.953, 0.019);
-    pouch.rotation.y = Math.PI / 2 - 0.13;
-    pouch.rotation.z = 0.12;
-    pouch.scale.set(0.98, 0.66, 0.78);
-    const pouchShape = roundedRectangle(0.156, 0.122, 0.004);
+    pouch.position.set(SL * 0.215, 0.965, 0.012);
+    pouch.rotation.y = Math.PI / 2 - 0.12;
+    pouch.rotation.z = 0.06;
+    const pouchShape = roundedRectangle(0.165, 0.069, 0.004);
     const body = new THREE.Mesh(new THREE.ExtrudeGeometry(pouchShape, {
-      depth: 0.012, bevelEnabled: true, bevelSize: 0.0014, bevelThickness: 0.0012, bevelSegments: 3
+      depth: 0.008, bevelEnabled: true, bevelSize: 0.0014, bevelThickness: 0.0012, bevelSegments: 3
     }), whiteMat);
-    body.position.z = -0.006;
+    body.position.z = -0.004;
     body.castShadow = true;
     body.receiveShadow = true;
     pouch.add(body);
 
     const flap = new THREE.Shape();
-    flap.moveTo(-0.080, 0.062);
-    flap.lineTo(0.080, 0.062);
-    flap.lineTo(0.080, 0.016);
-    flap.quadraticCurveTo(0.080, 0.010, 0.073, 0.010);
-    flap.lineTo(-0.073, 0.010);
-    flap.quadraticCurveTo(-0.080, 0.010, -0.080, 0.016);
+    flap.moveTo(-0.082, 0.034);
+    flap.lineTo(0.082, 0.034);
+    flap.lineTo(0.080, -0.012);
+    flap.quadraticCurveTo(0.077, -0.023, 0.064, -0.025);
+    flap.lineTo(-0.064, -0.025);
+    flap.quadraticCurveTo(-0.077, -0.023, -0.080, -0.012);
     flap.closePath();
     const foldedFlap = new THREE.Mesh(new THREE.ExtrudeGeometry(flap, {
       depth: 0.0018, bevelEnabled: true, bevelSize: 0.0006, bevelThickness: 0.0005, bevelSegments: 2
     }), whiteMat);
-    foldedFlap.position.z = 0.0072;
+    foldedFlap.position.z = 0.0048;
     foldedFlap.castShadow = true;
     pouch.add(foldedFlap);
     // Stitched border following the flap outline.
     const outline = flap.getPoints(10);
     if (outline.length > 1 && outline[0].distanceTo(outline[outline.length - 1]) < 1e-6) outline.pop();
-    const stitch = outline.map(q => [q.x * 0.93, 0.025 + (q.y - 0.025) * 0.90, 0.0096]);
+    const stitch = outline.map(q => [q.x * 0.94, 0.004 + (q.y - 0.004) * 0.89, 0.0072]);
     pouch.add(makeSeam(stitch, seamMat, 0.00032, true));
     // Brass stud with a raised rim and domed head.
-    const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.0092, 0.0092, 0.0014, 28), brassMat);
+    const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.0012, 28), brassMat);
     rim.rotation.x = Math.PI / 2;
-    rim.position.set(-0.055, 0.024, 0.0100);
+    rim.position.set(0, -0.009, 0.0074);
     pouch.add(rim);
-    const pouchButton = new THREE.Mesh(new THREE.SphereGeometry(0.0068, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), brassMat);
+    const pouchButton = new THREE.Mesh(new THREE.SphereGeometry(0.0056, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), brassMat);
     pouchButton.name = 'pouchBrassButton';
     pouchButton.rotation.x = Math.PI / 2;
-    pouchButton.position.set(-0.055, 0.024, 0.0106);
+    pouchButton.position.set(0, -0.009, 0.0080);
     pouch.add(pouchButton);
-    // Two belt loops on the back of the pouch (toward the wearer).
-    for (const lx of [-0.042, 0.042]) {
-      const loop = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.050, 0.0035), whiteMat);
-      loop.name = 'pouchBeltLoop';
-      loop.position.set(lx, 0.067, -0.0105);
-      loop.castShadow = true;
-      pouch.add(loop);
-    }
     haversackGroup.add(pouch);
 
-    // Strap tail passing under the belt on the left hip: a thick, rounded-corner end of webbing.
-    const tailGeo = new THREE.ExtrudeGeometry(roundedRectangle(0.047, 0.052, 0.003), {
-      depth: 0.006, bevelEnabled: true, bevelSize: 0.0008, bevelThickness: 0.0008, bevelSegments: 2
-    });
-    tailGeo.translate(0, 0, -0.003);
-    const tail = new THREE.Mesh(tailGeo, whiteMat);
-    tail.name = 'haversackTail';
-    tail.rotation.y = Math.PI / 2;
-    tail.position.set(0.217, 0.997, 0.031);
-    tail.castShadow = true;
-    haversackGroup.add(tail);
+    // Continue both ends behind the belt to the pouch, sharing their edge vertices with the webbing.
+    pouch.updateMatrix();
+    for (const [row, attachment] of [[0, -0.048], [points.length - 1, 0.048]]) {
+      const first = strapPoint(row, 0);
+      const last = strapPoint(row, columns - 1);
+      const endA = new THREE.Vector3(attachment - 0.022, 0.024, -0.003).applyMatrix4(pouch.matrix);
+      const endB = new THREE.Vector3(attachment + 0.022, 0.024, -0.003).applyMatrix4(pouch.matrix);
+      const reversed = first.distanceToSquared(endA) > first.distanceToSquared(endB);
+      const left = reversed ? endB : endA;
+      const right = reversed ? endA : endB;
+      const tabGeometry = new THREE.BufferGeometry();
+      setAttr(tabGeometry, 'position', [...first.toArray(), ...last.toArray(), ...left.toArray(), ...right.toArray()], 3);
+      setAttr(tabGeometry, 'uv', [0, 0, 1, 0, 0, 0.04, 1, 0.04], 2);
+      tabGeometry.setIndex([0, 2, 1, 1, 2, 3]);
+      tabGeometry.computeVertexNormals();
+      const tab = new THREE.Mesh(tabGeometry, webbingMat);
+      tab.name = 'haversackPouchAttachment';
+      haversackGroup.add(tab);
+    }
     haversackGroup.visible = window.BBMUniform3D.state.haversackVisible;
     uniformGroup.add(haversackGroup);
     buildSash();
