@@ -61,6 +61,7 @@
   };
 
   let badgeAssetsReady;
+  let badgeRefreshFrame = null;
   function preloadBadgeAssets() {
     badgeAssetsReady ??= Promise.all(
       [...Object.values(RIGHT_IMAGES), ...Object.values(LEFT_IMAGES)].map(url => new Promise(resolve => {
@@ -86,7 +87,6 @@
     const openBtn = document.getElementById('arm-3d-btn');
     const closeBtn = document.getElementById('uniform-3d-close');
     const modal = document.getElementById('uniform-3d-modal');
-    const syncBtn = document.getElementById('u3d-sync-btn');
     const fullscreenBtn = document.getElementById('u3d-fullscreen-btn');
     zoomInput = document.getElementById('u3d-zoom');
     zoomValue = document.getElementById('u3d-zoom-value');
@@ -123,13 +123,6 @@
         closeViewer();
       }
     });
-
-    if (syncBtn) {
-      syncBtn.addEventListener('click', () => {
-        syncFromPlanner();
-        flashFeedback(syncBtn, 'Synced!');
-      });
-    }
 
     if (fullscreenBtn) {
       fullscreenBtn.addEventListener('click', toggleFullscreen);
@@ -201,9 +194,11 @@
     // Auto-sync with BadgeState
     if (window.BadgeState && typeof window.BadgeState.subscribe === 'function') {
       window.BadgeState.subscribe(() => {
-        if (window.BBMUniform3D.isOpen) {
-          syncFromPlanner();
-        }
+        if (!window.BBMUniform3D.isOpen || badgeRefreshFrame !== null) return;
+        badgeRefreshFrame = requestAnimationFrame(() => {
+          badgeRefreshFrame = null;
+          if (window.BBMUniform3D.isOpen) syncFromPlanner();
+        });
       });
     }
 
@@ -1282,71 +1277,60 @@
 
     const collarMat = shirtMat.clone();
     collarMat.color.setHex(0x19263b).convertSRGBToLinear();
-    for (const side of [SR, SL]) {
-      const inner = new THREE.Vector2(0.040, 1.524);
-      const outer = new THREE.Vector2(0.086, 1.507);
-      const tip = new THREE.Vector2(0.077, 1.445);
-      const geo = new THREE.BufferGeometry();
-      const positions = [], indices = [];
-      const rows = 16, columns = 10;
-      for (let row = 0; row <= rows; row++) {
-        const t = row / rows;
-        for (let column = 0; column <= columns; column++) {
-          const u = column / columns;
-          const point = inner.clone().lerp(outer, u).lerp(tip, t * 0.999);
-          const roll = 0.004 * Math.sin(Math.PI * (0.2 + 0.8 * u)) * (1 - t);
-          positions.push(side * point.x, point.y, torsoFrontZ(point.x, point.y) + 0.004 + roll);
+    const addCollarLeaves = (group, buttoned) => {
+      for (const side of [SR, SL]) {
+        const inner = new THREE.Vector2(buttoned ? 0.008 : 0.040, buttoned ? 1.507 : 1.524);
+        const outer = new THREE.Vector2(buttoned ? 0.069 : 0.086, 1.507);
+        const tip = new THREE.Vector2(buttoned ? 0.050 : 0.077, buttoned ? 1.454 : 1.445);
+        const geo = new THREE.BufferGeometry();
+        const positions = [], indices = [];
+        const rows = 16, columns = 10;
+        for (let row = 0; row <= rows; row++) {
+          const t = row / rows;
+          for (let column = 0; column <= columns; column++) {
+            const u = column / columns;
+            const point = inner.clone().lerp(outer, u).lerp(tip, t * 0.999);
+            const roll = 0.004 * Math.sin(Math.PI * (0.2 + 0.8 * u)) * (1 - t);
+            const facing = buttoned ? 0.010 + 0.010 * (1 - u) * (1 - t) : 0.004;
+            positions.push(side * point.x, point.y, torsoFrontZ(point.x, point.y) + facing + roll);
+          }
         }
-      }
-      for (let row = 0; row < rows; row++) {
-        for (let column = 0; column < columns; column++) {
-          const a = row * (columns + 1) + column;
-          const b = a + columns + 1;
-          indices.push(...(side === SR ? [a, a + 1, b, b, a + 1, b + 1] : [a, b, a + 1, b, b + 1, a + 1]));
+        for (let row = 0; row < rows; row++) {
+          for (let column = 0; column < columns; column++) {
+            const a = row * (columns + 1) + column;
+            const b = a + columns + 1;
+            indices.push(...(side === SR ? [a, a + 1, b, b, a + 1, b + 1] : [a, b, a + 1, b, b + 1, a + 1]));
+          }
         }
+        setAttr(geo, 'position', positions, 3);
+        geo.setIndex(indices);
+        geo.computeVertexNormals();
+        group.add(new THREE.Mesh(geo, collarMat));
       }
-      setAttr(geo, 'position', positions, 3);
-      geo.setIndex(indices);
-      geo.computeVertexNormals();
-      dayCollarGroup.add(new THREE.Mesh(geo, collarMat));
-    }
+    };
+    addCollarLeaves(dayCollarGroup, false);
 
     ceremonialCollarGroup = new THREE.Group();
     ceremonialCollarGroup.name = 'ceremonialDressCollar';
-    const closedBand = new THREE.Mesh(new THREE.CylinderGeometry(0.068, 0.08, 0.036, 32, 1, true), shirtMat);
-    closedBand.position.set(0, 1.515, -0.004);
+    const closedBand = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.078, 0.025, 48, 2, true), shirtMat);
+    closedBand.position.set(0, 1.512, -0.004);
     ceremonialCollarGroup.add(closedBand);
-    for (const side of [SR, SL]) {
-      const points = [
-        [0.006, 1.525],
-        [0.071, 1.509],
-        [0.088, 1.463],
-        [0.022, 1.484]
-      ];
-      const geometry = new THREE.BufferGeometry();
-      setAttr(
-        geometry,
-        'position',
-        points.flatMap(([x, y]) => [side * x, y, torsoFrontZ(x, y) + 0.012]),
-        3
-      );
-      geometry.setIndex(side === SR ? [0, 1, 2, 0, 2, 3] : [0, 2, 1, 0, 3, 2]);
-      geometry.computeVertexNormals();
-      ceremonialCollarGroup.add(new THREE.Mesh(geometry, collarMat));
-    }
+    addCollarLeaves(ceremonialCollarGroup, true);
     shirtGroup.add(ceremonialCollarGroup);
 
     // Tapered epaulettes: 2" at the shoulder seam to 1 1/2" at the collar, navy button (Section 4.2.1d)
     [SR, SL].forEach((sx) => {
-      const ex = 0.175;
       const epGeo = new THREE.PlaneGeometry(0.11, 0.05, 24, 8);
+      const tabClearance = x => sx === SL
+        ? 0.002 + 0.012 * smoothStep01(0.120, 0.136, x) * (1 - smoothStep01(0.208, 0.227, x))
+        : 0.002;
       const vertices = epGeo.attributes.position;
       for (let i = 0; i < vertices.count; i++) {
         const u = (vertices.getX(i) + 0.055) / 0.11;
         const x = sx * (0.115 + 0.11 * u);
         const taper = Math.min(1, u * 11) * (0.76 + 0.24 * u);
         const z = vertices.getY(i) * taper;
-        vertices.setXYZ(i, x, torsoSurfaceY(x, z) + 0.002, z);
+        vertices.setXYZ(i, x, torsoSurfaceY(x, z) + tabClearance(Math.abs(x)), z);
       }
       epGeo.computeVertexNormals();
       const ep = new THREE.Mesh(epGeo, shirtMat);
@@ -1354,8 +1338,8 @@
       shirtGroup.add(ep);
 
       const epb = new THREE.Mesh(new THREE.CylinderGeometry(0.0075, 0.0075, 0.004, 14), navyBtnMat);
-      const buttonX = sx * (ex - 0.04);
-      epb.position.set(buttonX, torsoSurfaceY(buttonX, 0) + 0.004, 0);
+      const buttonX = sx * (sx === SL ? 0.127 : 0.135);
+      epb.position.set(buttonX, torsoSurfaceY(buttonX, 0) + tabClearance(Math.abs(buttonX)) + 0.002, 0);
       epb.rotation.z = Math.atan2(torsoSurfaceY(buttonX + 0.004, 0) -
         torsoSurfaceY(buttonX - 0.004, 0), 0.008);
       shirtGroup.add(epb);
@@ -1506,7 +1490,7 @@
     });
     const front = (x, y, lift = 0.007) => new THREE.Vector3(x, y, torsoFrontZ(x, y) + lift);
     const rear = (x, y) => new THREE.Vector3(x, y, -torsoFrontZ(x, y) - 0.007);
-    const shoulderX = 0.207;
+    const shoulderX = 0.198;
     const shoulderY = torsoSurfaceY(shoulderX, 0) + 0.003;
     const junction = front(0.2185, 1.185);
     const loop = new THREE.CatmullRomCurve3([
@@ -1914,20 +1898,22 @@
     for (let i = 0; i <= segments; i++) {
       const t = i / segments,
         y = top + (tip - top) * t;
-      points.push([0, y, rawTieZ(y) + 0.65 * (hullZ(y) - rawTieZ(y))]);   // near-straight hang, in front of the buttons, under the strap
-      widths.push(t < 0.86 ? 0.029 + 0.04 * (t / 0.86) : (0.069 * (1 - t)) / 0.14 + 0.0005);
+      const tuck = 1 - smoothStep01(0, 0.08, t);
+      points.push([0, y, rawTieZ(y) + 0.65 * (hullZ(y) - rawTieZ(y)) - 0.008 * tuck]);
+      widths.push(t < 0.86 ? 0.024 + 0.045 * (t / 0.86) : (0.069 * (1 - t)) / 0.14 + 0.0005);
     }
     const blade = new THREE.Mesh(makeRibbonGeo(points, widths), material);
     blade.name = 'skyBlueTieBlade';
     tieGroup.add(blade);
 
     const knotShape = new THREE.Shape();
-    knotShape.moveTo(-0.015, 0.02);
-    knotShape.lineTo(0.015, 0.02);
-    knotShape.lineTo(0.02, 0.005);
-    knotShape.lineTo(0.01, -0.021);
-    knotShape.lineTo(-0.01, -0.021);
-    knotShape.lineTo(-0.02, 0.005);
+    knotShape.moveTo(-0.014, 0.013);
+    knotShape.quadraticCurveTo(0, 0.017, 0.014, 0.013);
+    knotShape.quadraticCurveTo(0.017, 0.007, 0.015, 0.002);
+    knotShape.lineTo(0.010, -0.015);
+    knotShape.quadraticCurveTo(0, -0.018, -0.010, -0.015);
+    knotShape.lineTo(-0.015, 0.002);
+    knotShape.quadraticCurveTo(-0.017, 0.007, -0.014, 0.013);
     knotShape.closePath();
     const geometry = new THREE.ExtrudeGeometry(knotShape, {
       depth: 0.003,
@@ -3222,7 +3208,7 @@
       const rankText = state.rank ? state.rank : 'Private';
       summary.textContent = count
         ? `${rankText} · ${count} selected ${count === 1 ? 'badge' : 'badges'}`
-        : 'Select badges in the planner or load the example below.';
+        : 'Planner badges update automatically. Select badges or load the example below.';
     }
   }
 
@@ -3273,7 +3259,7 @@
 
     // 7. Update textures and UI
     syncFromPlanner();
-    setCameraView('front');
+    setCameraView('rightArm');
   }
 
   function clearAllBadges() {
@@ -3288,7 +3274,7 @@
   ══════════════════════════════════════════════════════════ */
   function setCameraView(viewName) {
     const preset = CAMERA_PRESET_VIEWS[viewName];
-    if (!preset || !camera) return;
+    if (!preset) return;
 
     window.BBMUniform3D.state.currentView = viewName;
 
@@ -3300,7 +3286,7 @@
 
     viewAngle = preset.angle;
     viewHeight = preset.y;
-    updateCameraPose();
+    if (camera) updateCameraPose();
   }
 
   function setZoom(percent) {
