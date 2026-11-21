@@ -810,6 +810,7 @@ body[data-active-tab="games"] #fab {
 
 /* Arms outer wrapper — two equal columns */
 .arms-outer {
+  --default-armlet-height: 500px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
@@ -817,11 +818,7 @@ body[data-active-tab="games"] #fab {
   align-items: start;
 }
 
-.arms-outer:not(:has(.right-arm-row, .left-arm-row)) {
-  --empty-armlet-min-height: 500px;
-}
-
-.arms-outer:not(:has(.right-arm-row, .left-arm-row)) > #arm-col-right {
+.arms-outer:not(:has(.right-arm-row, .left-arm-row, .has-rank)) > #arm-col-right {
   align-self: stretch;
 }
 
@@ -875,13 +872,17 @@ body[data-active-tab="games"] #fab {
   border-radius: var(--radius-lg);
   padding: var(--arm-card-padding-block) var(--arm-card-padding-inline);
   flex: 1;
-  min-height: var(--empty-armlet-min-height, 0);
   position: relative;
   overflow: hidden;
   /* Ensure clip-path and absolute children are tidy */
   display: flex;
   /* Allow vertical layout management */
   flex-direction: column;
+}
+
+.arm-card.has-rank,
+.arm-card:has(.arm-empty) {
+  min-height: var(--default-armlet-height);
 }
 
 /* Segment control (mobile) */
@@ -1281,13 +1282,9 @@ body[data-active-tab="games"] #fab {
 }
 
 .has-rank > #arm-right-content {
+  flex: 1 0 auto;
   padding: var(--arm-card-padding-block) var(--arm-card-padding-inline) 0;
   background: var(--navy-box);
-}
-
-.has-badge-row-space > #arm-right-content::after {
-  content: '';
-  height: 68px;
 }
 
 /* Arm empty */
@@ -4846,23 +4843,14 @@ body[data-active-tab="games"] #fab {
 
   /* Arm view modes on mobile (Override to show both arms side by side) */
   .arms-outer {
+    --default-armlet-height: 200px;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-  }
-
-  .arms-outer:not(:has(.right-arm-row, .left-arm-row)) {
-    --empty-armlet-min-height: 200px;
   }
 
   .arms-outer .arm-card {
     --arm-card-padding-block: 10px;
     --arm-card-padding-inline: 6px;
-  }
-
-  .has-badge-row-space > #arm-right-content::after {
-    width: clamp(29px, 19%, 68px);
-    height: auto;
-    aspect-ratio: 1;
   }
 
   /* Target the right arm grid — forced 5 per row */
