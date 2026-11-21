@@ -818,7 +818,7 @@ body[data-active-tab="games"] #fab {
   align-items: start;
 }
 
-.arms-outer:not(:has(.right-arm-row, .left-arm-row, .has-rank)) > #arm-col-right {
+.arms-outer:not(:has(.has-rank)) > #arm-col-right {
   align-self: stretch;
 }
 
@@ -880,6 +880,7 @@ body[data-active-tab="games"] #fab {
   flex-direction: column;
 }
 
+.arms-outer:not(:has(.has-rank)) .arm-card,
 .arm-card.has-rank,
 .arm-card:has(.arm-empty) {
   min-height: var(--default-armlet-height);
