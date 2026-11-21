@@ -1497,6 +1497,7 @@ function renderArrangement(s) {
     if (oldWrap) oldWrap.remove();
 
     armCard.classList.toggle('has-rank', rankCount > 0);
+    armCard.classList.toggle('has-badge-row-space', rankCount > 0 && rightBadges.length > 0 && rightBadges.length <= 10);
     if (rankCount > 0) {
       armCard.insertAdjacentHTML('beforeend', svgChevrons(rankCount, s.rank));
     }

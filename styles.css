@@ -817,6 +817,14 @@ body[data-active-tab="games"] #fab {
   align-items: start;
 }
 
+.arms-outer:not(:has(.right-arm-row, .left-arm-row)) {
+  --empty-armlet-min-height: 500px;
+}
+
+.arms-outer:not(:has(.right-arm-row, .left-arm-row)) > #arm-col-right {
+  align-self: stretch;
+}
+
 /* Each arm column: label + card + extras stacked */
 .arm-col {
   display: flex;
@@ -866,6 +874,8 @@ body[data-active-tab="games"] #fab {
   background: var(--navy-box);
   border-radius: var(--radius-lg);
   padding: var(--arm-card-padding-block) var(--arm-card-padding-inline);
+  flex: 1;
+  min-height: var(--empty-armlet-min-height, 0);
   position: relative;
   overflow: hidden;
   /* Ensure clip-path and absolute children are tidy */
@@ -1275,7 +1285,18 @@ body[data-active-tab="games"] #fab {
   background: var(--navy-box);
 }
 
+.has-badge-row-space > #arm-right-content::after {
+  content: '';
+  height: 68px;
+}
+
 /* Arm empty */
+#arm-right-content:has(.arm-empty),
+#arm-left-content:has(.arm-empty) {
+  flex: 1;
+  justify-content: center;
+}
+
 .arm-empty {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.35);
@@ -4829,9 +4850,19 @@ body[data-active-tab="games"] #fab {
     gap: 8px;
   }
 
+  .arms-outer:not(:has(.right-arm-row, .left-arm-row)) {
+    --empty-armlet-min-height: 200px;
+  }
+
   .arms-outer .arm-card {
     --arm-card-padding-block: 10px;
     --arm-card-padding-inline: 6px;
+  }
+
+  .has-badge-row-space > #arm-right-content::after {
+    width: clamp(29px, 19%, 68px);
+    height: auto;
+    aspect-ratio: 1;
   }
 
   /* Target the right arm grid — forced 5 per row */
