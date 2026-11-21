@@ -1499,15 +1499,10 @@ function renderArrangement(s) {
     armCard.classList.toggle('has-rank', rankCount > 0);
     if (rankCount > 0) {
       armCard.insertAdjacentHTML('beforeend', svgChevrons(rankCount, s.rank));
-    } else {
-      armCard.style.minHeight = '320px'; // Standard Private height
     }
   }
 
   document.getElementById('arm-right-content').innerHTML = rightHTML;
-
-  const armsOuter = document.getElementById('arms-outer');
-  // Layout logic is now handled in CSS via #arm-col-left align-self: start
 
   /* ── Left arm — structured rows ── */
   const sv = s.service;

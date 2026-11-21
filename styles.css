@@ -814,8 +814,7 @@ body[data-active-tab="games"] #fab {
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   max-width: 960px;
-  align-items: stretch;
-  /* Allows right arm to match left arm height */
+  align-items: start;
 }
 
 /* Each arm column: label + card + extras stacked */
@@ -825,29 +824,14 @@ body[data-active-tab="games"] #fab {
   gap: 0;
 }
 
-#arm-col-left {
-  align-self: start;
-  /* Left arm stays its natural height; doesn't stretch with right arm */
-}
-
-#arm-col-right {
-  align-self: stretch;
-  /* Right arm matches left arm if it has fewer badges */
-}
-
 #arm-left-content {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  flex: 1;
 }
 
 #arm-right-content {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  /* Start at top */
-  flex: 1;
 }
 
 /* Arm label OUTSIDE the card */
@@ -882,8 +866,6 @@ body[data-active-tab="games"] #fab {
   background: var(--navy-box);
   border-radius: var(--radius-lg);
   padding: var(--arm-card-padding-block) var(--arm-card-padding-inline);
-  flex: 1;
-  min-height: 500px;
   position: relative;
   overflow: hidden;
   /* Ensure clip-path and absolute children are tidy */
@@ -1275,6 +1257,8 @@ body[data-active-tab="games"] #fab {
   flex: none;
   width: 100%;
   height: auto;
+  /* Overlap the cloth to hide the seam at fractional pixel sizes. */
+  margin-top: -1px;
 }
 
 .chevron-wrap > path {
@@ -1300,9 +1284,7 @@ body[data-active-tab="games"] #fab {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1;
-  min-height: 200px;
-  /* Ensures it takes up space even if parent is tight */
+  min-height: 52px;
 }
 
 /* Sidebar thumb */
@@ -4850,8 +4832,6 @@ body[data-active-tab="games"] #fab {
   .arms-outer .arm-card {
     --arm-card-padding-block: 10px;
     --arm-card-padding-inline: 6px;
-    min-height: 200px;
-    /* ensure right arm gaps are smaller to fit 5-per-row */
   }
 
   /* Target the right arm grid — forced 5 per row */
