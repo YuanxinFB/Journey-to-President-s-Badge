@@ -1448,15 +1448,16 @@ function leftImgChip(src, title, small = false, awardId) {
   </div>`;
 }
 
-function svgChevron() {
-  return `<svg class="chevron-svg" viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <path d="M0,10 L100,27 L200,10 L200,23 L100,40 L0,23 Z" fill="white"/>
-  </svg>`;
-}
-
-function svgChevronPhone() {
-  return `<svg class="chevron-svg-phone" viewBox="0 0 200 52" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <path d="M20,10 L100,38 L180,10 L180,20 L100,51 L20,20 Z" fill="white"/>
+function svgChevrons(count, rank) {
+  const stripes = Array.from({ length: count }, (_, index) => {
+    const edge = 5 + index * 17;
+    const point = edge + 32;
+    return `<polygon points="5,${edge} 100,${point} 195,${edge} 195,${edge + 13} 100,${point + 13} 5,${edge + 13}" fill="white"/>`;
+  }).join('');
+  const height = 55 + (count - 1) * 17;
+  return `<svg class="chevron-wrap" viewBox="0 0 200 ${height}" role="img" aria-label="${rank}">
+    <path d="M0,0 H200 V${height - 34} L100,${height} L0,${height - 34} Z"/>
+    ${stripes}
   </svg>`;
 }
 
@@ -1495,20 +1496,10 @@ function renderArrangement(s) {
     const oldWrap = armCard.querySelector('.chevron-wrap');
     if (oldWrap) oldWrap.remove();
 
+    armCard.classList.toggle('has-rank', rankCount > 0);
     if (rankCount > 0) {
-      armCard.classList.add('has-rank');
-
-      const wrap = document.createElement('div');
-      wrap.className = 'chevron-wrap';
-      wrap.title = s.rank;
-      
-      const isMobile = window.innerWidth <= 1250;
-      for (let i = 0; i < rankCount; i++) {
-        wrap.innerHTML += isMobile ? svgChevronPhone() : svgChevron();
-      }
-      armCard.appendChild(wrap);
+      armCard.insertAdjacentHTML('beforeend', svgChevrons(rankCount, s.rank));
     } else {
-      armCard.classList.remove('has-rank');
       armCard.style.minHeight = '320px'; // Standard Private height
     }
   }
@@ -1534,11 +1525,11 @@ function renderArrangement(s) {
 
   const r2 = [];
   if (sp.presidents_award) r2.push([LEFT_IMAGES.presidents_award, "President's Award", "presidents_award"]);
-  if (sp.gold_award) r2.push([LEFT_IMAGES.gold_award, 'Gold Award', 'gold_award']);
   if (sp.dofe) {
     const awardId = 'dofe_' + sp.dofe;
     r2.push([LEFT_IMAGES[awardId] || '', 'Duke of Edinburgh – ' + sp.dofe, awardId]);
   }
+  if (sp.gold_award) r2.push([LEFT_IMAGES.gold_award, 'Gold Award', 'gold_award']);
 
   const r3 = [];
   if (sp.gold_scholastic) r3.push([LEFT_IMAGES.gold_scholastic, 'Gold Scholastic Award']);

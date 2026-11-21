@@ -3166,7 +3166,7 @@
     const { service, special } = state;
     const rows = [
       [special.founders_award && 'founders_award'],
-      [special.presidents_award && 'presidents_award', special.gold_award && 'gold_award', special.dofe && 'dofe_' + special.dofe],
+      [special.presidents_award && 'presidents_award', special.dofe && 'dofe_' + special.dofe, special.gold_award && 'gold_award'],
       [special.gold_scholastic && 'gold_scholastic', special.silver_scholastic && 'silver_scholastic', special.bronze_scholastic && 'bronze_scholastic'],
       [service.long_year && 'long_year', special.nco_proficiency && 'nco_proficiency', service.three_year && 'three_year'],
       [service.junior_section && 'junior_section', ...Array.from({ length: service.one_year_count }, () => 'one_year')]

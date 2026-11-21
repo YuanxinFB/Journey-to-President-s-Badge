@@ -877,9 +877,11 @@ body[data-active-tab="games"] #fab {
 
 /* Arm cards */
 .arm-card {
+  --arm-card-padding-block: 20px;
+  --arm-card-padding-inline: 20px;
   background: var(--navy-box);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: var(--arm-card-padding-block) var(--arm-card-padding-inline);
   flex: 1;
   min-height: 500px;
   position: relative;
@@ -1269,57 +1271,24 @@ body[data-active-tab="games"] #fab {
 
 /* Chevrons */
 .chevron-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: calc(100% - 20px);
-  margin: auto;
-  /* Replaced by margin-top: auto in flex context below */
-  margin-top: auto;
-  /* Pushes chevrons to the very bottom of the flex card */
-  pointer-events: none;
-  z-index: 10;
+  display: block;
+  flex: none;
+  width: 100%;
+  height: auto;
+}
+
+.chevron-wrap > path {
+  fill: var(--navy-box);
 }
 
 .arm-card.has-rank {
-  clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 40px), 50% 100%, 0% calc(100% - 40px));
-  padding-bottom: 10px;
-  /* Reduced from 50px to move chevrons closer to the bottom point */
+  padding: 0;
+  background: transparent;
 }
 
-.chevron-svg {
-  width: 110%;
-  height: auto;
-  display: block;
-}
-
-.chevron-svg+.chevron-svg {
-  margin-top: -50px;
-  /* Perfectly nests the chevrons downwards from top to bottom */
-}
-
-/* Tablet & Phone: Tailored spacing for rank chevrons */
-@media (max-width: 1250px) {
-  .chevron-svg-phone {
-    width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-  }
-
-  .chevron-svg-phone+.chevron-svg-phone {
-    margin-top: -15%;
-    /* Balanced spacing for iPad and smaller screens */
-  }
-}
-
-/* Phone only: Edge-to-edge sleeve look */
-@media (max-width: 600px) {
-  .chevron-wrap {
-    width: calc(100% + 40px) !important;
-    margin: 0 -20px !important;
-    margin-top: auto !important;
-  }
+.has-rank > #arm-right-content {
+  padding: var(--arm-card-padding-block) var(--arm-card-padding-inline) 0;
+  background: var(--navy-box);
 }
 
 /* Arm empty */
@@ -4879,7 +4848,8 @@ body[data-active-tab="games"] #fab {
   }
 
   .arms-outer .arm-card {
-    padding: 10px 6px;
+    --arm-card-padding-block: 10px;
+    --arm-card-padding-inline: 6px;
     min-height: 200px;
     /* ensure right arm gaps are smaller to fit 5-per-row */
   }
