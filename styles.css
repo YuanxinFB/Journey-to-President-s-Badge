@@ -882,7 +882,7 @@ body[data-active-tab="games"] #fab {
 
 .arms-outer:not(:has(.has-rank)) .arm-card,
 .arm-card.has-rank,
-.arm-card:has(.arm-empty) {
+#arm-left {
   min-height: var(--default-armlet-height);
 }
 
