@@ -832,6 +832,8 @@ body[data-active-tab="games"] #fab {
 #arm-left-content {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  justify-content: center;
 }
 
 #arm-right-content {
@@ -1160,7 +1162,7 @@ body[data-active-tab="games"] #fab {
   gap: 0px;
 }
 
-.left-arm-row:last-child {
+#arm-left-content > .left-arm-row:last-child {
   margin-bottom: 0;
 }
 
@@ -1289,8 +1291,7 @@ body[data-active-tab="games"] #fab {
 }
 
 /* Arm empty */
-#arm-right-content:has(.arm-empty),
-#arm-left-content:has(.arm-empty) {
+#arm-right-content:has(.arm-empty) {
   flex: 1;
   justify-content: center;
 }
